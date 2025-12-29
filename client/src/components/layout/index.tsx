@@ -211,7 +211,7 @@ export default function RootLayout() {
         </div>
 
         {open && (
-          <footer className="mx-5 py-4 text-sm transition-all delay-200 text-gray-500">
+          <footer className="px-5 py-4 text-sm transition-all delay-200 text-gray-500">
             from{" "}
             <a href="https://clinoae.is-a.dev" target="_blank">
               clinoae
@@ -221,8 +221,20 @@ export default function RootLayout() {
       </Drawer>
 
       {/* Page Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3, height: "100dvh" }}>
-        <DrawerHeader />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          width: "100%", // full viewport height minus AppBar
+        }}
+      >
+        <DrawerHeader className="w-full" />
         <Outlet />
       </Box>
     </Box>
