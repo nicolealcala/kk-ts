@@ -1,3 +1,9 @@
+import EmptyApplications from "../components/applications/EmptyApplications";
+
 export default function ApplicationsPage() {
-  return <h1>Applications</h1>;
+  return (
+    <article className="size-full">
+      <EmptyApplications />
+    </article>
+  );
 }

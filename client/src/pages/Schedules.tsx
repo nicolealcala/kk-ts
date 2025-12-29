@@ -1,3 +1,3 @@
 export default function SchedulesPage() {
-  return <h1>Schedules</h1>;
+  return <article className="size-full">Schedules</article>;
 }
