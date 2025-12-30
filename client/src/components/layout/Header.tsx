@@ -1,12 +1,13 @@
-import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import MuiAppBar, {
   type AppBarProps as MuiAppBarProps,
 } from "@mui/material/AppBar";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Badge, Box, IconButton, Toolbar, Typography } from "@mui/material";
-import { NotificationsNoneRounded } from "@mui/icons-material";
+import {
+  ChevronLeftRounded,
+  MenuRounded,
+  NotificationsNoneRounded,
+} from "@mui/icons-material";
 import AvatarMenu from "./AvatarMenu";
 import { DRAWER_WIDTH } from "./Sidebar";
 
@@ -77,7 +78,7 @@ export default function Header({
               },
             ]}
           >
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
+            {open ? <ChevronLeftRounded /> : <MenuRounded />}
           </IconButton>
           <Typography variant="h6" noWrap component="div">
             Kareer Kit
