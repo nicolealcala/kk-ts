@@ -13,7 +13,7 @@ type ApplicationStatus = {
 const applicationStatuses: ApplicationStatus[] = [
   {
     value: "applied",
-    color: "bg-indigo-50! text-indigo-500!",
+    color: "bg-blue-50! text-blue-500!",
   },
   {
     value: "interviewing",
