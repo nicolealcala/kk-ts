@@ -1,9 +1,11 @@
-import EmptyApplications from "../components/applications/EmptyApplications";
+import ApplicationsTable from "../components/applications/ApplicationsTable";
+//import EmptyApplications from "../components/applications/EmptyApplications";
 
 export default function ApplicationsPage() {
   return (
     <article className="size-full">
-      <EmptyApplications />
+      {/* <EmptyApplications /> */}
+      <ApplicationsTable />
     </article>
   );
 }
