@@ -7,6 +7,8 @@ import ApplicationsPage from "./pages/Applications.tsx";
 import SchedulesPage from "./pages/Schedules.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import RootLayout from "./components/layout/index.tsx";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./lib/config/theme.ts";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </StrictMode>
 );
