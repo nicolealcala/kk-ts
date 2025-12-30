@@ -15,7 +15,8 @@ function EmptyApplications() {
         variant="contained"
         size="large"
         sx={{
-          marginTop: "32px",
+          marginTop: 4,
+          borderRadius: 3,
         }}
         startIcon={<AddRoundedIcon />}
       >
