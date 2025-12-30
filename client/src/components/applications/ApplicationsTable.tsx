@@ -161,7 +161,7 @@ export default function ApplicationsTable() {
           },
           fontFamily: "'Inter', sans-serif",
           "& .MuiDataGrid-cell": {
-            whiteSpace: "normal !important",
+            whiteSpace: "normal",
             lineHeight: "1.5rem",
             display: "flex",
             alignItems: "center",
@@ -170,7 +170,7 @@ export default function ApplicationsTable() {
             fontWeight: "400",
           },
           "& .MuiDataGrid-cell[data-field='date']": {
-            fontSize: "12px",
+            fontSize: "14px",
           },
         }}
       />
