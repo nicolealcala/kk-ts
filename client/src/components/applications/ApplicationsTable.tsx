@@ -42,24 +42,37 @@ const rows: GridRowsProp = mockData.map((data) => ({
 }));
 
 const columns: GridColDef[] = [
-  { field: "date", headerName: "Date", flex: 1 },
+  { field: "date", headerName: "Date", flex: 1, display: "text" },
   {
     field: "position",
     headerName: "Position",
+    display: "flex",
     flex: 2,
     renderCell: (params) => {
       const position = params.row.position;
 
-      return <div className="line-clamp-2!">{position}</div>;
+      return <div className="flex line-clamp-2!">{position}</div>;
     },
   },
-  { field: "organization", headerName: "Organization", flex: 2 },
-  { field: "location", headerName: "Location", flex: 2 },
-  { field: "salary", headerName: "Salary Range", flex: 2, maxWidth: 150 },
+  {
+    field: "organization",
+    headerName: "Organization",
+    display: "text",
+    flex: 2,
+  },
+  { field: "location", headerName: "Location", display: "text", flex: 2 },
+  {
+    field: "salary",
+    headerName: "Salary Range",
+    display: "text",
+    flex: 2,
+    maxWidth: 150,
+  },
   {
     field: "source",
     headerName: "Source",
     minWidth: 128,
+    display: "flex",
     renderCell: (params) => (
       <ApplicationSourceLink source={params.row.source} />
     ),
@@ -67,6 +80,7 @@ const columns: GridColDef[] = [
   {
     field: "workArrangement",
     headerName: "Arrangement",
+    display: "flex",
     flex: 1.5,
     headerAlign: "center",
     renderCell: (params) => {
@@ -98,6 +112,7 @@ const columns: GridColDef[] = [
   {
     field: "status",
     headerName: "Status",
+    display: "flex",
     flex: 2.5,
     renderCell: (params) => {
       const status = params.row.status.toLowerCase();
