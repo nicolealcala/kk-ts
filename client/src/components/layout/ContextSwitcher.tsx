@@ -104,7 +104,7 @@ export default function ContextSwitcher() {
           py: 1.5,
         },
         "&:hover .MuiSelect-select": {
-          bgcolor: "rgba(0,0,0,0.05)",
+          bgcolor: "#f5f5f5",
         },
       }}
     >
