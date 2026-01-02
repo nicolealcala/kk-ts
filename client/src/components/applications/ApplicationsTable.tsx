@@ -1,14 +1,13 @@
 import { type GridRowsProp, type GridColDef, DataGrid } from "@mui/x-data-grid";
 import ApplicationSourceLink from "./ApplicationSourceLink";
-import { Chip } from "@mui/material";
+import Chip from "@mui/material/Chip";
 import { cn } from "../../lib/utils/tailwind";
 import ApplicationMenu from "./AppicationMenu";
 import { mockData } from "../../lib/table/applications";
-
-type ApplicationStatus = {
-  value: string;
-  color: string;
-};
+import type {
+  ApplicationStatus,
+  WorkArrangement,
+} from "../../lib/types/applications";
 
 const applicationStatuses: ApplicationStatus[] = [
   {
@@ -84,7 +83,6 @@ const columns: GridColDef[] = [
     flex: 1.5,
     headerAlign: "center",
     renderCell: (params) => {
-      type WorkArrangement = "remote" | "hybrid" | "onsite";
       type ChipClassName = {
         [K in WorkArrangement]: string;
       };
@@ -141,39 +139,38 @@ const PAGINATION_MODEL = { page: 0, pageSize: 10 };
 
 export default function ApplicationsTable() {
   return (
-    <div style={{ position: "relative", height: "100%", width: "100%" }}>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        checkboxSelection
-        disableColumnResize
-        disableRowSelectionOnClick
-        initialState={{ pagination: { paginationModel: PAGINATION_MODEL } }}
-        pageSizeOptions={[10, 15]}
-        getRowHeight={() => "auto"}
-        sx={{
-          borderRadius: 3,
-          "& .MuiDataGrid-columnHeaderTitle": {
-            fontWeight: "600",
-            fontFamily: "'Figtree', sans-serif",
-            fontSize: "16px",
-            color: "black",
-          },
-          fontFamily: "'Inter', sans-serif",
-          "& .MuiDataGrid-cell": {
-            whiteSpace: "normal",
-            lineHeight: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            py: 1,
-            fontSize: "16px",
-            fontWeight: "400",
-          },
-          "& .MuiDataGrid-cell[data-field='date']": {
-            fontSize: "14px",
-          },
-        }}
-      />
-    </div>
+    <DataGrid
+      rows={rows}
+      columns={columns}
+      checkboxSelection
+      disableColumnResize
+      disableRowSelectionOnClick
+      initialState={{ pagination: { paginationModel: PAGINATION_MODEL } }}
+      pageSizeOptions={[10, 15]}
+      getRowHeight={() => "auto"}
+      sx={{
+        borderRadius: 3,
+        maxWidth: "100%",
+        "& .MuiDataGrid-columnHeaderTitle": {
+          fontWeight: "600",
+          fontFamily: "'Figtree', sans-serif",
+          fontSize: "16px",
+          color: "black",
+        },
+        fontFamily: "'Inter', sans-serif",
+        "& .MuiDataGrid-cell": {
+          whiteSpace: "normal",
+          lineHeight: "1.5rem",
+          display: "flex",
+          alignItems: "center",
+          py: 1,
+          fontSize: "16px",
+          fontWeight: "400",
+        },
+        "& .MuiDataGrid-cell[data-field='date']": {
+          fontSize: "14px",
+        },
+      }}
+    />
   );
 }
