@@ -1,37 +1,15 @@
 import ApplicationsVolumeChart from "@/components/dashboard/ApplicationsVolumeChart";
 import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChart";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import ChartKpi from "@/components/dashboard/ChartKpi";
 
 export default function DashboardPage() {
-  const charts = ["Chart 1", "Chart 2", "Chart 3"];
+  const charts = [
+    { title: "Funnel Yield", value: "50%" },
+    { title: "Top Source", value: "Indeed" },
+    { title: "Avg. Wait Time", value: "5 Days" },
+  ];
   return (
-    // <article className="relative flex gap-3 h-full min-h-0 bg-purple-100">
-    //   <section className="flex gap-2 w-[70%] h-full min-h-0">
-    //     <div className="grid grid-cols-12 w-full gap-3">
-    //       <div className="col-span-4">
-    //         <ChartKpi chart={charts[0]} />
-    //       </div>
-    //       <div className="col-span-4">
-    //         <ChartKpi chart={charts[1]} />
-    //       </div>
-    //       <div className="col-span-4">
-    //         <ChartKpi chart={charts[2]} />
-    //       </div>
-    //       <div className="col-span-12 h-full min-h-0">
-    //         <ApplicationsVolumeChart />
-    //       </div>
-    //     </div>
-    //   </section>
-    //   <section className="flex gap-2 w-[30%] h-full min-h-0">
-    //     <div className="grid grid-cols-12 w-full gap-3">
-    //       <div className="col-span-12">
-    //         <ApplicationStatusChart />
-    //       </div>
-    //     </div>
-    //   </section>
-    // </article>
-
     <Box
       component="article"
       sx={{
@@ -43,12 +21,12 @@ export default function DashboardPage() {
         width: "100%",
       }}
     >
-      {/* LEFT COLUMN (70%) */}
+      {/* LEFT COLUMN */}
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          width: "70%",
+          width: "75%",
           height: "100%",
           minHeight: 0,
           gap: 2,
@@ -78,12 +56,12 @@ export default function DashboardPage() {
         </Box>
       </Box>
 
-      {/* RIGHT COLUMN (30%) */}
+      {/* RIGHT COLUMN */}
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          width: "30%",
+          width: "25%",
           height: "100%",
           minHeight: 0,
         }}

@@ -1,3 +1,9 @@
+import Box from "@mui/material/Box";
+
 export default function SchedulesPage() {
-  return <article className="size-full">Schedules</article>;
+  return (
+    <Box component="article" className="size-full">
+      Schedules
+    </Box>
+  );
 }
