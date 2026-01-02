@@ -2,12 +2,14 @@ import { styled, useTheme } from "@mui/material/styles";
 import MuiAppBar, {
   type AppBarProps as MuiAppBarProps,
 } from "@mui/material/AppBar";
-import { Badge, Box, IconButton, Toolbar, Typography } from "@mui/material";
-import {
-  ChevronLeftRounded,
-  MenuRounded,
-  NotificationsNoneRounded,
-} from "@mui/icons-material";
+import Badge from "@mui/material/Badge";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import NotificationsNoneRoundedIcon from "@mui/icons-material/NotificationsNoneRounded";
 import AvatarMenu from "./AvatarMenu";
 import { DRAWER_WIDTH } from "./Sidebar";
 
@@ -78,7 +80,7 @@ export default function Header({
               },
             ]}
           >
-            {open ? <ChevronLeftRounded /> : <MenuRounded />}
+            {open ? <ChevronLeftRoundedIcon /> : <MenuRoundedIcon />}
           </IconButton>
           <Typography variant="h6" noWrap component="div">
             Kareer Kit
@@ -88,7 +90,7 @@ export default function Header({
         <Box component="div" className="space-x-3!">
           <IconButton aria-label="notifications button" size="large">
             <Badge color="secondary" badgeContent={1} overlap="circular">
-              <NotificationsNoneRounded fontSize="medium" />
+              <NotificationsNoneRoundedIcon fontSize="medium" />
             </Badge>
           </IconButton>
           <AvatarMenu />

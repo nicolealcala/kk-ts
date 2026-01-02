@@ -1,13 +1,11 @@
 import { styled, type Theme, type CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
-import {
-  Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import { NavLink } from "react-router";
 import { navLinks } from "../../lib/config/nav";
 import ContextSwitcher from "./ContextSwitcher";
@@ -145,7 +143,7 @@ export default function Sidebar({ open }: SidebarProps) {
       </div>
 
       {open && (
-        <footer className="px-5 py-4 text-sm transition-all delay-200 text-gray-500">
+        <footer className="px-5 py-3 text-sm transition-all delay-200 text-gray-500 border-t">
           from{" "}
           <a
             href="https://clinoae.is-a.dev"

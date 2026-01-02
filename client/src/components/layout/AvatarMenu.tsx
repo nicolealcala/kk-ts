@@ -1,14 +1,12 @@
 import React from "react";
-import {
-  Avatar,
-  Menu,
-  MenuItem,
-  IconButton,
-  ListItemIcon,
-} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import Logout from "@mui/icons-material/Logout";
-import Settings from "@mui/icons-material/Settings";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import Person from "@mui/icons-material/Person";
+import Settings from "@mui/icons-material/Settings";
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);

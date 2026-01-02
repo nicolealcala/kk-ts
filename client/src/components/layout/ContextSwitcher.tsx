@@ -1,10 +1,8 @@
 import React from "react";
-import {
-  MenuItem,
-  Select,
-  Tooltip,
-  type SelectChangeEvent,
-} from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
 import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 
 type SelectValueProps = {
