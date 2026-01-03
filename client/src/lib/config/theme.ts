@@ -1,5 +1,14 @@
 import { createTheme } from "@mui/material/styles";
+import "@mui/material/styles";
 
+declare module "@mui/material/styles" {
+  interface PaletteColor {
+    extraLight?: string; // Add your custom property here
+  }
+  interface SimplePaletteColorOptions {
+    extraLight?: string; // Add to options as well
+  }
+}
 const theme = createTheme({
   typography: {
     fontFamily: "'Figtree', sans-serif",
@@ -30,7 +39,8 @@ const theme = createTheme({
     mode: "light",
     primary: {
       main: "#6708fa",
-      light: "#7c86ff",
+      light: "#9d76ff",
+      extraLight: "#d8cfff",
       dark: "#432dd7",
       contrastText: "rgba(255,255,255,0.95)",
     },
