@@ -29,23 +29,16 @@ export default function DonutChart({
           outerRadius: 80,
           cornerRadius: 2,
           paddingAngle: 2,
-          startAngle: -90,
-          endAngle: 90,
         },
       ]}
-      slotProps={{
-        legend: {
-          direction: "horizontal",
-          position: { vertical: "bottom", horizontal: "center" },
-        },
-      }}
       title={title ?? ""}
+      height={undefined}
       sx={{
-        p: 0,
-        "& .MuiChartsLegend-horizontal": {
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "-230px",
+        display: "flex",
+        flexDirection: "row-reverse",
+        minHeight: 0,
+        "& .MuiChartsLegend-root": {
+          gap: 1.5,
         },
       }}
     />

@@ -2,7 +2,8 @@
 import React from "react";
 import Divider from "@mui/material/Divider";
 import BarChartComponent from "@/components/shared/BarChartComponent";
-import { Box, Typography } from "@mui/material";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 const monthlyApplications = [
   { label: "Jan", value: 12, color: "#4F46E5" },
@@ -22,22 +23,25 @@ const monthlyApplications = [
 function ApplicationsVolumeChart() {
   const [chartCategory, setChartCategory] = React.useState("monthly");
   return (
-    <Box
-      flexGrow={1}
-      display="flex"
-      flexDirection="column"
-      gap={2}
-      borderRadius={2}
-      p={2}
-      className="h-full max-h-full bg-white border"
+    <Paper
+      elevation={0}
+      variant="outlined"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        p: 2,
+        borderRadius: 2,
+        height: "100%",
+      }}
     >
       {/* TO DO: Replace with select component */}
-      <Typography variant="h6" className="capitalize">
+      <Typography variant="h6" className="capitalize" sx={{ fontWeight: 600 }}>
         {chartCategory} Applications
       </Typography>
       <Divider />
       <BarChartComponent data={monthlyApplications} />
-    </Box>
+    </Paper>
   );
 }
 

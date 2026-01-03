@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import ChartKpi from "@/components/dashboard/ChartKpi";
 import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
 
-export default function DashboardPage() {
+export default function Dashboard1() {
   const charts = [
     { title: "Funnel Yield", value: "50%" },
     { title: "Top Source", value: "Indeed" },
@@ -43,14 +43,27 @@ export default function DashboardPage() {
         </Box>
 
         {/* Bottom Row: The Volume Chart */}
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-            position: "relative",
-          }}
-        >
-          <ApplicationsVolumeChart />
+        <Box sx={{ display: "flex", flex: 1, gap: 2, minHeight: 0 }}>
+          <Box
+            sx={{
+              flex: 2.05,
+              minHeight: 0,
+            }}
+          >
+            <ApplicationsVolumeChart />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              flex: 1,
+              minHeight: 0,
+            }}
+          >
+            <ApplicationStatusChart />
+            <ApplicationStatusChart />
+          </Box>
         </Box>
       </Box>
 
@@ -65,23 +78,7 @@ export default function DashboardPage() {
           minHeight: 0,
         }}
       >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-          }}
-        >
-          <ApplicationStatusChart />
-        </Box>
-
-        <Box
-          sx={{
-            flex: 1.5,
-            minHeight: 0,
-          }}
-        >
-          <WeeklySchedule />
-        </Box>
+        <WeeklySchedule />
       </Box>
     </Box>
   );

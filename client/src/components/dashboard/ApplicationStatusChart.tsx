@@ -1,6 +1,7 @@
-import DonutChartComponent from "@/components/shared/GaugeChartComponent";
-import { Box, Typography } from "@mui/material";
+import DonutChartComponent from "@/components/shared/DonutChartComponent";
 import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 const statusConfig = [
   { label: "Applied", value: 60 },
@@ -13,22 +14,27 @@ const statusConfig = [
 
 function ApplicationStatusChart() {
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      gap={1.5}
-      borderRadius={2}
-      p={2}
-      className="w-full h-full bg-white border"
-      height={250}
+    <Paper
+      elevation={0}
+      variant="outlined"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        p: 2,
+        borderRadius: 2,
+        height: "100%",
+        minHeight: 0,
+      }}
     >
-      <Typography variant="body2">Application Status</Typography>
-      <Divider />
+      <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+        Application Status
+      </Typography>
+      <Divider sx={{ mb: 1 }} />
       <DonutChartComponent
         title="Application Status Breakdown"
         statusConfig={statusConfig}
       />
-    </Box>
+    </Paper>
   );
 }
 
