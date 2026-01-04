@@ -26,7 +26,7 @@ function ApplicationStatusChart() {
         minHeight: 0,
       }}
     >
-      <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
+      <Typography variant="body2" sx={{ mb: 1 }}>
         Application Status
       </Typography>
       <Divider sx={{ mb: 1 }} />
