@@ -38,7 +38,7 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#6708fa",
+      main: "#7419ff",
       light: "#9d76ff",
       extraLight: "#d8cfff",
       dark: "#432dd7",
@@ -50,9 +50,10 @@ const theme = createTheme({
       dark: "#bd2e00",
     },
     success: {
-      main: "#00c951",
-      light: "#05df72",
-      dark: "#008236",
+      main: "#09de5e",
+      light: "#76ffac",
+      extraLight: "#eefff4",
+      dark: "#00c951",
       contrastText: "rgba(255,255,255,0.95)",
     },
     error: {
