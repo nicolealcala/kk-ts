@@ -1,12 +1,12 @@
 import ApplicationsVolumeChart from "@/components/dashboard/ApplicationsVolumeChart";
 import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChart";
 import Box from "@mui/material/Box";
-import ChartKpi from "@/components/dashboard/ChartKpi";
+import ChartKpi, { type ChartKpiProps } from "@/components/dashboard/ChartKpi";
 import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
 import { useState } from "react";
 
 export default function DashboardPage() {
-  const charts = [
+  const charts: ChartKpiProps[] = [
     {
       title: "Funnel Yield",
       value: "50%",
@@ -15,6 +15,7 @@ export default function DashboardPage() {
         { offset: 100, stopColor: "#d8cfff" },
       ],
       color: "#813fff",
+      sentiment: "positive",
     },
     {
       title: "Top Source",
@@ -24,6 +25,7 @@ export default function DashboardPage() {
         { offset: 100, stopColor: "#feccea" },
       ],
       color: "#fc6abb",
+      sentiment: "negative",
     },
     {
       title: "Avg. Wait Time",
@@ -33,6 +35,7 @@ export default function DashboardPage() {
         { offset: 100, stopColor: "#fff0d3" },
       ],
       color: "#ffa137",
+      sentiment: "neutral",
     },
   ];
 

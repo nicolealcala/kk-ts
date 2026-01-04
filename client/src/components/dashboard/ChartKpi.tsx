@@ -7,14 +7,16 @@ import AreaChartComponent, {
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import ArrowOutwardRoundedIcon from "@mui/icons-material/ArrowOutwardRounded";
-// import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
-// import IconButton from "@mui/material/IconButton";
+import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 
-type ChartKpiProps = {
+type Sentiment = "positive" | "negative" | "neutral";
+
+export type ChartKpiProps = {
   title: string;
   value: string;
   areaGradients: GradientStops[];
   color: string;
+  sentiment: Sentiment;
 };
 export default function ChartKpi({ chart }: { chart: ChartKpiProps }) {
   return (
@@ -42,7 +44,7 @@ export default function ChartKpi({ chart }: { chart: ChartKpiProps }) {
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
             {chart.value}
           </Typography>
-          <KpiChip />
+          <KpiChip sentiment={chart.sentiment} />
         </Box>
         <AreaChartComponent
           areaGradients={chart.areaGradients}
@@ -53,17 +55,38 @@ export default function ChartKpi({ chart }: { chart: ChartKpiProps }) {
   );
 }
 
-function KpiChip() {
+function KpiChip({ sentiment = "positive" }: { sentiment: Sentiment }) {
+  const chipStyles = {
+    positive: {
+      bgcolor: "success.extraLight",
+      color: "success.dark",
+    },
+    negative: {
+      bgcolor: "error.extraLight",
+      color: "error.dark",
+    },
+    neutral: {
+      bgcolor: "text.muted",
+      color: "text.secondary",
+    },
+  };
   return (
     <Chip
       label="50.1%"
       onDelete={() => {}}
-      deleteIcon={<ArrowOutwardRoundedIcon />}
+      deleteIcon={
+        sentiment !== "neutral" ? (
+          <ArrowOutwardRoundedIcon
+            sx={{ transform: sentiment === "positive" ? "" : "rotate(90deg)" }}
+          />
+        ) : (
+          <ArrowForwardRoundedIcon />
+        )
+      }
       size="small"
       sx={{
         borderRadius: 1.5,
-        color: "success.dark",
-        bgcolor: "success.extraLight",
+        ...chipStyles[sentiment],
         mt: 1,
         "& .MuiChip-label": {
           pr: 1,
@@ -73,24 +96,10 @@ function KpiChip() {
         "& .MuiChip-deleteIcon": {
           pointerEvents: "none",
           fontSize: "13px",
-          color: "success.dark",
+          color: chipStyles[sentiment].color,
           mr: 0.75,
         },
       }}
     />
-    // <>
-    //   <IconButton size="small" sx={{ bgcolor: "success.extraLight", mr: 0.5 }}>
-    //     <ArrowUpwardRoundedIcon
-    //       color="success"
-    //       sx={{ width: 12, height: 12, fontSize: "12px" }}
-    //     />
-    //   </IconButton>
-    //   <Typography
-    //     variant="overline"
-    //     sx={{ color: "success.main", fontWeight: 500 }}
-    //   >
-    //     50.1%
-    //   </Typography>
-    // </>
   );
 }
