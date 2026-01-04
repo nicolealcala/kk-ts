@@ -3,12 +3,37 @@ import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChar
 import Box from "@mui/material/Box";
 import ChartKpi from "@/components/dashboard/ChartKpi";
 import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
+import { useState } from "react";
 
 export default function DashboardPage() {
   const charts = [
-    { title: "Funnel Yield", value: "50%" },
-    { title: "Top Source", value: "Indeed" },
-    { title: "Avg. Wait Time", value: "5 Days" },
+    {
+      title: "Funnel Yield",
+      value: "50%",
+      areaGradients: [
+        { offset: 0, stopColor: "#bca8ff" },
+        { offset: 100, stopColor: "#d8cfff" },
+      ],
+      color: "#813fff",
+    },
+    {
+      title: "Top Source",
+      value: "JobStreet",
+      areaGradients: [
+        { offset: 0, stopColor: "#fea3d7" },
+        { offset: 100, stopColor: "#feccea" },
+      ],
+      color: "#fc6abb",
+    },
+    {
+      title: "Avg. Wait Time",
+      value: "5 Days",
+      areaGradients: [
+        { offset: 0, stopColor: "#ffdda5" },
+        { offset: 100, stopColor: "#fff0d3" },
+      ],
+      color: "#ffa137",
+    },
   ];
 
   return (
@@ -55,33 +80,50 @@ export default function DashboardPage() {
       </Box>
 
       {/* RIGHT COLUMN */}
+      <RightColumn />
+    </Box>
+  );
+}
+
+function RightColumn() {
+  const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        gap: isScheduleExpanded ? 0 : 2,
+        width: "25%",
+        height: "100%",
+        minHeight: 0,
+        transition: "gap 0.4s ease-in-out",
+      }}
+    >
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          width: "25%",
-          height: "100%",
+          flex: isScheduleExpanded ? 0 : 1,
+          opacity: isScheduleExpanded ? 0 : 1,
+          visibility: isScheduleExpanded ? "hidden" : "visible",
+          minHeight: 0,
+          overflow: "hidden",
+          transition:
+            "flex 0.4s ease-in-out, opacity 0.2s ease-in-out, visibility 0.3s",
+        }}
+      >
+        <ApplicationStatusChart />
+      </Box>
+
+      <Box
+        sx={{
+          flex: 1.5,
           minHeight: 0,
         }}
       >
-        <Box
-          sx={{
-            flex: 1,
-            minHeight: 0,
-          }}
-        >
-          <ApplicationStatusChart />
-        </Box>
-
-        <Box
-          sx={{
-            flex: 1.5,
-            minHeight: 0,
-          }}
-        >
-          <WeeklySchedule />
-        </Box>
+        <WeeklySchedule
+          isScheduleExpanded={isScheduleExpanded}
+          setIsScheduleExpanded={setIsScheduleExpanded}
+        />
       </Box>
     </Box>
   );
