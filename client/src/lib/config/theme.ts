@@ -57,9 +57,10 @@ const theme = createTheme({
       contrastText: "rgba(255,255,255,0.95)",
     },
     error: {
-      main: "#fb2c36",
-      light: "#ff6467",
-      dark: "#c10007",
+      main: "#ff0000",
+      light: "#ff9494",
+      extraLight: "#fff0f0",
+      dark: "#d70000",
       contrastText: "rgba(255,255,255,0.95)",
     },
     warning: {
