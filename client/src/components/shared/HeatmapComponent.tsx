@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Box, Typography, Tooltip } from "@mui/material";
 
 export interface ScheduleSlot {
@@ -24,6 +24,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
   config,
   activeSlots,
 }) => {
+  const currentDay = useMemo(() => new Date().getDay(), []);
   const hours = Array.from(
     { length: config.end - config.start + 1 },
     (_, i) => config.start + i
@@ -42,31 +43,19 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
       sx={{
         display: "grid",
         gridTemplateColumns: "40px repeat(7, 1fr)",
+        height: "100%",
         gap: 0.75,
-        alignItems: "center",
+        minHeight: 0,
+        alignItems: "stretch",
       }}
     >
-      {/* Header Row */}
-      <Box />
-      {DAYS.map((day, i) => (
-        <Typography
-          key={`day-${i}`}
-          variant="body2"
-          fontWeight="700"
-          align="center"
-          color="text.secondary"
-        >
-          {day}
-        </Typography>
-      ))}
       {/* Hour Rows */}
       {hours.map((hour) => (
         <React.Fragment key={`hour-row-${hour}`}>
           <Typography
             variant="caption"
             color="text.secondary"
-            align="right"
-            sx={{ pr: 2, fontWeight: 500 }}
+            sx={{ pr: 2, fontWeight: 500, alignSelf: "center" }}
           >
             {formatHour(hour)}
           </Typography>
@@ -87,7 +76,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
                 <Box
                   sx={{
                     width: "100%",
-                    aspectRatio: "1 / 1",
+                    height: "100%",
                     borderRadius: 1,
                     bgcolor: active ? "primary.extraLight" : "action.hover",
                     border: "1px solid",
@@ -105,6 +94,20 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
             );
           })}
         </React.Fragment>
+      ))}
+      {/* DAYS Row */}
+      <Box />
+      {DAYS.map((day, i) => (
+        <Typography
+          key={`day-${i}`}
+          variant="button"
+          fontWeight="700"
+          align="center"
+          color={currentDay === i ? "primary.light" : "text.secondary"}
+          sx={{ alignSelf: "center" }}
+        >
+          {day}
+        </Typography>
       ))}
     </Box>
   );
