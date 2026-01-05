@@ -2,6 +2,9 @@ import { createTheme } from "@mui/material/styles";
 import "@mui/material/styles";
 
 declare module "@mui/material/styles" {
+  interface PaletteOptions {
+    slate: PaletteColor;
+  }
   interface PaletteColor {
     extraLight?: string; // Add your custom property here
   }
@@ -19,10 +22,13 @@ const theme = createTheme({
         root: {
           textTransform: "none",
           boxShadow: "none",
+          "&:hover": {
+            boxShadow: "none",
+          },
           fontWeight: 600,
         },
         sizeLarge: {
-          height: "40px",
+          height: "48px",
         },
       },
     },
@@ -37,6 +43,13 @@ const theme = createTheme({
   },
   palette: {
     mode: "light",
+    slate: {
+      main: "#62748e",
+      light: "#f1f5f9",
+      extraLight: "#f8fafc",
+      dark: "#506079",
+      contrastText: "#242105",
+    },
     primary: {
       main: "#7419ff",
       light: "#9d76ff",
