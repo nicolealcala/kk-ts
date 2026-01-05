@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import { AddRounded, FileUploadOutlined } from "@mui/icons-material";
-import NoDocumentIllustration from "../svg/NoDocumentIllustration";
+import NoDocumentIllustration from "../illustrations/NoDocumentIllustration";
 import { Box } from "@mui/material";
 
 function EmptyApplications() {
