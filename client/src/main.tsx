@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound.tsx";
 import RootLayout from "./components/layout/index.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./lib/config/theme.ts";
+import AuthPage from "./pages/Auth.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,10 +21,10 @@ const router = createBrowserRouter([
       { path: "/schedules", element: <SchedulesPage /> },
     ],
   },
-  // {
-  //   path: "/auth",
-  //   element: <Auth />,
-  // },
+  {
+    path: "/auth",
+    element: <AuthPage />,
+  },
   { path: "*", element: <NotFound /> },
 ]);
 
