@@ -35,7 +35,7 @@ export default function BarChartComponent({ title, data = [] }: BarChartProps) {
           label: title,
         },
       ]}
-      borderRadius={2}
+      borderRadius={6}
       grid={{ horizontal: true }}
       title={title ?? ""}
       sx={{
