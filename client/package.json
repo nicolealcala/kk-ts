@@ -17,6 +17,7 @@
     "@mui/material": "^7.3.6",
     "@mui/x-charts": "^8.23.0",
     "@mui/x-data-grid": "^8.23.0",
+    "@supabase/supabase-js": "^2.89.0",
     "@tailwindcss/vite": "^4.1.18",
     "clsx": "^2.1.1",
     "motion": "^12.23.26",

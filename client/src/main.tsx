@@ -10,6 +10,7 @@ import RootLayout from "./components/layout/index.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./lib/config/theme.ts";
 import AuthPage from "./pages/Auth.tsx";
+import AuthContextProvider from "./components/context-providers/AuthContextProvider.tsx";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +32,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <AuthContextProvider>
+        <RouterProvider router={router} />
+      </AuthContextProvider>
     </ThemeProvider>
   </StrictMode>
 );

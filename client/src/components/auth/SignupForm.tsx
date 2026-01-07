@@ -9,6 +9,9 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
 import { useAuth } from "@/lib/contexts/AuthContext";
+import { supabase } from "@/lib/config/supabaseClient";
+import { useNavigate } from "react-router";
+import Alert from "@mui/material/Alert";
 
 const signupSchema = z.object({
   fname: z.string().min(3, "First name must be at least 3 characters"),
@@ -21,8 +24,9 @@ const signupSchema = z.object({
 type SignupFormInputs = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
-  const { setAuthMode } = useAuth();
+  const { authError, setAuthMode, setAuthSession, setAuthError } = useAuth();
 
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -39,9 +43,17 @@ export default function SignupForm() {
   });
 
   //TO DO: Update submit logic
-  const onSubmit = (data: SignupFormInputs) => {
-    console.log("Form Data: ", data);
-  };
+  async function onSubmit(formData: SignupFormInputs) {
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.confirmPassword,
+    });
+
+    if (error) setAuthError(error);
+
+    setAuthSession(data.session);
+    navigate("/");
+  }
   return (
     <>
       <Box
@@ -55,8 +67,7 @@ export default function SignupForm() {
             {/* First Name Field */}
             <TextField
               fullWidth
-              id="name"
-              label="Firist Name"
+              label="First Name"
               {...register("fname")}
               error={!!errors.fname}
               helperText={errors.fname?.message}
@@ -65,7 +76,6 @@ export default function SignupForm() {
             {/* Last Name Field */}
             <TextField
               fullWidth
-              id="name"
               label="Last Name"
               {...register("lname")}
               error={!!errors.lname}
@@ -76,7 +86,6 @@ export default function SignupForm() {
           {/* Email Field */}
           <TextField
             fullWidth
-            id="email"
             label="Email"
             {...register("email")}
             error={!!errors.email}
@@ -86,7 +95,6 @@ export default function SignupForm() {
           {/* Password Field */}
           <TextField
             fullWidth
-            id="password"
             label="Password"
             {...register("password")}
             error={!!errors.password}
@@ -96,12 +104,14 @@ export default function SignupForm() {
           {/* Confirm Password Field */}
           <TextField
             fullWidth
-            id="password"
             label="Confirm Password"
             {...register("confirmPassword")}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword?.message}
           />
+
+          {/* Error Message */}
+          {authError && <Alert severity="error">{authError.message}</Alert>}
 
           {/* Signup Button */}
           <Button
@@ -110,6 +120,7 @@ export default function SignupForm() {
             size="large"
             loading={isSubmitting}
             sx={{ borderRadius: 50 }}
+            type="submit"
           >
             Sign up
           </Button>
@@ -124,10 +135,7 @@ export default function SignupForm() {
           fontWeight="medium"
           onClick={() => setAuthMode("login")}
           sx={{
-            verticalAlign: "baseline", // Forces the button text to sit on the same line as "Already..."
-            fontSize: "inherit", // Ensures font size matches variant="body2"
-            lineHeight: "inherit", // Prevents the button from being taller than the text
-            fontFamily: "inherit", // Ensures the font stack matches
+            verticalAlign: "baseline",
           }}
         >
           Login

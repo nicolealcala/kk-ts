@@ -7,10 +7,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
+import { supabase } from "@/lib/config/supabaseClient";
+import { useNavigate } from "react-router";
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
+
+  const navigate = useNavigate();
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -18,6 +22,16 @@ export default function AvatarMenu() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error(error);
+      return;
+    } else {
+      navigate("/auth");
+    }
   };
 
   return (
@@ -58,7 +72,7 @@ export default function AvatarMenu() {
           Settings
         </MenuItem>
 
-        <MenuItem>
+        <MenuItem onClick={handleLogout}>
           <ListItemIcon>
             <Logout fontSize="small" />
           </ListItemIcon>

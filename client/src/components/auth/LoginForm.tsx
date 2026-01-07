@@ -9,6 +9,9 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
 import { useAuth } from "@/lib/contexts/AuthContext";
+import { supabase } from "@/lib/config/supabaseClient";
+import { useNavigate } from "react-router";
+import Alert from "@mui/material/Alert";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -18,7 +21,9 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-  const { setAuthMode } = useAuth();
+  const { authError, setAuthMode, setAuthError, setAuthSession } = useAuth();
+
+  const navigate = useNavigate();
 
   const {
     register,
@@ -29,10 +34,20 @@ export default function LoginForm() {
     defaultValues: { email: "", password: "" },
   });
 
-  //TO DO: Update submit logic
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log("Form Data: ", data);
-  };
+  async function onSubmit(formData: LoginFormInputs) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (error) {
+      setAuthError(error);
+      return;
+    }
+
+    setAuthSession(data.session);
+    navigate("/");
+  }
   return (
     <>
       <Box
@@ -45,7 +60,6 @@ export default function LoginForm() {
           {/* Email Field */}
           <TextField
             fullWidth
-            id="email"
             label="Email"
             {...register("email")}
             error={!!errors.email}
@@ -56,7 +70,6 @@ export default function LoginForm() {
             {/* Password Field */}
             <TextField
               fullWidth
-              id="password"
               label="Password"
               {...register("password")}
               error={!!errors.password}
@@ -73,12 +86,16 @@ export default function LoginForm() {
             </Link>
           </Stack>
 
+          {/* Error Message */}
+          {authError && <Alert severity="error">{authError.message}</Alert>}
+
           {/* Login Button */}
           <Button
             variant="contained"
             color="primary"
             size="large"
             loading={isSubmitting}
+            type="submit"
             sx={{ borderRadius: 50 }}
           >
             Login
@@ -94,10 +111,7 @@ export default function LoginForm() {
           fontWeight="medium"
           onClick={() => setAuthMode("signup")}
           sx={{
-            verticalAlign: "baseline", // Forces the button text to sit on the same line as "Already..."
-            fontSize: "inherit", // Ensures font size matches variant="body2"
-            lineHeight: "inherit", // Prevents the button from being taller than the text
-            fontFamily: "inherit", // Ensures the font stack matches
+            verticalAlign: "baseline",
           }}
         >
           Sign up
