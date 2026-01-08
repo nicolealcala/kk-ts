@@ -1,3 +1,4 @@
+import type { KPISupportingData } from "@/lib/types/dashboard";
 import { LineChart } from "@mui/x-charts/LineChart";
 
 export type GradientStops = {
@@ -38,18 +39,20 @@ function GradientFill({
 }
 
 export default function AreaChartComponent({
+  data,
   areaGradients,
   color,
 }: {
   areaGradients: GradientStops[];
   color: string;
+  data: KPISupportingData[];
 }) {
   return (
     <LineChart
       margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
       xAxis={[
         {
-          data: [1, 2, 3, 5, 8, 10],
+          data: data.map((d) => d.label),
           scaleType: "point",
           position: "none",
         },
@@ -57,7 +60,7 @@ export default function AreaChartComponent({
       yAxis={[{ position: "none" }]}
       series={[
         {
-          data: [2, 5.5, 2, 8.5, 1.5, 5],
+          data: data.map((d) => d.value),
           area: true,
           color: color || "#6708fa",
           showMark: false,

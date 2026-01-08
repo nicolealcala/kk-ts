@@ -1,24 +1,60 @@
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import AreaChartComponent, {
-  type GradientStops,
-} from "../shared/AreaChartComponent";
+import AreaChartComponent from "../shared/AreaChartComponent";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import ArrowOutwardRoundedIcon from "@mui/icons-material/ArrowOutwardRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
+import type {
+  ChartData,
+  KPIChartType,
+  KPISentiment,
+} from "@/lib/types/dashboard";
 
-type Sentiment = "positive" | "negative" | "neutral";
-
-export type ChartKpiProps = {
-  title: string;
+type ChartKpiProps = {
+  title: KPIChartType;
   value: string;
-  areaGradients: GradientStops[];
-  color: string;
-  sentiment: Sentiment;
+  sentiment: KPISentiment;
+  data: ChartData[];
 };
-export default function ChartKpi({ chart }: { chart: ChartKpiProps }) {
+
+const CHART_COLORS = {
+  funnelYield: {
+    color: "#813fff",
+    areaGradients: [
+      { offset: 0, stopColor: "#c4b4ff" },
+      { offset: 100, stopColor: "#ddd6ff" },
+    ],
+  },
+  topSource: {
+    color: "#05df72",
+    areaGradients: [
+      { offset: 0, stopColor: "#b9f8cf" },
+      { offset: 100, stopColor: "#dcfce7" },
+    ],
+  },
+  avgWaitTime: {
+    color: "#ffa137",
+    areaGradients: [
+      { offset: 0, stopColor: "#ffdda5" },
+      { offset: 100, stopColor: "#fff0d3" },
+    ],
+  },
+};
+
+export default function ChartKpi({
+  title,
+  value,
+  sentiment,
+  data,
+}: ChartKpiProps) {
+  const config = CHART_COLORS[title];
+
+  const formatTitle = title
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase());
+
   return (
     <Paper
       elevation={0}
@@ -32,7 +68,7 @@ export default function ChartKpi({ chart }: { chart: ChartKpiProps }) {
       }}
     >
       <Typography variant="body2" sx={{ mb: 1 }}>
-        {chart.title}
+        {formatTitle}
       </Typography>
       <Divider />
       <Box display="flex" alignItems="end" gap={2} height={100}>
@@ -42,20 +78,21 @@ export default function ChartKpi({ chart }: { chart: ChartKpiProps }) {
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {chart.value}
+            {value}
           </Typography>
-          <KpiChip sentiment={chart.sentiment} />
+          <KpiChip sentiment={sentiment} />
         </Box>
         <AreaChartComponent
-          areaGradients={chart.areaGradients}
-          color={chart.color}
+          data={data}
+          areaGradients={config.areaGradients}
+          color={config.color}
         />
       </Box>
     </Paper>
   );
 }
 
-function KpiChip({ sentiment = "positive" }: { sentiment: Sentiment }) {
+function KpiChip({ sentiment = "positive" }: { sentiment: KPISentiment }) {
   const chipStyles = {
     positive: {
       bgcolor: "success.extraLight",

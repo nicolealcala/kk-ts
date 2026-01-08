@@ -3,11 +3,28 @@ import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChar
 import Box from "@mui/material/Box";
 import ChartKpi from "@/components/dashboard/ChartKpi";
 import { RightColumn } from "@/pages/Dashboard";
-import { charts } from "@/lib/mock-data/dashboard";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentYear } from "@/lib/utils/date";
+import DashboardSkeleton from "./Skeleton";
+import type { KPIChartType } from "@/lib/types/dashboard";
 
 export default function Dashboard1() {
+  const currentYear = getCurrentYear();
+  const { isLoading, data, error } = useQuery({
+    queryKey: [`dashboard-${currentYear}`],
+    queryFn: async () => {
+      return fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`
+      ).then((res) => res.json());
+    },
+  });
+
+  if (isLoading) return <DashboardSkeleton />;
+
+  if (error) return <p>Error: {error.message}</p>;
+
   return (
     <Box
       component="article"
@@ -31,13 +48,33 @@ export default function Dashboard1() {
         }}
       >
         {/* Top Row: KPI Cards */}
-        <Grid container spacing={2} sx={{ flexShrink: 0 }}>
-          {charts.map((chart, i) => (
-            <Grid key={i} size={4}>
-              <ChartKpi chart={chart} />
-            </Grid>
-          ))}
-        </Grid>
+        {data?.kpis && Object.keys(data.kpis).length > 0 ? (
+          <Grid container spacing={2} sx={{ flexShrink: 0 }}>
+            {Object.keys(data.kpis).map((key) => {
+              const kpiData = data.kpis[key];
+              const sentiment = kpiData.sentiment;
+
+              return (
+                <Grid key={key} size={4}>
+                  <ChartKpi
+                    title={key as KPIChartType}
+                    sentiment={
+                      sentiment === 0
+                        ? "neutral"
+                        : sentiment > 0
+                        ? "positive"
+                        : "negative"
+                    }
+                    value={data.kpis[key].result}
+                    data={kpiData.data}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <p>No KPI data found for {currentYear}</p>
+        )}
 
         {/* Bottom Row: Main Charts */}
         <Grid
@@ -51,20 +88,23 @@ export default function Dashboard1() {
         >
           <Grid size={8} sx={{ height: "100%" }}>
             <Box sx={{ height: "100%", position: "relative" }}>
-              <ApplicationsVolumeChart />
+              <ApplicationsVolumeChart data={data?.volumeTrend || []} />
             </Box>
           </Grid>
           <Grid size={4} sx={{ height: "100%" }}>
             <Stack spacing={2} height="100%" minHeight={0}>
-              <ApplicationStatusChart />
-              <ApplicationStatusChart />
+              <ApplicationStatusChart data={data?.applicationStatus || []} />
+              <ApplicationStatusChart data={data?.applicationStatus || []} />
             </Stack>
           </Grid>
         </Grid>
       </Box>
 
       {/* RIGHT COLUMN */}
-      <RightColumn initialData={true} />
+      <RightColumn
+        initialData={true}
+        applicationStatusData={data?.applicationStatus || []}
+      />
     </Box>
   );
 }
