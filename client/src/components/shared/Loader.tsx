@@ -1,10 +1,10 @@
 export default function Loader() {
   return (
-    <div className="flex w-full h-dvh justify-center items-center">
+    <div className="flex w-full h-dvh justify-center items-center bg-white">
       <div className="relative w-12 h-12 mx-auto">
         {/* Shadow */}
         <div
-          className="absolute top-[60px] left-0 w-12 h-[5px] rounded-full"
+          className="absolute top-15 left-0 w-12 h-1.25 rounded-full"
           style={{
             background: "#f0808050",
             animation: "shadow324 0.5s linear infinite",
