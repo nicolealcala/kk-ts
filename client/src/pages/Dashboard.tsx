@@ -1,44 +1,13 @@
 import ApplicationsVolumeChart from "@/components/dashboard/ApplicationsVolumeChart";
 import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChart";
 import Box from "@mui/material/Box";
-import ChartKpi, { type ChartKpiProps } from "@/components/dashboard/ChartKpi";
+import ChartKpi from "@/components/dashboard/ChartKpi";
 import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
 import { useState } from "react";
+import { charts } from "@/lib/mock-data/dashboard";
+//import Dashboard1 from "@/components/dashboard/Dashboard1";
 
 export default function DashboardPage() {
-  const charts: ChartKpiProps[] = [
-    {
-      title: "Funnel Yield",
-      value: "50%",
-      areaGradients: [
-        { offset: 0, stopColor: "#bca8ff" },
-        { offset: 100, stopColor: "#d8cfff" },
-      ],
-      color: "#813fff",
-      sentiment: "positive",
-    },
-    {
-      title: "Top Source",
-      value: "JobStreet",
-      areaGradients: [
-        { offset: 0, stopColor: "#fea3d7" },
-        { offset: 100, stopColor: "#feccea" },
-      ],
-      color: "#fc6abb",
-      sentiment: "negative",
-    },
-    {
-      title: "Avg. Wait Time",
-      value: "5 Days",
-      areaGradients: [
-        { offset: 0, stopColor: "#ffdda5" },
-        { offset: 100, stopColor: "#fff0d3" },
-      ],
-      color: "#ffa137",
-      sentiment: "neutral",
-    },
-  ];
-
   return (
     <Box
       component="article"
@@ -85,11 +54,16 @@ export default function DashboardPage() {
       {/* RIGHT COLUMN */}
       <RightColumn />
     </Box>
+    // <Dashboard1 />
   );
 }
 
-function RightColumn() {
-  const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
+export function RightColumn({
+  initialData = false,
+}: {
+  initialData?: boolean;
+}) {
+  const [isScheduleExpanded, setIsScheduleExpanded] = useState(initialData);
 
   return (
     <Box
