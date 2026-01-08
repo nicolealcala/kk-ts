@@ -1,34 +1,81 @@
-import type { ChartKpiProps } from "@/components/dashboard/ChartKpi";
+import { schedules } from "./schedules";
 
-export const charts: ChartKpiProps[] = [
-  {
-    title: "Funnel Yield",
-    value: "50%",
-    areaGradients: [
-      { offset: 0, stopColor: "#c4b4ff" },
-      { offset: 100, stopColor: "#ddd6ff" },
-    ],
-    color: "#813fff",
-    sentiment: "positive",
+export const contextData = {
+  year: "2026",
+  employmentHistory: {
+    organization: {
+      name: "",
+      img: "",
+    },
   },
-  {
-    title: "Top Source",
-    value: "JobStreet",
-    areaGradients: [
-      { offset: 0, stopColor: "#b9f8cf" },
-      { offset: 100, stopColor: "#dcfce7" },
+};
+
+const kpiChartsData = {
+  funnelYield: {
+    result: 50,
+    sentiment: 1,
+    data: [
+      { label: "Monday", value: 0 },
+      { label: "Tuesday", value: 30 },
+      { label: "Wednesday", value: 50 },
+      { label: "Thursday", value: 0 },
+      { label: "Friday", value: 21 },
+      { label: "Saturday", value: 5 },
+      { label: "Sunday", value: 15 },
     ],
-    color: "#05df72",
-    sentiment: "negative",
   },
-  {
-    title: "Avg. Wait Time",
-    value: "5 Days",
-    areaGradients: [
-      { offset: 0, stopColor: "#ffdda5" },
-      { offset: 100, stopColor: "#fff0d3" },
+  topSource: {
+    result: "JobStreet",
+    sentiment: 1,
+    data: [
+      { label: "JobSreet", value: 9 },
+      { label: "Indeed", value: 12 },
+      { label: "LinkedIn", value: 11 },
     ],
-    color: "#ffa137",
-    sentiment: "neutral",
   },
+  avgWaitTime: {
+    result: 5,
+    sentiment: 0,
+    data: [
+      { label: "Monday", value: 0 },
+      { label: "Tuesday", value: 2 },
+      { label: "Wednesday", value: 1 },
+      { label: "Thursday", value: 0 },
+      { label: "Friday", value: 0 },
+      { label: "Saturday", value: 5 },
+      { label: "Sunday", value: 10 },
+    ],
+  },
+};
+
+const appplicationsVolumeData = [
+  { month: "January", value: 10 },
+  { month: "February", value: 0 },
+  { month: "March", value: 0 },
+  { month: "April", value: 0 },
+  { month: "May", value: 0 },
+  { month: "June", value: 0 },
+  { month: "July", value: 0 },
+  { month: "August", value: 0 },
+  { month: "September", value: 0 },
+  { month: "October", value: 0 },
+  { month: "November", value: 0 },
+  { month: "December", value: 0 },
 ];
+
+const applicationStatusData = [
+  { label: "Applied", value: 10 },
+  { label: "Interviewing", value: 4 },
+  { label: "Offered", value: 3 },
+  { label: "Rejected", value: 1 },
+  { label: "Withdrawn", value: 0 },
+  { label: "Accepted", value: 1 },
+  { label: "Ghosted", value: 6 },
+];
+
+export const dashboardData = {
+  kpis: { ...kpiChartsData },
+  volumeTrend: [...appplicationsVolumeData],
+  applicationStatus: [...applicationStatusData],
+  schedules: [...schedules],
+};
