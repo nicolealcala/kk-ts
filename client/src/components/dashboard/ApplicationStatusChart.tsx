@@ -12,7 +12,11 @@ const statusConfig = [
   { label: "Ghosted", value: 10 },
 ];
 
-function ApplicationStatusChart() {
+function ApplicationStatusChart({
+  maxHeight = "400px",
+}: {
+  maxHeight?: string;
+}) {
   return (
     <Paper
       elevation={0}
@@ -24,6 +28,7 @@ function ApplicationStatusChart() {
         borderRadius: 2,
         height: "100%",
         minHeight: 0,
+        maxHeight,
       }}
     >
       <Typography variant="body2" sx={{ mb: 1 }}>

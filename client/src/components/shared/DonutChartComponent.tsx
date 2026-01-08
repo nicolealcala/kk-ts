@@ -25,8 +25,8 @@ export default function DonutChart({
       series={[
         {
           data,
-          innerRadius: 40,
-          outerRadius: 80,
+          innerRadius: "50%",
+          outerRadius: "100%",
           cornerRadius: 2,
           paddingAngle: 2,
         },
@@ -36,9 +36,10 @@ export default function DonutChart({
       sx={{
         display: "flex",
         flexDirection: "row-reverse",
+        p: 1,
         minHeight: 0,
         "& .MuiChartsLegend-root": {
-          gap: 1.5,
+          gap: 1.25,
         },
       }}
     />
