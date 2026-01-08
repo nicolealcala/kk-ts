@@ -43,7 +43,8 @@ export default function RootLayout() {
       {/* Page Content */}
       <Container
         component="main"
-        maxWidth="xl"
+        // maxWidth="xl"
+        maxWidth={false}
         disableGutters
         sx={{
           position: "relative",
