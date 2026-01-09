@@ -49,18 +49,18 @@ const kpiChartsData = {
 };
 
 const appplicationsVolumeData = [
-  { month: "January", value: 10 },
-  { month: "February", value: 0 },
-  { month: "March", value: 0 },
-  { month: "April", value: 0 },
+  { month: "Jan", value: 10 },
+  { month: "Feb", value: 0 },
+  { month: "Mar", value: 0 },
+  { month: "Apr", value: 0 },
   { month: "May", value: 0 },
-  { month: "June", value: 0 },
-  { month: "July", value: 0 },
-  { month: "August", value: 0 },
-  { month: "September", value: 0 },
-  { month: "October", value: 0 },
-  { month: "November", value: 0 },
-  { month: "December", value: 0 },
+  { month: "Jun", value: 0 },
+  { month: "Jul", value: 0 },
+  { month: "Aug", value: 0 },
+  { month: "Sep", value: 0 },
+  { month: "Oct", value: 0 },
+  { month: "Nov", value: 0 },
+  { month: "Dec", value: 0 },
 ];
 
 const applicationStatusData = [
