@@ -77,5 +77,5 @@ export const dashboardData = {
   kpis: { ...kpiChartsData },
   volumeTrend: [...appplicationsVolumeData],
   applicationStatus: [...applicationStatusData],
-  schedules: [...schedules],
+  weeklySchedule: [...schedules],
 };

@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { Box, Typography, Tooltip } from "@mui/material";
 
-export interface ScheduleSlot {
-  day: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-  startHour: number;
-  endHour: number;
+export interface ScheduleData {
+  title: string;
+  day: number;
+  start: number;
+  end: number;
 }
-
 type HeatmapConfig = {
   start: number;
   end: number;
@@ -15,7 +15,7 @@ type HeatmapConfig = {
 
 type HeatmapComponentProps = {
   config: HeatmapConfig;
-  activeSlots: ScheduleSlot[];
+  activeSlots: ScheduleData[];
 };
 
 const DAYS: string[] = ["M", "T", "W", "T", "F", "S", "S"];
@@ -62,14 +62,21 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
 
           {DAYS.map((_, dayIndex) => {
             const active = activeSlots.some(
-              (s) =>
-                s.day === dayIndex && hour >= s.startHour && hour < s.endHour
+              (s) => s.day === dayIndex && hour >= s.start && hour < s.end
+            );
+
+            const scheduleItem = activeSlots.find(
+              (s) => s.day === dayIndex && hour >= s.start && hour < s.end
             );
 
             return (
               <Tooltip
                 key={`cell-${dayIndex}-${hour}`}
-                title={`${DAYS[dayIndex]} at ${formatHour(hour)}`}
+                title={
+                  active
+                    ? `${scheduleItem?.title} at ${formatHour(hour)}`
+                    : undefined
+                }
                 arrow
                 disableInteractive
               >
@@ -95,6 +102,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
           })}
         </React.Fragment>
       ))}
+
       {/* DAYS Row */}
       <Box />
       {DAYS.map((day, i) => (
@@ -103,7 +111,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
           variant="button"
           fontWeight="700"
           align="center"
-          color={currentDay === i ? "primary.light" : "text.secondary"}
+          color={currentDay === i + 1 ? "primary.light" : "text.secondary"}
           sx={{ alignSelf: "center" }}
         >
           {day}

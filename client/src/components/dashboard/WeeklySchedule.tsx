@@ -4,20 +4,24 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import HeatmapComponent, {
-  type ScheduleSlot,
+  type ScheduleData,
 } from "../shared/HeatmapComponent";
 import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import UnfoldLessRoundedIcon from "@mui/icons-material/UnfoldLessRounded";
 import IconButton from "@mui/material/IconButton";
+import type { Schedule } from "@/lib/types/schedules";
+import { transformSchedules } from "@/lib/utils/date";
 
 type WeeklyScheduleProps = {
   isScheduleExpanded: boolean;
   setIsScheduleExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  schedule: Schedule[];
 };
 
 export default function WeeklySchedule({
   isScheduleExpanded,
   setIsScheduleExpanded,
+  schedule,
 }: WeeklyScheduleProps) {
   const [currentHour, setCurrentHour] = useState<number>(new Date().getHours());
 
@@ -69,11 +73,10 @@ export default function WeeklySchedule({
     };
   }, [currentHour, isScheduleExpanded]);
 
-  const mySchedule: ScheduleSlot[] = [
-    { day: 0, startHour: 9, endHour: 17 }, // Mon 9-5
-    { day: 4, startHour: 18, endHour: 21 }, // Fri 6-9
-  ];
+  const mySchedule: ScheduleData[] = transformSchedules(schedule);
 
+  const result = transformSchedules(schedule);
+  console.log("New schedule: ", result);
   return (
     <Paper
       elevation={0}

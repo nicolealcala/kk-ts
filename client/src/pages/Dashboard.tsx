@@ -4,10 +4,29 @@ import Box from "@mui/material/Box";
 import ChartKpi from "@/components/dashboard/ChartKpi";
 import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
 import { useState } from "react";
-import { charts } from "@/lib/mock-data/dashboard";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentYear } from "@/lib/utils/date";
+import DashboardSkeleton from "@/components/dashboard/Skeleton";
+import type { ChartData, KPIChartType } from "@/lib/types/dashboard";
+import type { Schedule } from "@/lib/types/schedules";
 //import Dashboard1 from "@/components/dashboard/Dashboard1";
 
 export default function DashboardPage() {
+  const currentYear = getCurrentYear();
+  const { isLoading, data, error } = useQuery({
+    queryKey: [`dashboard-${currentYear}`],
+    queryFn: async () => {
+      return fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`
+      ).then((res) => res.json());
+    },
+  });
+
+  if (isLoading) return <DashboardSkeleton />;
+
+  if (error) return <p>Error: {error.message}</p>;
+
+  console.log(data);
   return (
     <Box
       component="article"
@@ -31,13 +50,32 @@ export default function DashboardPage() {
         }}
       >
         {/* Top Row: KPI Cards */}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          {charts.map((chart, i) => (
-            <Box key={i} sx={{ flex: 1, minWidth: 0 }}>
-              <ChartKpi chart={chart} />
-            </Box>
-          ))}
-        </Box>
+        {data?.kpis && Object.keys(data.kpis).length > 0 ? (
+          <Box sx={{ display: "flex", gap: 2 }}>
+            {Object.keys(data.kpis).map((key) => {
+              const kpiData = data.kpis[key];
+              const sentiment = kpiData.sentiment;
+              return (
+                <Box key={key} sx={{ flex: 1, minWidth: 0 }}>
+                  <ChartKpi
+                    title={key as KPIChartType}
+                    sentiment={
+                      sentiment === 0
+                        ? "neutral"
+                        : sentiment > 0
+                        ? "positive"
+                        : "negative"
+                    }
+                    value={data.kpis[key].result}
+                    data={kpiData.data}
+                  />
+                </Box>
+              );
+            })}
+          </Box>
+        ) : (
+          <p>No KPI data found for {currentYear}</p>
+        )}
 
         {/* Bottom Row: The Volume Chart */}
         <Box
@@ -47,23 +85,30 @@ export default function DashboardPage() {
             position: "relative",
           }}
         >
-          <ApplicationsVolumeChart />
+          <ApplicationsVolumeChart data={data?.volumeTrend || []} />
         </Box>
       </Box>
 
       {/* RIGHT COLUMN */}
-      <RightColumn />
+      <RightColumn
+        applicationStatusData={data?.applicationStatus || []}
+        weeklySchedule={data?.weeklySchedule || []}
+      />
     </Box>
     // <Dashboard1 />
   );
 }
 
 export function RightColumn({
-  initialData = false,
+  applicationStatusData,
+  weeklySchedule,
+  initialState = false,
 }: {
-  initialData?: boolean;
+  applicationStatusData: ChartData[];
+  weeklySchedule: Schedule[];
+  initialState?: boolean;
 }) {
-  const [isScheduleExpanded, setIsScheduleExpanded] = useState(initialData);
+  const [isScheduleExpanded, setIsScheduleExpanded] = useState(initialState);
 
   return (
     <Box
@@ -88,7 +133,7 @@ export function RightColumn({
             "flex 0.4s ease-in-out, opacity 0.2s ease-in-out, visibility 0.3s",
         }}
       >
-        <ApplicationStatusChart />
+        <ApplicationStatusChart data={applicationStatusData} />
       </Box>
 
       <Box
@@ -100,6 +145,7 @@ export function RightColumn({
         <WeeklySchedule
           isScheduleExpanded={isScheduleExpanded}
           setIsScheduleExpanded={setIsScheduleExpanded}
+          schedule={weeklySchedule}
         />
       </Box>
     </Box>
