@@ -71,7 +71,7 @@ export default function ChartKpi({
         {formatTitle}
       </Typography>
       <Divider />
-      <Box display="flex" alignItems="end" gap={2} height={100}>
+      <Box display="flex" alignItems="end" gap={2}>
         <Box
           sx={{
             width: "45%",
