@@ -1,4 +1,4 @@
-import type { KPISupportingData } from "@/lib/types/dashboard";
+import type { ChartData } from "@/lib/types/dashboard";
 import { LineChart } from "@mui/x-charts/LineChart";
 
 export type GradientStops = {
@@ -45,7 +45,7 @@ export default function AreaChartComponent({
 }: {
   areaGradients: GradientStops[];
   color: string;
-  data: KPISupportingData[];
+  data: ChartData[];
 }) {
   return (
     <LineChart
@@ -57,6 +57,7 @@ export default function AreaChartComponent({
           position: "none",
         },
       ]}
+      height={100}
       yAxis={[{ position: "none" }]}
       series={[
         {
