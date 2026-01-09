@@ -25,7 +25,7 @@ function ApplicationStatusChart({
         maxHeight,
       }}
     >
-      <Typography variant="body2" sx={{ mb: 1 }}>
+      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
         Application Status
       </Typography>
       <Divider sx={{ mb: 1 }} />

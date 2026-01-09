@@ -4,7 +4,7 @@ import Divider from "@mui/material/Divider";
 import BarChartComponent from "@/components/shared/BarChartComponent";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
-import type { VolumeTrendData } from "@/lib/types/dashboard";
+import type { ChartData } from "@/lib/types/dashboard";
 
 const monthlyApplications = [
   { label: "Jan", value: 12, color: "#4F46E5" },
@@ -21,7 +21,7 @@ const monthlyApplications = [
   { label: "Dec", value: 45, color: "#EAB308" },
 ];
 
-function ApplicationsVolumeChart({ data }: { data: VolumeTrendData[] }) {
+function ApplicationsVolumeChart({ data }: { data: ChartData[] }) {
   const [chartCategory, setChartCategory] = React.useState("monthly");
   return (
     <Paper
@@ -37,7 +37,7 @@ function ApplicationsVolumeChart({ data }: { data: VolumeTrendData[] }) {
       }}
     >
       {/* TO DO: Replace with select component */}
-      <Typography variant="h6" className="capitalize" sx={{ fontWeight: 600 }}>
+      <Typography variant="h6" className="capitalize" sx={{ fontWeight: 500 }}>
         {chartCategory} Applications
       </Typography>
       <Divider />
