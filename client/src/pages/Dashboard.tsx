@@ -1,17 +1,16 @@
 import ApplicationsVolumeChart from "@/components/dashboard/ApplicationsVolumeChart";
 import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChart";
 import Box from "@mui/material/Box";
-import ChartKpi from "@/components/dashboard/ChartKpi";
-import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
-import { useState } from "react";
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
 import { useQuery } from "@tanstack/react-query";
 import { getCurrentYear } from "@/lib/utils/date";
 import DashboardSkeleton from "@/components/dashboard/Skeleton";
-import type { ChartData, KPIChartType } from "@/lib/types/dashboard";
-import type { Schedule } from "@/lib/types/schedules";
-//import Dashboard1 from "@/components/dashboard/Dashboard1";
+import type { KPIChartType } from "@/lib/types/dashboard";
+import Kpi from "@/components/dashboard/Kpi";
+import Week from "@/components/dashboard/WeeklySchedule";
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const currentYear = getCurrentYear();
   const { isLoading, data, error } = useQuery({
     queryKey: [`dashboard-${currentYear}`],
@@ -26,14 +25,12 @@ export default function DashboardPage() {
 
   if (error) return <p>Error: {error.message}</p>;
 
-  console.log(data);
   return (
-    <Box
+    <Stack
       component="article"
+      direction="row"
+      spacing={2}
       sx={{
-        display: "flex",
-        flexDirection: "row",
-        gap: 2,
         height: "100%",
         minHeight: 0,
       }}
@@ -44,20 +41,21 @@ export default function DashboardPage() {
           display: "flex",
           flexDirection: "column",
           width: "75%",
-          height: "100%",
+          height: "100%", // Parent must have height for flex: 1 to work
           minHeight: 0,
           gap: 2,
         }}
       >
         {/* Top Row: KPI Cards */}
         {data?.kpis && Object.keys(data.kpis).length > 0 ? (
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Grid container spacing={2} sx={{ flexShrink: 0 }} height={130}>
             {Object.keys(data.kpis).map((key) => {
               const kpiData = data.kpis[key];
               const sentiment = kpiData.sentiment;
+
               return (
-                <Box key={key} sx={{ flex: 1, minWidth: 0 }}>
-                  <ChartKpi
+                <Grid key={key} size={4}>
+                  <Kpi
                     title={key as KPIChartType}
                     sentiment={
                       sentiment === 0
@@ -67,87 +65,49 @@ export default function DashboardPage() {
                         : "negative"
                     }
                     value={data.kpis[key].result}
-                    data={kpiData.data}
                   />
-                </Box>
+                </Grid>
               );
             })}
-          </Box>
+          </Grid>
         ) : (
           <p>No KPI data found for {currentYear}</p>
         )}
 
-        {/* Bottom Row: The Volume Chart */}
-        <Box
+        {/* Bottom Row: Main Charts */}
+        <Grid
+          container
+          spacing={2}
+          alignItems="flex-start"
           sx={{
             flex: 1,
             minHeight: 0,
-            position: "relative",
           }}
         >
-          <ApplicationsVolumeChart data={data?.volumeTrend || []} />
-        </Box>
+          <Grid size={8} sx={{ height: "100%" }}>
+            <Box sx={{ height: "100%", position: "relative" }}>
+              <ApplicationsVolumeChart data={data?.volumeTrend || []} />
+            </Box>
+          </Grid>
+          <Grid size={4} sx={{ height: "100%" }}>
+            <Stack spacing={2} height="100%" minHeight={0}>
+              <ApplicationStatusChart data={data?.applicationStatus || []} />
+              <ApplicationStatusChart data={data?.applicationStatus || []} />
+            </Stack>
+          </Grid>
+        </Grid>
       </Box>
 
       {/* RIGHT COLUMN */}
-      <RightColumn
-        applicationStatusData={data?.applicationStatus || []}
-        weeklySchedule={data?.weeklySchedule || []}
-      />
-    </Box>
-    // <Dashboard1 />
-  );
-}
-
-export function RightColumn({
-  applicationStatusData,
-  weeklySchedule,
-  initialState = false,
-}: {
-  applicationStatusData: ChartData[];
-  weeklySchedule: Schedule[];
-  initialState?: boolean;
-}) {
-  const [isScheduleExpanded, setIsScheduleExpanded] = useState(initialState);
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: isScheduleExpanded ? 0 : 2,
-        width: "25%",
-        height: "100%",
-        minHeight: 0,
-        transition: "gap 0.4s ease-in-out",
-      }}
-    >
       <Box
         sx={{
-          flex: isScheduleExpanded ? 0 : 1,
-          opacity: isScheduleExpanded ? 0 : 1,
-          visibility: isScheduleExpanded ? "hidden" : "visible",
-          minHeight: 0,
-          overflow: "hidden",
-          transition:
-            "flex 0.4s ease-in-out, opacity 0.2s ease-in-out, visibility 0.3s",
-        }}
-      >
-        <ApplicationStatusChart data={applicationStatusData} />
-      </Box>
-
-      <Box
-        sx={{
-          flex: 1.5,
+          width: "25%",
+          height: "100%",
           minHeight: 0,
         }}
       >
-        <WeeklySchedule
-          isScheduleExpanded={isScheduleExpanded}
-          setIsScheduleExpanded={setIsScheduleExpanded}
-          schedule={weeklySchedule}
-        />
+        <Week schedule={data?.weeklySchedule || []} />
       </Box>
-    </Box>
+    </Stack>
   );
 }
