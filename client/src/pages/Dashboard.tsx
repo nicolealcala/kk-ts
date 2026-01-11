@@ -1,51 +1,36 @@
 import ApplicationsVolumeChart from "@/components/dashboard/ApplicationsVolumeChart";
 import ApplicationStatusChart from "@/components/dashboard/ApplicationStatusChart";
 import Box from "@mui/material/Box";
-import ChartKpi, { type ChartKpiProps } from "@/components/dashboard/ChartKpi";
-import WeeklySchedule from "@/components/dashboard/WeeklySchedule";
-import { useState } from "react";
+import Grid from "@mui/material/Grid";
+import Stack from "@mui/material/Stack";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentYear } from "@/lib/utils/date";
+import DashboardSkeleton from "@/components/dashboard/Skeleton";
+import type { KPIChartType } from "@/lib/types/dashboard";
+import Kpi from "@/components/dashboard/Kpi";
+import Week from "@/components/dashboard/WeeklySchedule";
 
-export default function DashboardPage() {
-  const charts: ChartKpiProps[] = [
-    {
-      title: "Funnel Yield",
-      value: "50%",
-      areaGradients: [
-        { offset: 0, stopColor: "#bca8ff" },
-        { offset: 100, stopColor: "#d8cfff" },
-      ],
-      color: "#813fff",
-      sentiment: "positive",
+export default function Dashboard() {
+  const currentYear = getCurrentYear();
+  const { isLoading, data, error } = useQuery({
+    queryKey: [`dashboard-${currentYear}`],
+    queryFn: async () => {
+      return fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`
+      ).then((res) => res.json());
     },
-    {
-      title: "Top Source",
-      value: "JobStreet",
-      areaGradients: [
-        { offset: 0, stopColor: "#fea3d7" },
-        { offset: 100, stopColor: "#feccea" },
-      ],
-      color: "#fc6abb",
-      sentiment: "negative",
-    },
-    {
-      title: "Avg. Wait Time",
-      value: "5 Days",
-      areaGradients: [
-        { offset: 0, stopColor: "#ffdda5" },
-        { offset: 100, stopColor: "#fff0d3" },
-      ],
-      color: "#ffa137",
-      sentiment: "neutral",
-    },
-  ];
+  });
+
+  if (isLoading) return <DashboardSkeleton />;
+
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
-    <Box
+    <Stack
       component="article"
+      direction="row"
+      spacing={2}
       sx={{
-        display: "flex",
-        flexDirection: "row",
-        gap: 2,
         height: "100%",
         minHeight: 0,
       }}
@@ -56,78 +41,73 @@ export default function DashboardPage() {
           display: "flex",
           flexDirection: "column",
           width: "75%",
-          height: "100%",
+          height: "100%", // Parent must have height for flex: 1 to work
           minHeight: 0,
           gap: 2,
         }}
       >
         {/* Top Row: KPI Cards */}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          {charts.map((chart, i) => (
-            <Box key={i} sx={{ flex: 1, minWidth: 0 }}>
-              <ChartKpi chart={chart} />
-            </Box>
-          ))}
-        </Box>
+        {data?.kpis && Object.keys(data.kpis).length > 0 ? (
+          <Grid container spacing={2} sx={{ flexShrink: 0 }} height={130}>
+            {Object.keys(data.kpis).map((key) => {
+              const kpiData = data.kpis[key];
+              const sentiment = kpiData.sentiment;
 
-        {/* Bottom Row: The Volume Chart */}
-        <Box
+              return (
+                <Grid key={key} size={4}>
+                  <Kpi
+                    title={key as KPIChartType}
+                    sentiment={
+                      sentiment === 0
+                        ? "neutral"
+                        : sentiment > 0
+                        ? "positive"
+                        : "negative"
+                    }
+                    value={data.kpis[key].result}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <p>No KPI data found for {currentYear}</p>
+        )}
+
+        {/* Bottom Row: Main Charts */}
+        <Grid
+          container
+          spacing={2}
+          alignItems="flex-start"
           sx={{
             flex: 1,
             minHeight: 0,
-            position: "relative",
           }}
         >
-          <ApplicationsVolumeChart />
-        </Box>
+          <Grid size={8} sx={{ height: "100%" }}>
+            <Box sx={{ height: "100%", position: "relative" }}>
+              <ApplicationsVolumeChart data={data?.volumeTrend || []} />
+            </Box>
+          </Grid>
+          <Grid size={4} sx={{ height: "100%" }}>
+            <Stack spacing={2} height="100%" minHeight={0}>
+              <ApplicationStatusChart data={data?.applicationStatus || []} />
+              <ApplicationStatusChart data={data?.applicationStatus || []} />
+            </Stack>
+          </Grid>
+        </Grid>
       </Box>
 
       {/* RIGHT COLUMN */}
-      <RightColumn />
-    </Box>
-  );
-}
-
-function RightColumn() {
-  const [isScheduleExpanded, setIsScheduleExpanded] = useState(false);
-
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: isScheduleExpanded ? 0 : 2,
-        width: "25%",
-        height: "100%",
-        minHeight: 0,
-        transition: "gap 0.4s ease-in-out",
-      }}
-    >
       <Box
         sx={{
-          flex: isScheduleExpanded ? 0 : 1,
-          opacity: isScheduleExpanded ? 0 : 1,
-          visibility: isScheduleExpanded ? "hidden" : "visible",
-          minHeight: 0,
-          overflow: "hidden",
-          transition:
-            "flex 0.4s ease-in-out, opacity 0.2s ease-in-out, visibility 0.3s",
-        }}
-      >
-        <ApplicationStatusChart />
-      </Box>
-
-      <Box
-        sx={{
-          flex: 1.5,
+          width: "25%",
+          height: "100%",
           minHeight: 0,
         }}
       >
-        <WeeklySchedule
-          isScheduleExpanded={isScheduleExpanded}
-          setIsScheduleExpanded={setIsScheduleExpanded}
-        />
+        <Week schedule={data?.weeklySchedule || []} />
       </Box>
-    </Box>
+    </Stack>
   );
 }

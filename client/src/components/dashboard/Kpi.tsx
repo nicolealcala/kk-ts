@@ -1,60 +1,41 @@
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import AreaChartComponent from "../shared/AreaChartComponent";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
 import ArrowOutwardRoundedIcon from "@mui/icons-material/ArrowOutwardRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
-import type {
-  ChartData,
-  KPIChartType,
-  KPISentiment,
-} from "@/lib/types/dashboard";
+import type { KPIChartType, KPISentiment } from "@/lib/types/dashboard";
+import Stack from "@mui/material/Stack";
+import QueryStatsRoundedIcon from "@mui/icons-material/QueryStats";
+import AlignVerticalBottomRoundedIcon from "@mui/icons-material/AlignVerticalBottomRounded";
+import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 
 type ChartKpiProps = {
   title: KPIChartType;
   value: string;
   sentiment: KPISentiment;
-  data: ChartData[];
 };
 
-const CHART_COLORS = {
-  funnelYield: {
-    color: "#813fff",
-    areaGradients: [
-      { offset: 0, stopColor: "#c4b4ff" },
-      { offset: 100, stopColor: "#ddd6ff" },
-    ],
-  },
-  topSource: {
-    color: "#05df72",
-    areaGradients: [
-      { offset: 0, stopColor: "#b9f8cf" },
-      { offset: 100, stopColor: "#dcfce7" },
-    ],
-  },
-  avgWaitTime: {
-    color: "#ffa137",
-    areaGradients: [
-      { offset: 0, stopColor: "#ffdda5" },
-      { offset: 100, stopColor: "#fff0d3" },
-    ],
-  },
-};
-
-export default function ChartKpi({
-  title,
-  value,
-  sentiment,
-  data,
-}: ChartKpiProps) {
-  const config = CHART_COLORS[title];
-
+export default function Kpi({ title, value, sentiment }: ChartKpiProps) {
   const formatTitle = title
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (str) => str.toUpperCase());
 
+  const icon =
+    title === "funnelYield" ? (
+      <QueryStatsRoundedIcon color="inherit" fontSize="small" />
+    ) : title === "topSource" ? (
+      <AlignVerticalBottomRoundedIcon color="inherit" fontSize="small" />
+    ) : (
+      <AccessTimeRoundedIcon color="inherit" fontSize="small" />
+    );
+
+  const renderValue =
+    title === "funnelYield"
+      ? `${value}%`
+      : title === "topSource"
+      ? value
+      : `${value} Days`;
   return (
     <Paper
       elevation={0}
@@ -67,27 +48,23 @@ export default function ChartKpi({
         height: "100%",
       }}
     >
-      <Typography variant="body2" sx={{ mb: 1 }}>
-        {formatTitle}
+      <Typography
+        variant="body2"
+        sx={{ mb: 1 }}
+        color="textSecondary"
+        display="flex"
+        gap={1}
+        alignItems="end"
+      >
+        {icon} {formatTitle}
       </Typography>
-      <Divider />
-      <Box display="flex" alignItems="end" gap={2}>
-        <Box
-          sx={{
-            width: "45%",
-          }}
-        >
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {value}
-          </Typography>
-          <KpiChip sentiment={sentiment} />
-        </Box>
-        <AreaChartComponent
-          data={data}
-          areaGradients={config.areaGradients}
-          color={config.color}
-        />
-      </Box>
+      <Divider sx={{ mb: 3 }} />
+      <Stack direction="row" alignItems="end" gap={1.5}>
+        <Typography variant="h4" sx={{ fontWeight: 600 }}>
+          {renderValue}
+        </Typography>
+        <KpiChip sentiment={sentiment} />
+      </Stack>
     </Paper>
   );
 }
@@ -124,7 +101,7 @@ function KpiChip({ sentiment = "positive" }: { sentiment: KPISentiment }) {
       sx={{
         borderRadius: 1.5,
         ...chipStyles[sentiment],
-        mt: 1,
+        mb: 0.5,
         "& .MuiChip-label": {
           pr: 1,
           fontWeight: 600,

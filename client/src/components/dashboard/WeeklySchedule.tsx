@@ -1,24 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
-import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import HeatmapComponent, {
-  type ScheduleSlot,
+  type ScheduleData,
 } from "../shared/HeatmapComponent";
-import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
-import UnfoldLessRoundedIcon from "@mui/icons-material/UnfoldLessRounded";
-import IconButton from "@mui/material/IconButton";
+import type { Schedule } from "@/lib/types/schedules";
+import { transformSchedules } from "@/lib/utils/date";
 
 type WeeklyScheduleProps = {
-  isScheduleExpanded: boolean;
-  setIsScheduleExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  schedule: Schedule[];
 };
 
-export default function WeeklySchedule({
-  isScheduleExpanded,
-  setIsScheduleExpanded,
-}: WeeklyScheduleProps) {
+export default function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
   const [currentHour, setCurrentHour] = useState<number>(new Date().getHours());
 
   useEffect(() => {
@@ -34,16 +28,6 @@ export default function WeeklySchedule({
   }, [currentHour]);
 
   const config = useMemo(() => {
-    const quarterlyBracket = [
-      { label: "Morning Schedule (12AM-5AM)", hours: [0, 5] },
-      { label: "Morning Schedule (6AM-11AM)", hours: [6, 11] },
-      {
-        label: "Afternoon Schedule (12PM-5PM)",
-        hours: [12, 17],
-      },
-      { label: "Evening Schedule (6PM-11PM)", hours: [18, 23] },
-    ];
-
     const halfBracket = [
       {
         label: "AM Schedule (12AM-12PM)",
@@ -54,9 +38,7 @@ export default function WeeklySchedule({
         hours: [12, 24],
       },
     ];
-
-    const bracket = isScheduleExpanded ? halfBracket : quarterlyBracket;
-    const schedule = bracket.find((b) => {
+    const schedule = halfBracket.find((b) => {
       const [start, end] = b.hours;
 
       return currentHour >= start && currentHour <= (end === 24 ? 23 : end);
@@ -67,13 +49,12 @@ export default function WeeklySchedule({
       end: schedule!.hours[1],
       label: schedule!.label,
     };
-  }, [currentHour, isScheduleExpanded]);
+  }, [currentHour]);
 
-  const mySchedule: ScheduleSlot[] = [
-    { day: 0, startHour: 9, endHour: 17 }, // Mon 9-5
-    { day: 4, startHour: 18, endHour: 21 }, // Fri 6-9
-  ];
+  const mySchedule: ScheduleData[] = transformSchedules(schedule);
 
+  const result = transformSchedules(schedule);
+  console.log("New schedule: ", result);
   return (
     <Paper
       elevation={0}
@@ -84,39 +65,11 @@ export default function WeeklySchedule({
         p: 2,
         borderRadius: 2,
         height: "100%",
+        width: "100%",
         gap: 1,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          position: "relative",
-        }}
-      >
-        <Typography variant="body2">{config.label}</Typography>
-        <IconButton
-          aria-label="Toggle Schedule Expand"
-          size="small"
-          sx={{
-            position: "absolute",
-            right: 0,
-            bgcolor: isScheduleExpanded ? "primary.main" : "",
-            color: isScheduleExpanded ? "primary.contrastText" : "",
-            "& :hover": {
-              color: "text.primary",
-            },
-          }}
-          onClick={() => setIsScheduleExpanded((prev) => !prev)}
-        >
-          {isScheduleExpanded ? (
-            <UnfoldLessRoundedIcon fontSize="small" />
-          ) : (
-            <UnfoldMoreRoundedIcon fontSize="small" />
-          )}
-        </IconButton>
-      </Box>
+      <Typography variant="body2">{config.label}</Typography>
 
       <Divider sx={{ mb: 1 }} />
       <HeatmapComponent config={config} activeSlots={mySchedule} />

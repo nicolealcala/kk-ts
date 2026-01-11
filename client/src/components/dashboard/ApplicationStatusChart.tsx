@@ -1,18 +1,16 @@
 import DonutChartComponent from "@/components/shared/DonutChartComponent";
+import type { ChartData } from "@/lib/types/dashboard";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
-const statusConfig = [
-  { label: "Applied", value: 60 },
-  { label: "Interviewing", value: 40 },
-  { label: "Offered", value: 20 },
-  { label: "Rejected", value: 25 },
-  { label: "Hired", value: 4 },
-  { label: "Ghosted", value: 10 },
-];
-
-function ApplicationStatusChart() {
+function ApplicationStatusChart({
+  data,
+  maxHeight = "400px",
+}: {
+  data: ChartData[];
+  maxHeight?: string;
+}) {
   return (
     <Paper
       elevation={0}
@@ -24,16 +22,14 @@ function ApplicationStatusChart() {
         borderRadius: 2,
         height: "100%",
         minHeight: 0,
+        maxHeight,
       }}
     >
-      <Typography variant="body2" sx={{ mb: 1 }}>
+      <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
         Application Status
       </Typography>
       <Divider sx={{ mb: 1 }} />
-      <DonutChartComponent
-        title="Application Status Breakdown"
-        statusConfig={statusConfig}
-      />
+      <DonutChartComponent data={data} />
     </Paper>
   );
 }
