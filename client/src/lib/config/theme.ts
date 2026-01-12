@@ -40,6 +40,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        outlined: {
+          borderColor: "#EFEFEF",
+        },
+      },
+    },
   },
   palette: {
     mode: "light",
