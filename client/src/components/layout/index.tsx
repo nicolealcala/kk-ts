@@ -53,7 +53,7 @@ export default function RootLayout() {
           flexDirection: "column",
           p: 3,
           minHeight: 0,
-          backgroundColor: "#f8fafc",
+          bgcolor: "slate.extraLight",
           width: "100%",
           overflow: "hidden",
           minWidth: 0,
