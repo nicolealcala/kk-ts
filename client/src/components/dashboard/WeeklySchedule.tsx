@@ -53,8 +53,6 @@ export default function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
 
   const mySchedule: ScheduleData[] = transformSchedules(schedule);
 
-  const result = transformSchedules(schedule);
-  console.log("New schedule: ", result);
   return (
     <Paper
       elevation={0}
