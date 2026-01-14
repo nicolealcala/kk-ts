@@ -4,6 +4,7 @@ import "@mui/material/styles";
 declare module "@mui/material/styles" {
   interface PaletteOptions {
     slate: PaletteColor;
+    violet: PaletteColor;
   }
   interface PaletteColor {
     extraLight?: string; // Add your custom property here
@@ -13,6 +14,7 @@ declare module "@mui/material/styles" {
   }
 }
 const theme = createTheme({
+  cssVariables: true,
   typography: {
     fontFamily: "'Figtree', sans-serif",
   },
@@ -50,13 +52,6 @@ const theme = createTheme({
   },
   palette: {
     mode: "light",
-    slate: {
-      main: "#62748e",
-      light: "#f1f5f9",
-      extraLight: "#f8fafc",
-      dark: "#506079",
-      contrastText: "#242105",
-    },
     primary: {
       main: "#7419ff",
       light: "#9d76ff",
@@ -87,6 +82,20 @@ const theme = createTheme({
       main: "#fd9a00",
       light: "#ffba00",
       dark: "#bb4d00",
+    },
+    slate: {
+      main: "#62748e",
+      light: "#f1f5f9",
+      extraLight: "#f8fafc",
+      dark: "#506079",
+      contrastText: "#242105",
+    },
+    violet: {
+      main: "#a684ff",
+      light: "#c4b4ff",
+      extraLight: "#ddd6ff",
+      dark: "#8e51ff",
+      contrastText: "rgba(255,255,255,0.95)",
     },
   },
 });
