@@ -3,9 +3,7 @@ import type { ControllerRenderProps, FieldPath } from "react-hook-form";
 import type { ScheduleFormInputs } from "./ScheduleForm";
 
 type ScheduleFormTextFieldProps<TName extends FieldPath<ScheduleFormInputs>> =
-  // 1. Extend standard MUI TextField props
   Omit<TextFieldProps, "name"> & {
-    // 2. Keep your specific Hook Form props
     field: ControllerRenderProps<ScheduleFormInputs, TName>;
     errorMessage?: string;
   };

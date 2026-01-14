@@ -5,9 +5,6 @@ import Box from "@mui/material/Box";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Stack from "@mui/material/Stack";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { AdapterLuxon } from "@mui/x-date-pickers/AdapterLuxon";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import ScheduleFormButtons from "./ScheduleFormButtons";
@@ -16,8 +13,9 @@ import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
 import { useEffect } from "react";
 import Divider from "@mui/material/Divider";
-import { DateTime } from "luxon";
 import type { SlotInfo } from "react-big-calendar";
+import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
+import ScheduleFormTimePicker from "./ScheduleFormTimePicker";
 
 type ScheduleDrawerType = {
   openDrawer: boolean;
@@ -29,6 +27,7 @@ type ScheduleDrawerType = {
 const scheduleSchema = z.object({
   title: z.string().nonempty("Title is required"),
   description: z.string().optional(),
+  date: z.string().nonempty("Date is required"),
   start: z.string().nonempty("Start time is required"),
   end: z.string().nonempty("End time is required"),
   modality: z.string().nonempty("Modality is required"),
@@ -46,6 +45,7 @@ export type ScheduleFormInputs = z.infer<typeof scheduleSchema>;
 const initialValues: ScheduleFormInputs = {
   title: "",
   description: "",
+  date: "",
   start: "",
   end: "",
   modality: "remote",
@@ -79,12 +79,15 @@ export default function ScheduleForm({
 
   useEffect(() => {
     if (selectedSlot) {
+      const isoString =
+        selectedSlot.start instanceof Date
+          ? selectedSlot.start.toISOString()
+          : selectedSlot.start;
+
       reset({
         ...initialValues,
-        start:
-          selectedSlot.start instanceof Date
-            ? selectedSlot.start.toISOString()
-            : selectedSlot.start,
+        date: isoString,
+        start: isoString,
       });
     }
   }, [selectedSlot, reset]);
@@ -104,6 +107,11 @@ export default function ScheduleForm({
     setOpenDrawer(false);
   }
 
+  const startTimeValue = useWatch({
+    control,
+    name: "start",
+  });
+
   return (
     <Drawer
       open={openDrawer}
@@ -115,161 +123,175 @@ export default function ScheduleForm({
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        sx={{ mt: 2, p: 2 }}
+        sx={{
+          mt: 2,
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
       >
-        <Typography variant="h5" gutterBottom mb={3} fontWeight={500}>
+        <Typography
+          variant="h5"
+          component="h1"
+          gutterBottom
+          mb={3}
+          fontWeight={500}
+          px={2}
+        >
           Create a new event
         </Typography>
-        <Stack spacing={2.5}>
-          {/* Title Field */}
-          <Controller
-            name="title"
-            control={control}
-            render={({ field }) => (
-              <ScheduleFormTextField
-                field={field}
-                label="Title"
-                error={!!errors.title}
-                errorMessage={errors.title?.message}
-                placeholder="Event title"
-              />
-            )}
-          />
-
-          {/* Description Field */}
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <MDEditor
-                value={field.value}
-                onChange={field.onChange}
-                preview="edit"
-                previewOptions={{
-                  rehypePlugins: [[rehypeSanitize]],
-                }}
-                textareaProps={{
-                  placeholder: "Description (optional)",
-                  maxLength: 200,
-                }}
-              />
-            )}
-          />
-
-          <Stack direction="row" spacing={2}>
+        <Box
+          sx={{
+            pl: 2,
+            pr: 1.5,
+          }}
+          className="thin-scrollbar"
+        >
+          <Stack spacing={2.5}>
+            {/* Title Field */}
             <Controller
-              name="start"
+              name="title"
               control={control}
               render={({ field }) => (
-                <LocalizationProvider dateAdapter={AdapterLuxon}>
-                  <TimePicker
+                <ScheduleFormTextField
+                  field={field}
+                  label="Title"
+                  error={!!errors.title}
+                  errorMessage={errors.title?.message}
+                  placeholder="Event title"
+                />
+              )}
+            />
+
+            {/* Description Field */}
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <MDEditor
+                  value={field.value}
+                  onChange={field.onChange}
+                  preview="edit"
+                  previewOptions={{
+                    rehypePlugins: [[rehypeSanitize]],
+                  }}
+                  textareaProps={{
+                    placeholder: "Description (optional)",
+                    maxLength: 200,
+                  }}
+                />
+              )}
+            />
+
+            <Stack direction="row" spacing={2} maxWidth="500px">
+              {/* Date Field */}
+              <Controller
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormDatePicker
+                    field={field}
+                    error={!!errors.date}
+                    errorMessage={errors.date?.message}
+                    label="Date"
+                  />
+                )}
+              />
+
+              {/* Start Time Field */}
+              <Controller
+                name="start"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormTimePicker
+                    field={field}
+                    error={!!errors.start}
+                    errorMessage={errors.start?.message}
                     label="Start Time"
-                    // Convert the string value from Hook Form into a Luxon DateTime object
-                    value={field.value ? DateTime.fromISO(field.value) : null}
-                    // Convert the Luxon object back into a string for Hook Form
-                    onChange={(newValue) => {
-                      field.onChange(newValue ? newValue.toISO() : "");
-                    }}
-                    slotProps={{
-                      textField: {
-                        error: !!errors.start,
-                        helperText: errors.start?.message,
-                        fullWidth: true,
-                      },
-                    }}
                   />
-                </LocalizationProvider>
+                )}
+              />
+
+              {/* End Time Field */}
+              <Controller
+                name="end"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormTimePicker
+                    field={field}
+                    error={!!errors.end}
+                    errorMessage={errors.end?.message}
+                    label="End Time"
+                    baseDate={startTimeValue}
+                  />
+                )}
+              />
+            </Stack>
+
+            <Divider />
+
+            <Controller
+              name="modality"
+              control={control}
+              render={({ field }) => (
+                <ScheduleFormRadioGroup
+                  field={field}
+                  label="Modality:"
+                  error={!!errors.modality}
+                  errorMessage={errors.modality?.message}
+                  radioItems={modalityOptions}
+                />
               )}
             />
 
-            <Controller
-              name="end"
-              control={control}
-              render={({ field }) => (
-                <LocalizationProvider dateAdapter={AdapterLuxon}>
-                  <TimePicker
-                    label="End Time"
-                    // Convert the string value from Hook Form into a Luxon DateTime object
-                    value={field.value ? DateTime.fromISO(field.value) : null}
-                    // Convert the Luxon object back into a string for Hook Form
-                    onChange={(newValue) => {
-                      field.onChange(newValue ? newValue.toISO() : "");
-                    }}
-                    slotProps={{
-                      textField: {
-                        error: !!errors.start,
-                        helperText: errors.start?.message,
-                        fullWidth: true,
-                      },
-                    }}
+            {/* Link / Address Field */}
+            {modality === "remote" ? (
+              <Controller
+                name="link"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormTextField
+                    field={field}
+                    label="Meeting Link (URL)"
+                    error={!!errors.link}
+                    errorMessage={errors.link?.message}
                   />
-                </LocalizationProvider>
-              )}
-            />
+                )}
+              />
+            ) : (
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormTextField
+                    field={field}
+                    label="Office/Location Address"
+                    error={!!errors.address}
+                    errorMessage={errors.address?.message}
+                  />
+                )}
+              />
+            )}
           </Stack>
 
-          <Divider />
+          <Stack direction="row" spacing={2} width="100%" mt={3}>
+            {/* Cancel Button */}
+            <ScheduleFormButtons
+              type="button"
+              variant="outlined"
+              isLoading={isSubmitting}
+              onClick={handleCancel}
+            >
+              Cancel
+            </ScheduleFormButtons>
 
-          <Controller
-            name="modality"
-            control={control}
-            render={({ field }) => (
-              <ScheduleFormRadioGroup
-                field={field}
-                label="Modality:"
-                error={!!errors.modality}
-                errorMessage={errors.modality?.message}
-                radioItems={modalityOptions}
-              />
-            )}
-          />
-
-          {/* Link / Address Field */}
-          {modality === "remote" ? (
-            <Controller
-              name="link"
-              control={control}
-              render={({ field }) => (
-                <ScheduleFormTextField
-                  field={field}
-                  label="Meeting Link (URL)"
-                  error={!!errors.link}
-                  errorMessage={errors.link?.message}
-                />
-              )}
-            />
-          ) : (
-            <Controller
-              name="address"
-              control={control}
-              render={({ field }) => (
-                <ScheduleFormTextField
-                  field={field}
-                  label="Office/Location Address"
-                  error={!!errors.address}
-                  errorMessage={errors.address?.message}
-                />
-              )}
-            />
-          )}
-        </Stack>
-
-        <Stack direction="row" spacing={2} width="100%" mt={3}>
-          {/* Cancel Button */}
-          <ScheduleFormButtons
-            type="button"
-            variant="outlined"
-            isLoading={isSubmitting}
-            onClick={handleCancel}
-          >
-            Cancel
-          </ScheduleFormButtons>
-
-          {/* Save Button */}
-          <ScheduleFormButtons type="submit" isLoading={isSubmitting}>
-            Save
-          </ScheduleFormButtons>
-        </Stack>
+            {/* Save Button */}
+            <ScheduleFormButtons type="submit" isLoading={isSubmitting}>
+              Save
+            </ScheduleFormButtons>
+          </Stack>
+        </Box>
       </Box>
     </Drawer>
   );
