@@ -2,6 +2,7 @@ type ScheduleType = "interview" | "assessment" | "task";
 export type Modality = "remote" | "onsite";
 
 interface BaseSchedule {
+  id: string;
   title: string;
   description?: string;
   type: ScheduleType;

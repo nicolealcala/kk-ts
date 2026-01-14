@@ -1,9 +1,35 @@
-/* // 🎨 Override core variables first
+// 🎨 Override core variables first
 $calendar-btn-bg: #4a90e2; // default button background
 $calendar-btn-color: #fff; // default button text color
 $calendar-btn-hover-bg: #357ab8; // hover background
 $calendar-btn-active-bg: #2c3e50; // active button background
 $calendar-btn-border-radius: 6px; // rounded corners
 
+$event-bg: #8e51ff;
+$event-border: #8e51ff;
+
+.rbc-active {
+  background-color: var(--mui-palette-primary-main) !important;
+  color: var(--mui-palette-primary-contrastText) !important;
+  box-shadow: none !important;
+}
+
+$today-highlight-bg: #f5f3ff !default;
+
+$current-time-color: #c70300;
+
+.rbc-toolbar-label {
+  font-weight: 600;
+}
+
+.rbc-time-gutter.rbc-time-column {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mui-palette-text-secondary);
+}
+
+.rbc-current-time-indicator {
+  height: 2px !important;
+}
 // Import the base styles AFTER overrides
-@import "react-big-calendar/lib/sass/styles"; */
+@import "react-big-calendar/lib/sass/styles";
