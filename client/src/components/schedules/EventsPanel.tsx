@@ -11,55 +11,6 @@ import Divider from "@mui/material/Divider";
 import { schedules } from "@/lib/mock-data/schedules";
 import Tooltip from "@mui/material/Tooltip";
 
-// const myEventsList = [
-//   {
-//     title: "Project Kickoff",
-//     start: "2026-01-12T04:30:00Z",
-//     end: "2026-01-12T05:30:00Z",
-//     description: `**Agenda:**
-// - Introductions
-// - Overview of project scope
-// - Timeline discussion
-
-// For details, check the [project docs](https://example.com/docs).`,
-//   },
-//   {
-//     title: "Design Review",
-//     start: "2026-01-13T08:00:00Z",
-//     end: "2026-01-13T09:00:00Z",
-//     description: `We'll review the latest **UI mockups**.
-// Please bring your feedback on:
-// 1. Color scheme
-// 2. Layout consistency
-// 3. Accessibility
-
-// See the [design guidelines](https://example.com/design).`,
-//   },
-//   {
-//     title: "Client Presentation",
-//     start: "2026-01-12T13:00:00Z",
-//     end: "2026-01-12T14:00:00Z",
-//     description: `Present progress to the client.
-// Topics include:
-// - ✅ Completed milestones
-// - 🚧 Work in progress
-// - 📌 Next steps
-
-// Slides are available [here](https://example.com/slides).`,
-//   },
-//   {
-//     title: "Team Retrospective",
-//     start: "2026-01-13T02:00:00Z",
-//     end: "2026-01-13T03:00:00Z",
-//     description: `Reflect on the sprint:
-// - What went **well**
-// - What could be *improved*
-// - Action items for next sprint
-
-// Add notes in the [retrospective board](https://example.com/retro).`,
-//   },
-// ];
-
 export default function EventsPanel() {
   const todaysEvents = schedules.filter((event) => {
     const localStart = DateTime.fromISO(event.start, { zone: "utc" }).toLocal();
@@ -99,12 +50,8 @@ export default function EventsPanel() {
       ) : (
         <Box
           sx={{
-            flex: 1,
-            minHeight: 0,
             pl: 2,
             pr: 0.5,
-            overflowY: "auto",
-            position: "relative",
           }}
           className="thin-scrollbar"
         >

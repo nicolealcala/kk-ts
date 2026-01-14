@@ -45,6 +45,8 @@ body {
   --color-foreground: #303030;
   --color-background: #ffffff;
   --color-border: var(--border);
+
+  --btn-bg: var(--mui-palette-text-secondary);
 }
 
 @layer base {
@@ -65,12 +67,14 @@ body {
   }
 
   .thin-scrollbar {
-    position: relative; /* Required for ::after */
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    position: relative; /* Required for ::after */
 
     /* Firefox */
     scrollbar-width: thin;
-    scrollbar-color: #efefef transparent;
+    scrollbar-color: #e0e0e0 transparent;
 
     /* Prevent layout shift */
     scrollbar-gutter: stable;
@@ -114,10 +118,10 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 24px;
+    height: 32px;
     background: linear-gradient(
       to bottom,
-      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0),
       rgba(255, 255, 255, 1)
     );
     pointer-events: none;
