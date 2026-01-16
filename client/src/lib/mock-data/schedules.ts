@@ -1,7 +1,8 @@
-//import type { Schedule } from "../types/schedules";
+import type { Schedule } from "../types/schedules";
 
-export const schedules = [
+export const schedules: Schedule[] = [
   {
+    id: "1",
     title: "Technical Interview - Frontend lorem ipsum",
     // List markup for specific topics
     description: "Deep dive into:\n* **React** patterns\n* `TypeScript` logic",
@@ -12,6 +13,7 @@ export const schedules = [
     link: "https://meet.google.com/abc-defg-hij",
   },
   {
+    id: "2",
     title: "System Design Assessment",
     description: "> **Onsite whiteboarding**: Dashboard architecture.",
     type: "assessment",
@@ -21,6 +23,7 @@ export const schedules = [
     address: "Level 12, Tech Tower, Makati Ave, Manila",
   },
   {
+    id: "3",
     title: "Take-home Task Review",
     // Link markup for documentation/repo reference
     description:
@@ -32,9 +35,10 @@ export const schedules = [
     link: "https://zoom.us/j/987654321",
   },
   {
+    id: "4",
     title: "Culture Fit Interview",
     description: "Meeting with the _Engineering VP_.",
-    type: "interview",
+    type: "other",
     modality: "onsite",
     start: "2026-01-16T03:00:00Z",
     end: "2026-01-16T04:00:00Z",
