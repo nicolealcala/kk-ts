@@ -5,22 +5,12 @@ $calendar-btn-hover-bg: #357ab8; // hover background
 $calendar-btn-active-bg: #2c3e50; // active button background
 $calendar-btn-border-radius: 6px; // rounded corners
 
-$event-bg: #8e51ff;
-$event-border: #8e51ff;
-
-.rbc-active {
-  background-color: var(--mui-palette-primary-main) !important;
-  color: var(--mui-palette-primary-contrastText) !important;
-  box-shadow: none !important;
-}
+$event-bg: #a684ff;
+$event-border: #a684ff;
 
 $today-highlight-bg: #f5f3ff !default;
 
 $current-time-color: #c70300;
-
-.rbc-toolbar-label {
-  font-weight: 600;
-}
 
 .rbc-time-gutter.rbc-time-column {
   font-size: 12px;
