@@ -28,13 +28,13 @@ export default function ScheduleFormRadioGroup<
     <FormControl
       error={error}
       component="fieldset"
+      fullWidth
       sx={{
         "& .MuiFormLabel-root.Mui-focused": { color: "text.secondary" },
         "& .MuiFormHelperText-root.Mui-error": { mx: 0, ml: 0.5 },
       }}
     >
       <FormLabel component="legend">{label}</FormLabel>
-
       <RadioGroup {...field} row aria-label="modality">
         {radioItems.map((r) => (
           <FormControlLabel

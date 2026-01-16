@@ -1,6 +1,6 @@
 import ScheduleContextProvider from "@/components/context-providers/ScheduleContextProvider";
 import ScheduleCalendar from "@/components/schedules/Calendar";
-import EventsPanel from "@/components/schedules/EventsPanel";
+import TodayPanel from "@/components/schedules/TodayPanel";
 import ScheduleForm from "@/components/schedules/ScheduleForm";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
@@ -28,7 +28,7 @@ export default function SchedulesPage() {
             width: "20%",
           }}
         >
-          <EventsPanel />
+          <TodayPanel />
         </Box>
         <Box
           sx={{

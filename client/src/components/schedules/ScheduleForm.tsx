@@ -16,6 +16,8 @@ import Divider from "@mui/material/Divider";
 import type { SlotInfo } from "react-big-calendar";
 import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
 import ScheduleFormTimePicker from "./ScheduleFormTimePicker";
+import { convertDateToIso } from "@/lib/utils/date";
+import ScheduleFormSelect from "./ScheduleFormSelect";
 
 type ScheduleDrawerType = {
   openDrawer: boolean;
@@ -30,6 +32,7 @@ const scheduleSchema = z.object({
   date: z.string().nonempty("Date is required"),
   start: z.string().nonempty("Start time is required"),
   end: z.string().nonempty("End time is required"),
+  type: z.string().nonempty("Event type is required"),
   modality: z.string().nonempty("Modality is required"),
   link: z.string().optional(),
   address: z.string().optional(),
@@ -48,6 +51,7 @@ const initialValues: ScheduleFormInputs = {
   date: "",
   start: "",
   end: "",
+  type: "",
   modality: "remote",
   link: "",
   address: "",
@@ -79,15 +83,14 @@ export default function ScheduleForm({
 
   useEffect(() => {
     if (selectedSlot) {
-      const isoString =
-        selectedSlot.start instanceof Date
-          ? selectedSlot.start.toISOString()
-          : selectedSlot.start;
+      const startIsoString = convertDateToIso(selectedSlot.start);
+      const endIsoString = convertDateToIso(selectedSlot.end);
 
       reset({
         ...initialValues,
-        date: isoString,
-        start: isoString,
+        date: startIsoString,
+        start: startIsoString,
+        end: endIsoString,
       });
     }
   }, [selectedSlot, reset]);
@@ -124,7 +127,7 @@ export default function ScheduleForm({
         onSubmit={handleSubmit(onSubmit)}
         noValidate
         sx={{
-          mt: 2,
+          my: 2,
           height: "100%",
           display: "flex",
           flexDirection: "column",
@@ -135,20 +138,20 @@ export default function ScheduleForm({
           variant="h5"
           component="h1"
           gutterBottom
-          mb={3}
           fontWeight={500}
-          px={2}
+          px={2.5}
         >
           Create a new event
         </Typography>
         <Box
           sx={{
-            pl: 2,
-            pr: 1.5,
+            p: 2.5,
+            pr: 1.3,
+            pb: 0,
           }}
           className="thin-scrollbar"
         >
-          <Stack spacing={2.5}>
+          <Stack spacing={3}>
             {/* Title Field */}
             <Controller
               name="title"
@@ -184,7 +187,7 @@ export default function ScheduleForm({
               )}
             />
 
-            <Stack direction="row" spacing={2} maxWidth="500px">
+            <Stack direction="row" spacing={2} maxWidth="550px">
               {/* Date Field */}
               <Controller
                 name="date"
@@ -228,22 +231,41 @@ export default function ScheduleForm({
                 )}
               />
             </Stack>
+          </Stack>
 
-            <Divider />
+          <Divider sx={{ my: 4 }} />
 
-            <Controller
-              name="modality"
-              control={control}
-              render={({ field }) => (
-                <ScheduleFormRadioGroup
-                  field={field}
-                  label="Modality:"
-                  error={!!errors.modality}
-                  errorMessage={errors.modality?.message}
-                  radioItems={modalityOptions}
-                />
-              )}
-            />
+          <Stack spacing={2.5}>
+            <Stack direction="row" spacing={2}>
+              {/* Type Field */}
+              <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormSelect
+                    field={field}
+                    label="Type"
+                    error={!!errors.title}
+                    errorMessage={errors.title?.message}
+                  />
+                )}
+              />
+
+              {/* Modality Field */}
+              <Controller
+                name="modality"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormRadioGroup
+                    field={field}
+                    label="Modality:"
+                    error={!!errors.modality}
+                    errorMessage={errors.modality?.message}
+                    radioItems={modalityOptions}
+                  />
+                )}
+              />
+            </Stack>
 
             {/* Link / Address Field */}
             {modality === "remote" ? (
@@ -274,24 +296,23 @@ export default function ScheduleForm({
               />
             )}
           </Stack>
-
-          <Stack direction="row" spacing={2} width="100%" mt={3}>
-            {/* Cancel Button */}
-            <ScheduleFormButtons
-              type="button"
-              variant="outlined"
-              isLoading={isSubmitting}
-              onClick={handleCancel}
-            >
-              Cancel
-            </ScheduleFormButtons>
-
-            {/* Save Button */}
-            <ScheduleFormButtons type="submit" isLoading={isSubmitting}>
-              Save
-            </ScheduleFormButtons>
-          </Stack>
         </Box>
+        <Stack direction="row" spacing={2} width="100%" px={2.5}>
+          {/* Cancel Button */}
+          <ScheduleFormButtons
+            type="button"
+            variant="outlined"
+            isLoading={isSubmitting}
+            onClick={handleCancel}
+          >
+            Cancel
+          </ScheduleFormButtons>
+
+          {/* Save Button */}
+          <ScheduleFormButtons type="submit" isLoading={isSubmitting}>
+            Save
+          </ScheduleFormButtons>
+        </Stack>
       </Box>
     </Drawer>
   );
