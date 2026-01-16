@@ -62,6 +62,7 @@ const theme = createTheme({
     secondary: {
       main: "#ff4001",
       light: "#ff6c40",
+      extraLight: "#fff7ed",
       dark: "#bd2e00",
     },
     success: {
