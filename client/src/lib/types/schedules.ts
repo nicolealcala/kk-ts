@@ -1,4 +1,4 @@
-type ScheduleType = "interview" | "assessment" | "task";
+export type ScheduleType = "interview" | "assessment" | "task" | "other";
 export type Modality = "remote" | "onsite";
 
 interface BaseSchedule {
@@ -10,12 +10,12 @@ interface BaseSchedule {
   end: string;
 }
 
-interface RemoteSchedule extends BaseSchedule {
+export interface RemoteSchedule extends BaseSchedule {
   modality: "remote";
   link: string;
 }
 
-interface OnsiteSchedule extends BaseSchedule {
+export interface OnsiteSchedule extends BaseSchedule {
   modality: "onsite";
   address?: string;
 }
