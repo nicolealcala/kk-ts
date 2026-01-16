@@ -10,8 +10,9 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import { schedules } from "@/lib/mock-data/schedules";
 import Tooltip from "@mui/material/Tooltip";
+import ScheduleChip from "../shared/ScheduleChip";
 
-export default function EventsPanel() {
+export default function TodayPanel() {
   const todaysEvents = schedules.filter((event) => {
     const localStart = DateTime.fromISO(event.start, { zone: "utc" }).toLocal();
 
@@ -131,8 +132,11 @@ export default function EventsPanel() {
                       color: "#505050",
                       fontSize: "14px",
                       backgroundColor: "transparent",
+                      marginBottom: "12px",
                     }}
                   />
+
+                  <ScheduleChip label={event.type} />
                 </AccordionDetails>
               </Accordion>
             );
