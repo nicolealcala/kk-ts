@@ -1,52 +1,39 @@
-import {
-  Calendar,
-  luxonLocalizer,
-  Views,
-  type SlotInfo,
-  type View,
-} from "react-big-calendar";
+import { Calendar, luxonLocalizer, Views, type View } from "react-big-calendar";
 import { DateTime } from "luxon";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "@/styles/schedules.scss";
 import { useMemo, useState, type SetStateAction } from "react";
-import { schedules } from "@/lib/mock-data/schedules";
 import React from "react";
-import CustomToolbar, {
-  type CalendarEvent,
-  type CustomToolbarProps,
-} from "./CalendarToolbar";
+import CustomToolbar, { type CustomToolbarProps } from "./CalendarToolbar";
+import type { OpenDrawerValues, CalendarEvent } from "@/pages/Schedules";
 
 const localizer = luxonLocalizer(DateTime);
 
-const events: CalendarEvent[] = schedules.map((s) => ({
-  ...s,
-  start: DateTime.fromISO(s.start).toJSDate(),
-  end: DateTime.fromISO(s.end).toJSDate(),
-})) as CalendarEvent[];
-
 type ScheduleCalendar = {
-  setOpenDrawer: React.Dispatch<SetStateAction<boolean>>;
-  setSelectedSlot: React.Dispatch<React.SetStateAction<SlotInfo | null>>;
+  events: CalendarEvent[];
+  setOpenDrawer: React.Dispatch<SetStateAction<OpenDrawerValues>>;
+  setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
 };
 
-export default function ScheduleCalendar({
+function ScheduleCalendar({
+  events,
   setOpenDrawer,
-}: //setSelectedSlot,
-ScheduleCalendar) {
+  setSelectedEvent,
+}: ScheduleCalendar) {
   const [view, setView] = useState<View>(Views.WEEK);
   const [date, setDate] = useState(new Date());
 
-  // const handleSelectSlot = (slotProps: SlotInfo) => {
-  //   console.log(slotProps);
-  //   setOpenDrawer(true);
-  //   setSelectedSlot(slotProps);
-  // };
+  const handleSelectEvent = (event: CalendarEvent) => {
+    console.log(event);
+    setOpenDrawer("update");
+    setSelectedEvent(event);
+  };
 
   const { components } = useMemo(
     () => ({
       components: {
         toolbar: (props: CustomToolbarProps) => (
-          <CustomToolbar {...props} onAdd={() => setOpenDrawer(true)} />
+          <CustomToolbar {...props} onAdd={() => setOpenDrawer("create")} />
         ),
       },
     }),
@@ -55,8 +42,6 @@ ScheduleCalendar) {
 
   return (
     <Calendar<CalendarEvent>
-      //selectable
-      //onSelectSlot={handleSelectSlot}
       localizer={localizer}
       events={events}
       //For calendar display options
@@ -69,10 +54,12 @@ ScheduleCalendar) {
       onNavigate={(date) => {
         setDate(new Date(date));
       }}
-      onSelectEvent={(e) => console.log(e)}
+      onSelectEvent={handleSelectEvent}
       // startAccessor="start"
       // endAccessor="end"
       components={components}
     />
   );
 }
+
+export default React.memo(ScheduleCalendar);
