@@ -19,11 +19,8 @@ import { convertDateToIso } from "@/lib/utils/date";
 import ScheduleFormSelect from "./ScheduleFormSelect";
 import type { CalendarEvent } from "@/pages/Schedules";
 import type { OpenDrawerValues } from "@/pages/Schedules";
-//import { v4 as uuidv4 } from "uuid";
 import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateSchedule } from "@/lib/utils/api/schedules";
-//import { DateTime } from "luxon";
+import { useSchedules } from "@/lib/utils/hooks/useSchedules";
 
 type ScheduleDrawerType = {
   //setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
@@ -81,7 +78,7 @@ function ScheduleForm({
     resolver: zodResolver(scheduleSchema),
     mode: "onChange",
     reValidateMode: "onChange",
-    //defaultValues: initialValues,
+    defaultValues: initialValues,
   });
 
   const modality = useWatch({
@@ -111,111 +108,19 @@ function ScheduleForm({
 
   const currentLocalDate = new Date().toLocaleDateString();
 
-  // async function addNewSchedule() {
-  //   const response = await fetch(
-  //     `${import.meta.env.VITE_BASE_URL}/api/schedules?date=${currentLocalDate}`,
-  //     { method: "POST", body: JSON.stringify(formData) }
-  //   );
-
-  //   if (!response.ok) throw new Error("Failed to add new schedule");
-
-  //   return await response.json();
-  // }
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: (data: ScheduleFormInputs) =>
-      updateSchedule(data, selectedEvent?.id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["schedules", currentLocalDate],
-      });
-      setOpenDrawer(null);
-    },
-  });
+  const { saveSchedule } = useSchedules(currentLocalDate);
   async function onSubmit(formData: ScheduleFormInputs) {
     console.log("Start: ", formData.start, "End: ", formData.end);
-    mutation.mutate(formData);
-    // setEvents((prev) => {
-    //   const selectedEventIndex = prev.findIndex(
-    //     (e) => e.id === selectedEvent?.id
-    //   );
-
-    //   if (selectedEventIndex === -1) {
-    //     const newEvent: CalendarEvent = {
-    //       id: uuidv4(),
-    //       ...formData,
-    //       start: new Date(formData.start),
-    //       end: new Date(formData.end),
-    //     } as CalendarEvent;
-
-    //     return [...prev, newEvent];
-    //   }
-
-    //   const updatedEvents = [...prev];
-
-    //   updatedEvents[selectedEventIndex] = {
-    //     ...prev[selectedEventIndex],
-    //     ...formData,
-    //     start: new Date(formData.start),
-    //     end: new Date(formData.end),
-    //   } as CalendarEvent;
-
-    //   return updatedEvents;
-    // });
-    setOpenDrawer(null);
-    reset(initialValues);
+    saveSchedule(
+      { data: formData, id: selectedEvent?.id },
+      {
+        onSuccess: () => {
+          setOpenDrawer(null);
+          reset();
+        },
+      }
+    );
   }
-
-  // async function onSubmit(formData: ScheduleFormInputs) {
-  //   try {
-  //     // 1. PREPARE API PAYLOAD (Convert Local -> UTC String)
-  //     const apiPayload = {
-  //       ...formData,
-  //       // Luxon handles the timezone math automatically
-  //       start: DateTime.fromISO(formData.start).toUTC().toISO(),
-  //       end: DateTime.fromISO(formData.end).toUTC().toISO(),
-  //     };
-
-  //     // 2. SAVE TO DATABASE
-  //     const url = selectedEvent?.id
-  //       ? `/api/events/${selectedEvent.id}`
-  //       : "/api/events";
-  //     const method = selectedEvent?.id ? "PUT" : "POST";
-
-  //     const response = await fetch(url, {
-  //       method,
-  //       body: JSON.stringify(apiPayload),
-  //       headers: { "Content-Type": "application/json" },
-  //     });
-
-  //     if (!response.ok) throw new Error("Save failed");
-  //     const savedEvent = await response.json(); // Data from DB (with UTC dates and ID)
-
-  //     // 3. UPDATE LOCAL STATE (Convert UTC String -> Local JS Date)
-  //     setEvents((prev) => {
-  //       // Create the Calendar-friendly version of the saved event
-  //       const calendarFriendlyEvent: CalendarEvent = {
-  //         ...savedEvent,
-  //         start: DateTime.fromISO(savedEvent.start).toJSDate(),
-  //         end: DateTime.fromISO(savedEvent.end).toJSDate(),
-  //       };
-
-  //       const index = prev.findIndex((e) => e.id === selectedEvent?.id);
-
-  //       if (index === -1) {
-  //         return [...prev, calendarFriendlyEvent];
-  //       }
-
-  //       return prev.map((e, i) => (i === index ? calendarFriendlyEvent : e));
-  //     });
-
-  //     setOpenDrawer(null);
-  //     reset(initialValues);
-  //   } catch (error) {
-  //     console.error("Submission error:", error);
-  //     // Add toast notification or error handling here
-  //   }
-  // }
 
   function handleCancel() {
     reset(initialValues);

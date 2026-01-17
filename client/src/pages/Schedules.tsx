@@ -4,14 +4,9 @@ import ScheduleForm from "@/components/schedules/ScheduleForm";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useState } from "react";
-import { DateTime } from "luxon";
-import type {
-  OnsiteSchedule,
-  RemoteSchedule,
-  Schedule,
-} from "@/lib/types/schedules";
-import { useQuery } from "@tanstack/react-query";
+import type { OnsiteSchedule, RemoteSchedule } from "@/lib/types/schedules";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
+import { useSchedules } from "@/lib/utils/hooks/useSchedules";
 
 export type OpenDrawerValues = "create" | "update" | null;
 
@@ -42,26 +37,7 @@ export default function SchedulesPage() {
 
   const currentLocalDate = new Date().toLocaleDateString();
 
-  async function fetchSchedules() {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/schedules?date=${currentLocalDate}`
-    );
-
-    if (!response.ok) throw new Error("Failed to fetch schedules");
-
-    const data = await response.json();
-
-    return data?.map((d: Schedule) => ({
-      ...d,
-      start: DateTime.fromISO(d.start).toJSDate(),
-      end: DateTime.fromISO(d.end).toJSDate(),
-    })) as CalendarEvent[];
-  }
-
-  const { isLoading, data, error } = useQuery({
-    queryKey: [`schedules`, currentLocalDate],
-    queryFn: fetchSchedules,
-  });
+  const { schedules, isLoading, error } = useSchedules(currentLocalDate);
 
   if (isLoading) return <SchedulesSkeleton />;
 
@@ -83,7 +59,7 @@ export default function SchedulesPage() {
           width: "20%",
         }}
       >
-        <TodayPanel events={data || []} />
+        <TodayPanel events={schedules || []} />
       </Box>
       <Box
         sx={{
@@ -94,7 +70,7 @@ export default function SchedulesPage() {
         }}
       >
         <ScheduleCalendar
-          events={data || []}
+          events={schedules || []}
           setOpenDrawer={setOpenDrawer}
           setSelectedEvent={setSelectedEvent}
         />
