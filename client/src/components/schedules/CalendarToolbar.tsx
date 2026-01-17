@@ -1,4 +1,3 @@
-import type { OnsiteSchedule, RemoteSchedule } from "@/lib/types/schedules";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { DateTime } from "luxon";
@@ -9,27 +8,38 @@ import Typography from "@mui/material/Typography";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import type { ButtonGroupProps } from "@mui/material/ButtonGroup";
 import ButtonGroup from "@mui/material/ButtonGroup";
+import type { CalendarEvent } from "@/pages/Schedules";
+import React from "react";
 
-// 1. Define the Date-converted versions of your specific schedules
-type RemoteCalendarEvent = Omit<RemoteSchedule, "start" | "end"> & {
-  start: Date;
-  end: Date;
-};
+function StyledButtonGroup({ children, sx, ...rest }: ButtonGroupProps) {
+  return (
+    <ButtonGroup
+      variant="outlined"
+      {...rest}
+      sx={{
+        "& .MuiButton-outlined": {
+          color: "text.secondary",
+          borderColor: "divider",
+          textTransform: "none",
+          "&:hover": {
+            borderColor: "divider",
+            backgroundColor: "action.hover",
+          },
+          "&:active": {
+            backgroundColor: "action.selected",
+          },
+        },
+        ...sx,
+      }}
+    >
+      {children}
+    </ButtonGroup>
+  );
+}
 
-type OnsiteCalendarEvent = Omit<OnsiteSchedule, "start" | "end"> & {
-  start: Date;
-  end: Date;
-};
-
-// 2. Create the Union
-export type CalendarEvent = RemoteCalendarEvent | OnsiteCalendarEvent;
-
-// 3. Define Toolbar Props
 export type CustomToolbarProps = ToolbarProps<CalendarEvent, object>;
 
-export default function CustomToolbar(
-  toolbar: CustomToolbarProps & { onAdd: () => void }
-) {
+function CustomToolbar(toolbar: CustomToolbarProps & { onAdd: () => void }) {
   const viewOptions = [
     { id: Views.MONTH, label: "Month" },
     { id: Views.WEEK, label: "Week" },
@@ -112,28 +122,4 @@ export default function CustomToolbar(
   );
 }
 
-function StyledButtonGroup({ children, sx, ...rest }: ButtonGroupProps) {
-  return (
-    <ButtonGroup
-      variant="outlined"
-      {...rest}
-      sx={{
-        "& .MuiButton-outlined": {
-          color: "text.secondary",
-          borderColor: "divider",
-          textTransform: "none",
-          "&:hover": {
-            borderColor: "divider",
-            backgroundColor: "action.hover",
-          },
-          "&:active": {
-            backgroundColor: "action.selected",
-          },
-        },
-        ...sx,
-      }}
-    >
-      {children}
-    </ButtonGroup>
-  );
-}
+export default React.memo(CustomToolbar);
