@@ -9,7 +9,7 @@ import type { OpenDrawerValues, CalendarEvent } from "@/pages/Schedules";
 
 const localizer = luxonLocalizer(DateTime);
 
-type ScheduleCalendar = {
+type ScheduleCalendarProps = {
   events: CalendarEvent[];
   setOpenDrawer: React.Dispatch<SetStateAction<OpenDrawerValues>>;
   setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
@@ -19,7 +19,7 @@ function ScheduleCalendar({
   events,
   setOpenDrawer,
   setSelectedEvent,
-}: ScheduleCalendar) {
+}: ScheduleCalendarProps) {
   const [view, setView] = useState<View>(Views.WEEK);
   const [date, setDate] = useState(new Date());
 
@@ -37,7 +37,7 @@ function ScheduleCalendar({
         ),
       },
     }),
-    [setOpenDrawer]
+    [setOpenDrawer],
   );
 
   return (
@@ -55,8 +55,6 @@ function ScheduleCalendar({
         setDate(new Date(date));
       }}
       onSelectEvent={handleSelectEvent}
-      // startAccessor="start"
-      // endAccessor="end"
       components={components}
     />
   );

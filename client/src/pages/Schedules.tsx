@@ -4,35 +4,21 @@ import ScheduleForm from "@/components/schedules/ScheduleForm";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import { useState } from "react";
-import type { OnsiteSchedule, RemoteSchedule } from "@/lib/types/schedules";
+import type { Schedule } from "@/lib/types/schedules";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
 import { useSchedules } from "@/lib/utils/hooks/useSchedules";
 
 export type OpenDrawerValues = "create" | "update" | null;
 
-type RemoteCalendarEvent = Omit<RemoteSchedule, "start" | "end"> & {
+// Change type of Schedule's start and end time because Calendar only accepts JS Date
+export type CalendarEvent = Omit<Schedule, "start" | "end"> & {
   start: Date;
   end: Date;
 };
-
-type OnsiteCalendarEvent = Omit<OnsiteSchedule, "start" | "end"> & {
-  start: Date;
-  end: Date;
-};
-
-export type CalendarEvent = RemoteCalendarEvent | OnsiteCalendarEvent;
-
-// const calendarEvents: CalendarEvent[] = schedules.map((s) => ({
-//   ...s,
-//   start: DateTime.fromISO(s.start).toJSDate(),
-//   end: DateTime.fromISO(s.end).toJSDate(),
-// })) as CalendarEvent[];
-
 export default function SchedulesPage() {
-  //const [events, setEvents] = useState(calendarEvents);
   const [openDrawer, setOpenDrawer] = useState<OpenDrawerValues>(null);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-    null
+    null,
   );
 
   const currentLocalDate = new Date().toLocaleDateString();
@@ -77,7 +63,6 @@ export default function SchedulesPage() {
       </Box>
 
       <ScheduleForm
-        // setEvents={setEvents} // TO DO: Pass mutate function
         openDrawer={openDrawer}
         setOpenDrawer={setOpenDrawer}
         selectedEvent={selectedEvent}
