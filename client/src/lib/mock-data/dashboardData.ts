@@ -1,4 +1,4 @@
-import schedulesData from "./schedules";
+import schedulesData from "./schedulesData";
 
 export const contextData = {
   year: "2026",
