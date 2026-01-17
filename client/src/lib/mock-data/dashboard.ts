@@ -1,4 +1,4 @@
-import { schedules } from "./schedules";
+import schedulesData from "./schedules";
 
 export const contextData = {
   year: "2026",
@@ -77,5 +77,5 @@ export const dashboardData = {
   kpis: { ...kpiChartsData },
   volumeTrend: [...appplicationsVolumeData],
   applicationStatus: [...applicationStatusData],
-  weeklySchedule: [...schedules],
+  weeklySchedule: [...schedulesData],
 };

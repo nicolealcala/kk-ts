@@ -1,6 +1,6 @@
 import type { Schedule } from "../types/schedules";
 
-export const schedules: Schedule[] = [
+const schedulesData: Schedule[] = [
   {
     id: "1",
     title: "Technical Interview - Frontend lorem ipsum",
@@ -45,3 +45,5 @@ export const schedules: Schedule[] = [
     address: "Greenbelt 5, Corporate Center",
   },
 ];
+
+export default schedulesData;
