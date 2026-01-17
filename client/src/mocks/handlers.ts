@@ -1,5 +1,5 @@
-import { contextData, dashboardData } from "@/lib/mock-data/dashboardData";
-import schedulesData from "@/lib/mock-data/schedulesData";
+import { contextData, dashboardData } from "@/mocks/data/dashboardData";
+import schedulesData from "@/mocks/data/schedulesData";
 import type { Schedule } from "@/lib/types/schedules";
 import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
