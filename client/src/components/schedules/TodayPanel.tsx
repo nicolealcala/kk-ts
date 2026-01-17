@@ -14,6 +14,7 @@ import React from "react";
 import type { CalendarEvent } from "@/pages/Schedules";
 
 function TodayPanel({ events }: { events: CalendarEvent[] }) {
+  //Localize event time because this component does not make use of localizer
   const todaysEvents = events.filter((event) => {
     const localStart = DateTime.fromJSDate(event.start, {
       zone: "utc",
@@ -34,9 +35,9 @@ function TodayPanel({ events }: { events: CalendarEvent[] }) {
         height: "fit-content",
         maxHeight: "100%",
       }}
-      spacing={1}
+      spacing={0}
     >
-      <Typography variant="h6" p={2} pb={0}>
+      <Typography variant="h6" p={2} pb={1}>
         Today
       </Typography>
       <Divider variant="middle" />
@@ -45,7 +46,7 @@ function TodayPanel({ events }: { events: CalendarEvent[] }) {
         <Typography
           variant="body2"
           p={2}
-          pt={1}
+          pb={2.5}
           fontStyle="italic"
           color="textSecondary"
         >
@@ -130,7 +131,7 @@ function TodayPanel({ events }: { events: CalendarEvent[] }) {
                   }}
                 >
                   <MarkdownPreview
-                    source={event.description || "No description provided"}
+                    source={event.description || ""}
                     style={{
                       color: "#505050",
                       fontSize: "14px",
