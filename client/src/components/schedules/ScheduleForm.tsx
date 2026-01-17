@@ -13,17 +13,24 @@ import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
 import { useEffect } from "react";
 import Divider from "@mui/material/Divider";
-import type { SlotInfo } from "react-big-calendar";
 import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
 import ScheduleFormTimePicker from "./ScheduleFormTimePicker";
 import { convertDateToIso } from "@/lib/utils/date";
 import ScheduleFormSelect from "./ScheduleFormSelect";
+import type { CalendarEvent } from "@/pages/Schedules";
+import type { OpenDrawerValues } from "@/pages/Schedules";
+//import { v4 as uuidv4 } from "uuid";
+import React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateSchedule } from "@/lib/utils/api/schedules";
+//import { DateTime } from "luxon";
 
 type ScheduleDrawerType = {
-  openDrawer: boolean;
-  setOpenDrawer: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedSlot: SlotInfo | null;
-  setSelectedSlot: React.Dispatch<React.SetStateAction<SlotInfo | null>>;
+  //setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
+  openDrawer: OpenDrawerValues;
+  setOpenDrawer: React.Dispatch<React.SetStateAction<OpenDrawerValues>>;
+  selectedEvent: CalendarEvent | null;
+  setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
 };
 
 const scheduleSchema = z.object({
@@ -32,8 +39,8 @@ const scheduleSchema = z.object({
   date: z.string().nonempty("Date is required"),
   start: z.string().nonempty("Start time is required"),
   end: z.string().nonempty("End time is required"),
-  type: z.string().nonempty("Event type is required"),
-  modality: z.string().nonempty("Modality is required"),
+  type: z.enum(["interview", "assessment", "task", "other"]),
+  modality: z.enum(["onsite", "remote"]),
   link: z.string().optional(),
   address: z.string().optional(),
 });
@@ -51,17 +58,18 @@ const initialValues: ScheduleFormInputs = {
   date: "",
   start: "",
   end: "",
-  type: "",
+  type: "interview",
   modality: "remote",
   link: "",
   address: "",
 };
 
-export default function ScheduleForm({
+function ScheduleForm({
+  // setEvents,
   openDrawer,
   setOpenDrawer,
-  selectedSlot,
-  setSelectedSlot,
+  selectedEvent,
+  setSelectedEvent,
 }: ScheduleDrawerType) {
   const {
     reset,
@@ -73,7 +81,7 @@ export default function ScheduleForm({
     resolver: zodResolver(scheduleSchema),
     mode: "onChange",
     reValidateMode: "onChange",
-    defaultValues: initialValues,
+    //defaultValues: initialValues,
   });
 
   const modality = useWatch({
@@ -82,43 +90,148 @@ export default function ScheduleForm({
   });
 
   useEffect(() => {
-    if (selectedSlot) {
-      const startIsoString = convertDateToIso(selectedSlot.start);
-      const endIsoString = convertDateToIso(selectedSlot.end);
+    if (selectedEvent) {
+      const startIsoString = convertDateToIso(selectedEvent.start);
+      const endIsoString = convertDateToIso(selectedEvent.end);
 
       reset({
         ...initialValues,
+        ...selectedEvent,
         date: startIsoString,
         start: startIsoString,
         end: endIsoString,
-      });
+      } as ScheduleFormInputs);
     }
-  }, [selectedSlot, reset]);
+  }, [selectedEvent, reset]);
 
   useEffect(() => {
     if (modality === "remote") resetField("address");
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  function onSubmit(formData: ScheduleFormInputs) {
-    console.log(formData);
+  const currentLocalDate = new Date().toLocaleDateString();
+
+  // async function addNewSchedule() {
+  //   const response = await fetch(
+  //     `${import.meta.env.VITE_BASE_URL}/api/schedules?date=${currentLocalDate}`,
+  //     { method: "POST", body: JSON.stringify(formData) }
+  //   );
+
+  //   if (!response.ok) throw new Error("Failed to add new schedule");
+
+  //   return await response.json();
+  // }
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (data: ScheduleFormInputs) =>
+      updateSchedule(data, selectedEvent?.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["schedules", currentLocalDate],
+      });
+      setOpenDrawer(null);
+    },
+  });
+  async function onSubmit(formData: ScheduleFormInputs) {
+    console.log("Start: ", formData.start, "End: ", formData.end);
+    mutation.mutate(formData);
+    // setEvents((prev) => {
+    //   const selectedEventIndex = prev.findIndex(
+    //     (e) => e.id === selectedEvent?.id
+    //   );
+
+    //   if (selectedEventIndex === -1) {
+    //     const newEvent: CalendarEvent = {
+    //       id: uuidv4(),
+    //       ...formData,
+    //       start: new Date(formData.start),
+    //       end: new Date(formData.end),
+    //     } as CalendarEvent;
+
+    //     return [...prev, newEvent];
+    //   }
+
+    //   const updatedEvents = [...prev];
+
+    //   updatedEvents[selectedEventIndex] = {
+    //     ...prev[selectedEventIndex],
+    //     ...formData,
+    //     start: new Date(formData.start),
+    //     end: new Date(formData.end),
+    //   } as CalendarEvent;
+
+    //   return updatedEvents;
+    // });
+    setOpenDrawer(null);
+    reset(initialValues);
   }
+
+  // async function onSubmit(formData: ScheduleFormInputs) {
+  //   try {
+  //     // 1. PREPARE API PAYLOAD (Convert Local -> UTC String)
+  //     const apiPayload = {
+  //       ...formData,
+  //       // Luxon handles the timezone math automatically
+  //       start: DateTime.fromISO(formData.start).toUTC().toISO(),
+  //       end: DateTime.fromISO(formData.end).toUTC().toISO(),
+  //     };
+
+  //     // 2. SAVE TO DATABASE
+  //     const url = selectedEvent?.id
+  //       ? `/api/events/${selectedEvent.id}`
+  //       : "/api/events";
+  //     const method = selectedEvent?.id ? "PUT" : "POST";
+
+  //     const response = await fetch(url, {
+  //       method,
+  //       body: JSON.stringify(apiPayload),
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+
+  //     if (!response.ok) throw new Error("Save failed");
+  //     const savedEvent = await response.json(); // Data from DB (with UTC dates and ID)
+
+  //     // 3. UPDATE LOCAL STATE (Convert UTC String -> Local JS Date)
+  //     setEvents((prev) => {
+  //       // Create the Calendar-friendly version of the saved event
+  //       const calendarFriendlyEvent: CalendarEvent = {
+  //         ...savedEvent,
+  //         start: DateTime.fromISO(savedEvent.start).toJSDate(),
+  //         end: DateTime.fromISO(savedEvent.end).toJSDate(),
+  //       };
+
+  //       const index = prev.findIndex((e) => e.id === selectedEvent?.id);
+
+  //       if (index === -1) {
+  //         return [...prev, calendarFriendlyEvent];
+  //       }
+
+  //       return prev.map((e, i) => (i === index ? calendarFriendlyEvent : e));
+  //     });
+
+  //     setOpenDrawer(null);
+  //     reset(initialValues);
+  //   } catch (error) {
+  //     console.error("Submission error:", error);
+  //     // Add toast notification or error handling here
+  //   }
+  // }
 
   function handleCancel() {
     reset(initialValues);
-    setSelectedSlot(null);
-    setOpenDrawer(false);
+    setSelectedEvent(null);
+    setOpenDrawer(null);
   }
 
-  const startTimeValue = useWatch({
+  const selectedDate = useWatch({
     control,
-    name: "start",
+    name: "date",
   });
 
   return (
     <Drawer
-      open={openDrawer}
-      onClose={() => setOpenDrawer(false)}
+      open={!!openDrawer}
+      onClose={() => setOpenDrawer(null)}
       anchor="right"
     >
       <DrawerHeader />
@@ -141,7 +254,7 @@ export default function ScheduleForm({
           fontWeight={500}
           px={2.5}
         >
-          Create a new event
+          {openDrawer === "create" ? "Create a new event" : "Update event"}
         </Typography>
         <Box
           sx={{
@@ -187,7 +300,7 @@ export default function ScheduleForm({
               )}
             />
 
-            <Stack direction="row" spacing={2} maxWidth="550px">
+            <Stack direction="row" spacing={2} maxWidth="500px">
               {/* Date Field */}
               <Controller
                 name="date"
@@ -212,6 +325,7 @@ export default function ScheduleForm({
                     error={!!errors.start}
                     errorMessage={errors.start?.message}
                     label="Start Time"
+                    baseDate={selectedDate}
                   />
                 )}
               />
@@ -226,7 +340,7 @@ export default function ScheduleForm({
                     error={!!errors.end}
                     errorMessage={errors.end?.message}
                     label="End Time"
-                    baseDate={startTimeValue}
+                    baseDate={selectedDate}
                   />
                 )}
               />
@@ -317,3 +431,5 @@ export default function ScheduleForm({
     </Drawer>
   );
 }
+
+export default React.memo(ScheduleForm);
