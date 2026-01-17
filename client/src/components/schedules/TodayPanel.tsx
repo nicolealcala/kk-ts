@@ -8,13 +8,16 @@ import { DateTime } from "luxon";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
-import { schedules } from "@/lib/mock-data/schedules";
 import Tooltip from "@mui/material/Tooltip";
 import ScheduleChip from "../shared/ScheduleChip";
+import React from "react";
+import type { CalendarEvent } from "@/pages/Schedules";
 
-export default function TodayPanel() {
-  const todaysEvents = schedules.filter((event) => {
-    const localStart = DateTime.fromISO(event.start, { zone: "utc" }).toLocal();
+function TodayPanel({ events }: { events: CalendarEvent[] }) {
+  const todaysEvents = events.filter((event) => {
+    const localStart = DateTime.fromJSDate(event.start, {
+      zone: "utc",
+    }).toLocal();
 
     return localStart.hasSame(DateTime.local(), "day");
   });
@@ -57,7 +60,7 @@ export default function TodayPanel() {
           className="thin-scrollbar"
         >
           {todaysEvents.map((event, index) => {
-            const localStart = DateTime.fromISO(event.start, {
+            const localStart = DateTime.fromJSDate(event.start, {
               zone: "utc",
             }).setZone("local");
             const startHour = localStart.toFormat("hh:mm a");
@@ -146,3 +149,5 @@ export default function TodayPanel() {
     </Stack>
   );
 }
+
+export default React.memo(TodayPanel);
