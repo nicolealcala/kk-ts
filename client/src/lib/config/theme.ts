@@ -1,16 +1,25 @@
+/**
+ * This file contains custom theme configurations for MUI Library.
+ * The exported theme is provided on the flobal theme provider.
+ *
+ */
 import { createTheme } from "@mui/material/styles";
 import "@mui/material/styles";
 
 declare module "@mui/material/styles" {
+  //Add additional palette options (merged with base)
   interface PaletteOptions {
     slate: PaletteColor;
     violet: PaletteColor;
   }
+
+  //Add additional palette option properties
   interface PaletteColor {
-    extraLight?: string; // Add your custom property here
+    extraLight?: string;
   }
+  
   interface SimplePaletteColorOptions {
-    extraLight?: string; // Add to options as well
+    extraLight?: string;
   }
 }
 const theme = createTheme({
