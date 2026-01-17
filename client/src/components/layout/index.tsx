@@ -5,7 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { Outlet, useNavigate } from "react-router";
 import Header from "./Header";
 import Sidebar, { DrawerHeader } from "./Sidebar";
-import { supabase } from "@/lib/config/supabaseClient";
+import supabase from "@/lib/config/supabaseClient";
 import Loader from "../shared/Loader";
 export default function RootLayout() {
   const [open, setOpen] = React.useState(false);
