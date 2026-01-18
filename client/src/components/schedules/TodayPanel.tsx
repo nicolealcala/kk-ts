@@ -11,14 +11,12 @@ import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
 import ScheduleChip from "../shared/ScheduleChip";
 import React from "react";
-import type { CalendarEvent } from "@/pages/Schedules";
+import type { Schedule } from "@/lib/types/schedules";
 
-function TodayPanel({ events }: { events: CalendarEvent[] }) {
+function TodayPanel({ events }: { events: Schedule[] }) {
   //Localize event time because this component does not make use of localizer
   const todaysEvents = events.filter((event) => {
-    const localStart = DateTime.fromJSDate(event.start, {
-      zone: "utc",
-    }).toLocal();
+    const localStart = DateTime.fromISO(event.start);
 
     return localStart.hasSame(DateTime.local(), "day");
   });
@@ -61,9 +59,7 @@ function TodayPanel({ events }: { events: CalendarEvent[] }) {
           className="thin-scrollbar"
         >
           {todaysEvents.map((event, index) => {
-            const localStart = DateTime.fromJSDate(event.start, {
-              zone: "utc",
-            }).setZone("local");
+            const localStart = DateTime.fromISO(event.start);
             const startHour = localStart.toFormat("hh:mm a");
 
             return (
@@ -73,17 +69,18 @@ function TodayPanel({ events }: { events: CalendarEvent[] }) {
                   boxShadow: "none",
                   borderTop: "1px solid #ddd",
                   "&:first-of-type": {
-                    borderTop: "none", // no line above the first item
+                    borderTop: "none",
                   },
                   "&.Mui-disabled": {
                     bgcolor: "initial",
                   },
                   "& .MuiAccordionSummary-root.Mui-disabled": {
-                    opacity: 1, // keep summary text normal
+                    opacity: 1,
+                    pointerEvents: "auto",
                   },
                   "& .MuiAccordionSummary-root.Mui-disabled .MuiAccordionSummary-expandIconWrapper":
                     {
-                      color: "#DCDCDC", // only muted when disabled
+                      color: "#DCDCDC",
                     },
                   "& .MuiAccordionSummary-content.Mui-expanded": {
                     margin: 0, // prevent content shift
