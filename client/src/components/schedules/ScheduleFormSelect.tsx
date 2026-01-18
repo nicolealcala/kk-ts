@@ -20,11 +20,9 @@ const typeValues = [
   { label: "Other", value: "other" },
 ];
 
-function ScheduleFormSelect<TName extends FieldPath<ScheduleFormInputs>>({
-  field,
-  errorMessage,
-  ...props
-}: ScheduleFormTextFieldProps<TName>) {
+export default function ScheduleFormSelect<
+  TName extends FieldPath<ScheduleFormInputs>,
+>({ field, errorMessage, ...props }: ScheduleFormTextFieldProps<TName>) {
   return (
     <FormControl error={props?.error} fullWidth>
       <InputLabel id={`label-${field.name}`}>{props?.label}</InputLabel>
@@ -39,5 +37,3 @@ function ScheduleFormSelect<TName extends FieldPath<ScheduleFormInputs>>({
     </FormControl>
   );
 }
-
-export default React.memo(ScheduleFormSelect);

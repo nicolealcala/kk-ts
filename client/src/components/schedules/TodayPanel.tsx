@@ -1,3 +1,4 @@
+import React from "react";
 import Box from "@mui/material/Box";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -10,7 +11,6 @@ import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
 import ScheduleChip from "../shared/ScheduleChip";
-import React from "react";
 import type { Schedule } from "@/lib/types/schedules";
 import NoEventsIllustration from "../illustrations/NoEventsIllustration";
 

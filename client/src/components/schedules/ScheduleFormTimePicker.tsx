@@ -19,7 +19,9 @@ type ScheduleFormTimePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
     baseDate?: string;
   };
 
-function ScheduleFormTimePicker<TName extends FieldPath<ScheduleFormInputs>>({
+export default function ScheduleFormTimePicker<
+  TName extends FieldPath<ScheduleFormInputs>,
+>({
   field,
   errorMessage,
   error,
@@ -71,8 +73,6 @@ function ScheduleFormTimePicker<TName extends FieldPath<ScheduleFormInputs>>({
     </LocalizationProvider>
   );
 }
-
-export default React.memo(ScheduleFormTimePicker);
 
 type DependentTimePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<ScheduleFormTimePickerProps<TName>, "minTime"> & {

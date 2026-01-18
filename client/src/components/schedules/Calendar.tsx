@@ -15,7 +15,7 @@ type ScheduleCalendarProps = {
   setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
 };
 
-function ScheduleCalendar({
+export default function ScheduleCalendar({
   events,
   setOpenDrawer,
   setSelectedEvent,
@@ -67,5 +67,3 @@ function ScheduleCalendar({
     />
   );
 }
-
-export default React.memo(ScheduleCalendar);

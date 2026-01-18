@@ -1,12 +1,11 @@
-import { TextField, type TextFieldProps } from "@mui/material";
-import React from "react";
+import TextField, { type TextFieldProps } from "@mui/material/TextField";
 import type { UseFormRegisterReturn } from "react-hook-form";
 
 export type FormTextFieldProps = TextFieldProps & {
   registration?: UseFormRegisterReturn;
 };
 
-function FormTextField({
+export default function FormTextField({
   registration,
   error,
   type = "text",
@@ -25,4 +24,3 @@ function FormTextField({
     />
   );
 }
-export default React.memo(FormTextField);
