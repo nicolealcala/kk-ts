@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/contexts/AuthContext";
 import supabase from "@/lib/config/supabaseClient";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
-import { PasswordField } from "./PasswordField";
+import  PasswordField  from "./PasswordField";
 import FormTextField from "../shared/FormTextField";
 import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
 import loginSchema from "@/lib/forms/loginFormSchema";
