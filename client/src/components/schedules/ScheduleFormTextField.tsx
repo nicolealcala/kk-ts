@@ -1,6 +1,7 @@
 import TextField, { type TextFieldProps } from "@mui/material/TextField";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
-import type { ScheduleFormInputs } from "./ScheduleForm";
+import React from "react";
+import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 
 type ScheduleFormTextFieldProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<TextFieldProps, "name"> & {
@@ -8,9 +9,11 @@ type ScheduleFormTextFieldProps<TName extends FieldPath<ScheduleFormInputs>> =
     errorMessage?: string;
   };
 
-export default function ScheduleFormTextField<
-  TName extends FieldPath<ScheduleFormInputs>
->({ field, errorMessage, ...props }: ScheduleFormTextFieldProps<TName>) {
+function ScheduleFormTextField<TName extends FieldPath<ScheduleFormInputs>>({
+  field,
+  errorMessage,
+  ...props
+}: ScheduleFormTextFieldProps<TName>) {
   return (
     <TextField
       {...field}
@@ -18,11 +21,10 @@ export default function ScheduleFormTextField<
       fullWidth
       helperText={errorMessage}
       slotProps={{
-        // input: {
-        //   readOnly: true,
-        // },
         formHelperText: { sx: { mx: 0, ml: 0.5 } },
       }}
     />
   );
 }
+
+export default React.memo(ScheduleFormTextField);

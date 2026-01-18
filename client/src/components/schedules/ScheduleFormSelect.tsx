@@ -3,8 +3,9 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select, { type SelectProps } from "@mui/material/Select";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
-import type { ScheduleFormInputs } from "./ScheduleForm";
 import FormHelperText from "@mui/material/FormHelperText";
+import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
+import React from "react";
 
 type ScheduleFormTextFieldProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<SelectProps, "name"> & {
@@ -18,9 +19,12 @@ const typeValues = [
   { label: "Task", value: "task" },
   { label: "Other", value: "other" },
 ];
-export default function ScheduleFormSelect<
-  TName extends FieldPath<ScheduleFormInputs>
->({ field, errorMessage, ...props }: ScheduleFormTextFieldProps<TName>) {
+
+function ScheduleFormSelect<TName extends FieldPath<ScheduleFormInputs>>({
+  field,
+  errorMessage,
+  ...props
+}: ScheduleFormTextFieldProps<TName>) {
   return (
     <FormControl error={props?.error} fullWidth>
       <InputLabel id={`label-${field.name}`}>{props?.label}</InputLabel>
@@ -35,3 +39,5 @@ export default function ScheduleFormSelect<
     </FormControl>
   );
 }
+
+export default React.memo(ScheduleFormSelect);

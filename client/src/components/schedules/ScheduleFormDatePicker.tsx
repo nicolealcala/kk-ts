@@ -5,8 +5,9 @@ import {
   type DatePickerProps,
 } from "@mui/x-date-pickers/DatePicker";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
-import type { ScheduleFormInputs } from "./ScheduleForm";
 import { DateTime } from "luxon";
+import React from "react";
+import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 
 type ScheduleFormDatePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<DatePickerProps, "name"> & {
@@ -15,9 +16,7 @@ type ScheduleFormDatePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
     error: boolean;
   };
 
-export default function ScheduleFormDatePicker<
-  TName extends FieldPath<ScheduleFormInputs>
->({
+function ScheduleFormDatePicker<TName extends FieldPath<ScheduleFormInputs>>({
   field,
   errorMessage,
   error,
@@ -33,6 +32,7 @@ export default function ScheduleFormDatePicker<
         onChange={(newValue) => {
           field.onChange(newValue ? newValue.toISO() : "");
         }}
+        disablePast
         slotProps={{
           textField: {
             error: error,
@@ -45,3 +45,5 @@ export default function ScheduleFormDatePicker<
     </LocalizationProvider>
   );
 }
+
+export default React.memo(ScheduleFormDatePicker);
