@@ -1,3 +1,7 @@
+/**
+ * TO DO: Replace with Redux
+ */
+
 import { createContext, useContext } from "react";
 import { AuthError, type Session } from "@supabase/supabase-js";
 export type AuthMode = "login" | "signup" | null;

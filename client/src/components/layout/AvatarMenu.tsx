@@ -7,7 +7,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
-import { supabase } from "@/lib/config/supabaseClient";
+import  supabase  from "@/lib/config/supabaseClient";
 import { useNavigate } from "react-router";
 
 export default function AvatarMenu() {

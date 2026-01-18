@@ -1,18 +1,29 @@
+/**
+ * This file contains custom theme configurations for MUI Library.
+ * The exported theme is provided on the flobal theme provider.
+ *
+ */
 import { createTheme } from "@mui/material/styles";
 import "@mui/material/styles";
 
 declare module "@mui/material/styles" {
+  //Add additional palette options (merged with base)
   interface PaletteOptions {
     slate: PaletteColor;
+    violet: PaletteColor;
   }
+
+  //Add additional palette option properties
   interface PaletteColor {
-    extraLight?: string; // Add your custom property here
+    extraLight?: string;
   }
+  
   interface SimplePaletteColorOptions {
-    extraLight?: string; // Add to options as well
+    extraLight?: string;
   }
 }
 const theme = createTheme({
+  cssVariables: true,
   typography: {
     fontFamily: "'Figtree', sans-serif",
   },
@@ -40,16 +51,16 @@ const theme = createTheme({
         },
       },
     },
+    MuiPaper: {
+      styleOverrides: {
+        outlined: {
+          borderColor: "#EFEFEF",
+        },
+      },
+    },
   },
   palette: {
     mode: "light",
-    slate: {
-      main: "#62748e",
-      light: "#f1f5f9",
-      extraLight: "#f8fafc",
-      dark: "#506079",
-      contrastText: "#242105",
-    },
     primary: {
       main: "#7419ff",
       light: "#9d76ff",
@@ -60,6 +71,7 @@ const theme = createTheme({
     secondary: {
       main: "#ff4001",
       light: "#ff6c40",
+      extraLight: "#fff7ed",
       dark: "#bd2e00",
     },
     success: {
@@ -80,6 +92,20 @@ const theme = createTheme({
       main: "#fd9a00",
       light: "#ffba00",
       dark: "#bb4d00",
+    },
+    slate: {
+      main: "#62748e",
+      light: "#f1f5f9",
+      extraLight: "#f8fafc",
+      dark: "#506079",
+      contrastText: "#242105",
+    },
+    violet: {
+      main: "#a684ff",
+      light: "#c4b4ff",
+      extraLight: "#ddd6ff",
+      dark: "#8e51ff",
+      contrastText: "rgba(255,255,255,0.95)",
     },
   },
 });

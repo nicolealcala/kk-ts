@@ -104,13 +104,14 @@ export default function Sidebar({ open }: SidebarProps) {
                       px: 2.5,
                       py: 0,
                       justifyContent: open ? "initial" : "center",
-                      backgroundColor: isActive
-                        ? "primary.main"
-                        : "transparent",
+                      // backgroundColor: isActive
+                      //   ? "primary.main"
+                      //   : "transparent",
                       "&:hover": {
-                        backgroundColor: isActive
-                          ? "primary.dark"
-                          : "rgba(0,0,0,0.04)",
+                        backgroundColor: (theme) =>
+                          isActive
+                            ? `rgba(${theme.vars?.palette.primary.mainChannel} / 0.12)`
+                            : "rgba(0,0,0,0.04)",
                       },
                       borderRadius: 3,
                     }}
@@ -119,8 +120,8 @@ export default function Sidebar({ open }: SidebarProps) {
                       sx={{
                         minWidth: 0,
                         justifyContent: "center",
-                        mr: open ? 3 : "auto",
-                        color: isActive ? "white" : "inherit",
+                        mr: open ? 2.5 : "auto",
+                        color: isActive ? "primary.main" : "inherit",
                       }}
                     >
                       <nav.icon />
@@ -129,7 +130,7 @@ export default function Sidebar({ open }: SidebarProps) {
                       primary={nav.name}
                       sx={{
                         opacity: open ? 1 : 0,
-                        color: isActive ? "white" : "inherit",
+                        color: isActive ? "primary.main" : "inherit",
                       }}
                     />
                   </ListItemButton>

@@ -1,3 +1,7 @@
+/**
+ * This file contains navigation links to be displayed in the sidebar/menu bar
+ */
+
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";

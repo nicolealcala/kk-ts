@@ -9,7 +9,7 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
 import { useAuth } from "@/lib/contexts/AuthContext";
-import { supabase } from "@/lib/config/supabaseClient";
+import  supabase  from "@/lib/config/supabaseClient";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
 

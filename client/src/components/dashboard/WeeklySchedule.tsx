@@ -6,7 +6,7 @@ import HeatmapComponent, {
   type ScheduleData,
 } from "../shared/HeatmapComponent";
 import type { Schedule } from "@/lib/types/schedules";
-import { transformSchedules } from "@/lib/utils/date";
+import { transformWeeklySchedules } from "@/lib/utils/date";
 
 type WeeklyScheduleProps = {
   schedule: Schedule[];
@@ -51,10 +51,8 @@ export default function WeeklySchedule({ schedule }: WeeklyScheduleProps) {
     };
   }, [currentHour]);
 
-  const mySchedule: ScheduleData[] = transformSchedules(schedule);
+  const mySchedule: ScheduleData[] = transformWeeklySchedules(schedule);
 
-  const result = transformSchedules(schedule);
-  console.log("New schedule: ", result);
   return (
     <Paper
       elevation={0}

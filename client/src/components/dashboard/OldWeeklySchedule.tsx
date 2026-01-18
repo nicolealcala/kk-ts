@@ -10,7 +10,7 @@ import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import UnfoldLessRoundedIcon from "@mui/icons-material/UnfoldLessRounded";
 import IconButton from "@mui/material/IconButton";
 import type { Schedule } from "@/lib/types/schedules";
-import { transformSchedules } from "@/lib/utils/date";
+import { transformWeeklySchedules } from "@/lib/utils/date";
 
 type WeeklyScheduleProps = {
   isScheduleExpanded: boolean;
@@ -73,10 +73,8 @@ export default function WeeklySchedule({
     };
   }, [currentHour, isScheduleExpanded]);
 
-  const mySchedule: ScheduleData[] = transformSchedules(schedule);
+  const mySchedule: ScheduleData[] = transformWeeklySchedules(schedule);
 
-  const result = transformSchedules(schedule);
-  console.log("New schedule: ", result);
   return (
     <Paper
       elevation={0}
