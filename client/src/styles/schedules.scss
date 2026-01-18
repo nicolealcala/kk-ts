@@ -21,5 +21,14 @@ $current-time-color: #c70300;
 .rbc-current-time-indicator {
   height: 2px !important;
 }
+
+.rbc-event {
+  flex-flow: column;
+}
+
+.rbc-event-label {
+  font-size: 12px !important;
+}
+
 // Import the base styles AFTER overrides
 @import "react-big-calendar/lib/sass/styles";
