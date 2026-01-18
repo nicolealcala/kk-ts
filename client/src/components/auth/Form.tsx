@@ -8,7 +8,7 @@ import SignupForm from "./SignupForm";
 import { useAuth } from "@/lib/contexts/AuthContext";
 import AuthTabs from "./AuthTabs";
 
-export default function Form() {
+function Form() {
   const { authMode, authError, setAuthError } = useAuth();
 
   const onSwitchTabs = React.useEffectEvent(() => {
@@ -72,3 +72,5 @@ export default function Form() {
     </Container>
   );
 }
+
+export default React.memo(Form);

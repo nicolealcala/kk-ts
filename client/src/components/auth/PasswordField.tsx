@@ -8,12 +8,13 @@ import {
 import VisibilityRoundedIcon from "@mui/icons-material/VisibilityRounded";
 import VisibilityOffRoundedIcon from "@mui/icons-material/VisibilityOffRounded";
 import type { UseFormRegisterReturn } from "react-hook-form";
+import React from "react";
 
 export type PasswordFieldProps = TextFieldProps & {
   registration: UseFormRegisterReturn;
 };
 
-export function PasswordField({
+function PasswordField({
   registration,
   error,
   label = "Password",
@@ -54,3 +55,5 @@ export function PasswordField({
     />
   );
 }
+
+export default React.memo(PasswordField);
