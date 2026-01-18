@@ -2,16 +2,16 @@ import { Calendar, luxonLocalizer, Views, type View } from "react-big-calendar";
 import { DateTime } from "luxon";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "@/styles/schedules.scss";
-import { useMemo, useState, type SetStateAction } from "react";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import CustomToolbar, { type CustomToolbarProps } from "./CalendarToolbar";
 import type { OpenDrawerValues, CalendarEvent } from "@/pages/Schedules";
+import type { Schedule } from "@/lib/types/schedules";
 
 const localizer = luxonLocalizer(DateTime);
 
 type ScheduleCalendarProps = {
-  events: CalendarEvent[];
-  setOpenDrawer: React.Dispatch<SetStateAction<OpenDrawerValues>>;
+  events: Schedule[];
+  setOpenDrawer: React.Dispatch<React.SetStateAction<OpenDrawerValues>>;
   setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
 };
 
@@ -40,10 +40,18 @@ function ScheduleCalendar({
     [setOpenDrawer],
   );
 
+  const calendarEvents = useMemo(() => {
+    return events.map((e) => ({
+      ...e,
+      start: DateTime.fromISO(e.start).toJSDate(),
+      end: DateTime.fromISO(e.end).toJSDate(),
+    }));
+  }, [events]);
+
   return (
-    <Calendar<CalendarEvent>
+    <Calendar
       localizer={localizer}
-      events={events}
+      events={calendarEvents}
       //For calendar display options
       views={[Views.MONTH, Views.WEEK, Views.DAY]}
       defaultView={view}
