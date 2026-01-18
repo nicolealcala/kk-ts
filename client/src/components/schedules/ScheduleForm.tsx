@@ -1,4 +1,4 @@
-import * as z from "zod";
+import React, { useEffect } from "react";
 import Drawer from "@mui/material/Drawer";
 import { DrawerHeader } from "../layout/Sidebar";
 import Box from "@mui/material/Box";
@@ -9,65 +9,41 @@ import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import ScheduleFormButtons from "./ScheduleFormButtons";
 import ScheduleFormTextField from "./ScheduleFormTextField";
+import ScheduleFormSelect from "./ScheduleFormSelect";
+import ScheduleFormTimePicker, {
+  DependentTimePicker,
+} from "./ScheduleFormTimePicker";
+import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
 import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
-import { useEffect } from "react";
 import Divider from "@mui/material/Divider";
-import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
-import ScheduleFormTimePicker from "./ScheduleFormTimePicker";
 import { convertDateToIso } from "@/lib/utils/date";
-import ScheduleFormSelect from "./ScheduleFormSelect";
 import type { CalendarEvent } from "@/pages/Schedules";
 import type { OpenDrawerValues } from "@/pages/Schedules";
-import React from "react";
 import { useSchedules } from "@/lib/utils/hooks/useSchedules";
+import scheduleFormSchema, {
+  initialValues,
+  type ScheduleFormInputs,
+} from "@/lib/forms/scheduleFormSchema";
 
-type ScheduleDrawerType = {
-  //setEvents: React.Dispatch<React.SetStateAction<CalendarEvent[]>>;
+type ScheduleFormProps = {
   openDrawer: OpenDrawerValues;
   setOpenDrawer: React.Dispatch<React.SetStateAction<OpenDrawerValues>>;
   selectedEvent: CalendarEvent | null;
   setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
 };
 
-const scheduleSchema = z.object({
-  title: z.string().nonempty("Title is required"),
-  description: z.string().optional(),
-  date: z.string().nonempty("Date is required"),
-  start: z.string().nonempty("Start time is required"),
-  end: z.string().nonempty("End time is required"),
-  type: z.enum(["interview", "assessment", "task", "other"]),
-  modality: z.enum(["onsite", "remote"]),
-  link: z.string().optional(),
-  address: z.string().optional(),
-});
-
 const modalityOptions = [
   { value: "remote", label: "Remote" },
   { value: "onsite", label: "In-Person" },
 ];
 
-export type ScheduleFormInputs = z.infer<typeof scheduleSchema>;
-
-const initialValues: ScheduleFormInputs = {
-  title: "",
-  description: "",
-  date: "",
-  start: "",
-  end: "",
-  type: "interview",
-  modality: "remote",
-  link: "",
-  address: "",
-};
-
 function ScheduleForm({
-  // setEvents,
   openDrawer,
   setOpenDrawer,
   selectedEvent,
   setSelectedEvent,
-}: ScheduleDrawerType) {
+}: ScheduleFormProps) {
   const {
     reset,
     resetField,
@@ -75,7 +51,7 @@ function ScheduleForm({
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ScheduleFormInputs>({
-    resolver: zodResolver(scheduleSchema),
+    resolver: zodResolver(scheduleFormSchema),
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: initialValues,
@@ -109,8 +85,8 @@ function ScheduleForm({
   const currentLocalDate = new Date().toLocaleDateString();
 
   const { saveSchedule } = useSchedules(currentLocalDate);
+
   async function onSubmit(formData: ScheduleFormInputs) {
-    console.log("Start: ", formData.start, "End: ", formData.end);
     saveSchedule(
       { data: formData, id: selectedEvent?.id },
       {
@@ -118,7 +94,7 @@ function ScheduleForm({
           setOpenDrawer(null);
           reset();
         },
-      }
+      },
     );
   }
 
@@ -134,11 +110,7 @@ function ScheduleForm({
   });
 
   return (
-    <Drawer
-      open={!!openDrawer}
-      onClose={() => setOpenDrawer(null)}
-      anchor="right"
-    >
+    <Drawer open={!!openDrawer} onClose={handleCancel} anchor="right">
       <DrawerHeader />
       <Box
         component="form"
@@ -146,19 +118,14 @@ function ScheduleForm({
         noValidate
         sx={{
           my: 2,
+          mt: 3,
           height: "100%",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
         }}
       >
-        <Typography
-          variant="h5"
-          component="h1"
-          gutterBottom
-          fontWeight={500}
-          px={2.5}
-        >
+        <Typography variant="h5" component="h1" fontWeight={500} px={2.5}>
           {openDrawer === "create" ? "Create a new event" : "Update event"}
         </Typography>
         <Box
@@ -240,12 +207,14 @@ function ScheduleForm({
                 name="end"
                 control={control}
                 render={({ field }) => (
-                  <ScheduleFormTimePicker
+                  <DependentTimePicker
                     field={field}
-                    error={!!errors.end}
-                    errorMessage={errors.end?.message}
+                    control={control}
+                    watchName="start"
                     label="End Time"
                     baseDate={selectedDate}
+                    error={!!errors.end}
+                    errorMessage={errors.end?.message}
                   />
                 )}
               />
@@ -264,8 +233,8 @@ function ScheduleForm({
                   <ScheduleFormSelect
                     field={field}
                     label="Type"
-                    error={!!errors.title}
-                    errorMessage={errors.title?.message}
+                    error={!!errors.type}
+                    errorMessage={errors.type?.message}
                   />
                 )}
               />

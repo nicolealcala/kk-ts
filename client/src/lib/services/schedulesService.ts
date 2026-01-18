@@ -1,5 +1,5 @@
-import type { ScheduleFormInputs } from "@/components/schedules/ScheduleForm";
 import { DateTime } from "luxon";
+import type { ScheduleFormInputs } from "../forms/scheduleFormSchema";
 
 export const fetchSchedules = async (currentLocalDate: string) => {
   const response = await fetch(

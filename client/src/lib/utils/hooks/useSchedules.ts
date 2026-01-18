@@ -3,7 +3,7 @@ import {
   fetchSchedules,
   updateSchedule,
 } from "@/lib/services/schedulesService";
-import type { ScheduleFormInputs } from "@/components/schedules/ScheduleForm";
+import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 
 export function useSchedules(currentLocalDate: string) {
   const queryClient = useQueryClient();
@@ -19,7 +19,9 @@ export function useSchedules(currentLocalDate: string) {
     mutationFn: ({ data, id }: { data: ScheduleFormInputs; id?: string }) =>
       updateSchedule(data, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({
+        queryKey: ["schedules", currentLocalDate],
+      });
     },
     onError: (error: Error) => {
       alert(error.message);
