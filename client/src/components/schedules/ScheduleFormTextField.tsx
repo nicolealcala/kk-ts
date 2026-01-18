@@ -21,7 +21,7 @@ function ScheduleFormTextField<TName extends FieldPath<ScheduleFormInputs>>({
       fullWidth
       helperText={errorMessage}
       slotProps={{
-        formHelperText: { sx: { mx: 0, ml: 0.5 } },
+        formHelperText: { sx: { mx: 0.5 } },
       }}
     />
   );
