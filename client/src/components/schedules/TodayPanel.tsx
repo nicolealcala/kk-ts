@@ -12,6 +12,7 @@ import Tooltip from "@mui/material/Tooltip";
 import ScheduleChip from "../shared/ScheduleChip";
 import React from "react";
 import type { Schedule } from "@/lib/types/schedules";
+import NoEventsIllustration from "../illustrations/NoEventsIllustration";
 
 function TodayPanel({ events }: { events: Schedule[] }) {
   //Localize event time because this component does not make use of localizer
@@ -41,15 +42,12 @@ function TodayPanel({ events }: { events: Schedule[] }) {
       <Divider variant="middle" />
 
       {todaysEvents.length === 0 ? (
-        <Typography
-          variant="body2"
-          p={2}
-          pb={2.5}
-          fontStyle="italic"
-          color="textSecondary"
-        >
-          No events scheduled for today.
-        </Typography>
+        <Stack spacing={3} alignItems="center" p={2} pb={5}>
+          <NoEventsIllustration />
+          <Typography variant="body2" color="textSecondary">
+            No events scheduled for today
+          </Typography>
+        </Stack>
       ) : (
         <Box
           sx={{
