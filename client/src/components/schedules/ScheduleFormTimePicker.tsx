@@ -5,8 +5,11 @@ import {
   type TimePickerProps,
 } from "@mui/x-date-pickers/TimePicker";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
-import type { ScheduleFormInputs } from "./ScheduleForm";
+import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 import { DateTime } from "luxon";
+import { type Control, useWatch } from "react-hook-form";
+import type { TimeView } from "@mui/x-date-pickers/models";
+import React from "react";
 
 type ScheduleFormTimePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<TimePickerProps, "name"> & {
@@ -16,9 +19,7 @@ type ScheduleFormTimePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
     baseDate?: string;
   };
 
-export default function ScheduleFormTimePicker<
-  TName extends FieldPath<ScheduleFormInputs>
->({
+function ScheduleFormTimePicker<TName extends FieldPath<ScheduleFormInputs>>({
   field,
   errorMessage,
   error,
@@ -70,3 +71,55 @@ export default function ScheduleFormTimePicker<
     </LocalizationProvider>
   );
 }
+
+export default React.memo(ScheduleFormTimePicker);
+
+type DependentTimePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
+  Omit<ScheduleFormTimePickerProps<TName>, "minTime"> & {
+    control: Control<ScheduleFormInputs>;
+    watchName: FieldPath<ScheduleFormInputs>;
+  };
+
+function DependentTimePickerComponent<
+  TName extends FieldPath<ScheduleFormInputs>,
+>({ field, control, watchName, ...props }: DependentTimePickerProps<TName>) {
+  const watchedValue = useWatch({
+    control,
+    name: watchName,
+  });
+
+  const minTime = watchedValue ? DateTime.fromISO(watchedValue) : undefined;
+
+  // Logic: Disable any time that is less than or equal to the Start Time
+  const shouldDisableTime = (value: DateTime, view: TimeView) => {
+    if (!minTime) return false;
+
+    if (view === "hours") {
+      // Disable hours that are strictly less than the start hour
+      return value.hour < minTime.hour;
+    }
+    if (view === "minutes") {
+      // If we are in the same hour as the start time,
+      // disable minutes that are equal to or less than the start minute
+      if (value.hour === minTime.hour) {
+        return value.minute <= minTime.minute;
+      }
+
+      // If the hour is already less than the start hour, disable all minutes
+      return value.hour < minTime.hour;
+    }
+
+    return false;
+  };
+
+  return (
+    <ScheduleFormTimePicker
+      {...props}
+      field={field}
+      minTime={minTime}
+      shouldDisableTime={shouldDisableTime}
+    />
+  );
+}
+
+export const DependentTimePicker = React.memo(DependentTimePickerComponent);
