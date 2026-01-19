@@ -1,13 +1,19 @@
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { useAuth } from "@/lib/contexts/AuthContext";
+import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { setAuthError, setAuthMode } from "@/store/auth/authSlice";
 
 export default function AuthTabs() {
-  const { authMode, setAuthMode } = useAuth();
+  const dispatch = useAppDispatch();
+  const { authMode } = useAppSelector((state) => state.auth);
+
   return (
     <Tabs
       value={authMode}
-      onChange={(_, v) => setAuthMode(v)}
+      onChange={(_, v) => {
+        dispatch(setAuthError(null));
+        dispatch(setAuthMode(v));
+      }}
       variant="fullWidth"
       aria-label="auth tabs"
       sx={{

@@ -1,7 +1,7 @@
 import { type GridRowsProp, type GridColDef, DataGrid } from "@mui/x-data-grid";
 import ApplicationSourceLink from "./ApplicationSourceLink";
 import Chip from "@mui/material/Chip";
-import { cn } from "../../lib/utils/tailwind";
+import { cn } from "@/utils/tailwind";
 import ApplicationMenu from "./AppicationMenu";
 import { mockData } from "../../lib/table/applications";
 import type {
@@ -116,7 +116,7 @@ const columns: GridColDef[] = [
       const status = params.row.status.toLowerCase();
 
       const statusConfig = applicationStatuses.find(
-        (s) => s.value.toLowerCase() === status
+        (s) => s.value.toLowerCase() === status,
       );
 
       const chipClassName = statusConfig?.color ?? "bg-gray-50! text-gray-500!";

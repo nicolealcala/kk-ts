@@ -10,7 +10,7 @@ import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import UnfoldLessRoundedIcon from "@mui/icons-material/UnfoldLessRounded";
 import IconButton from "@mui/material/IconButton";
 import type { Schedule } from "@/lib/types/schedules";
-import { transformWeeklySchedules } from "@/lib/utils/date";
+import { transformWeeklySchedules } from "@/utils/date";
 
 type WeeklyScheduleProps = {
   isScheduleExpanded: boolean;

@@ -1,23 +1,14 @@
-import React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
-import { useAuth } from "@/lib/contexts/AuthContext";
 import AuthTabs from "./AuthTabs";
+import { useAppSelector } from "@/utils/hooks/useRedux";
 
-function Form() {
-  const { authMode, authError, setAuthError } = useAuth();
-
-  const onSwitchTabs = React.useEffectEvent(() => {
-    if (authError) setAuthError(null);
-  });
-
-  React.useEffect(() => {
-    onSwitchTabs();
-  }, [authMode]);
+export default function Form() {
+  const { authMode } = useAppSelector((state) => state.auth);
 
   const variants: Variants = {
     enter: (direction: number) => ({
@@ -40,7 +31,7 @@ function Form() {
   const direction = authMode === "login" ? -1 : 1;
 
   return (
-    <Container maxWidth="xs" sx={{ pt: 7 }}>
+    <Container maxWidth="xs" sx={{ pt: 8.5 }}>
       <Typography variant="h4" component="h1" align="center" fontWeight="bold">
         {authMode === "login" ? "Welcome Back" : "Create an Account"}
       </Typography>
@@ -72,5 +63,3 @@ function Form() {
     </Container>
   );
 }
-
-export default React.memo(Form);

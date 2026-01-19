@@ -6,17 +6,18 @@ import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
-import { useAuth } from "@/lib/contexts/AuthContext";
-import supabase from "@/lib/config/supabaseClient";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
-import  PasswordField  from "./PasswordField";
+import PasswordField from "./PasswordField";
 import FormTextField from "../shared/FormTextField";
 import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
 import loginSchema from "@/lib/forms/loginFormSchema";
+import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { loginUser, setAuthMode } from "@/store/auth/authSlice";
 
 export default function LoginForm() {
-  const { authError, setAuthMode, setAuthError, setAuthSession } = useAuth();
+  const dispatch = useAppDispatch();
+  const { authError } = useAppSelector((state) => state.auth);
 
   const navigate = useNavigate();
 
@@ -30,18 +31,12 @@ export default function LoginForm() {
   });
 
   async function onSubmit(formData: LoginFormInputs) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: formData.email,
-      password: formData.password,
-    });
-
-    if (error) {
-      setAuthError(error);
-      return;
+    try {
+      await dispatch(loginUser(formData)).unwrap();
+      navigate("/");
+    } catch (error) {
+      console.error("[FORM] Login error: ", error);
     }
-
-    setAuthSession(data.session);
-    navigate("/");
   }
   return (
     <>
@@ -81,7 +76,7 @@ export default function LoginForm() {
           </Stack>
 
           {/* Error Message */}
-          {authError && <Alert severity="error">{authError.message}</Alert>}
+          {authError && <Alert severity="error">{authError}</Alert>}
 
           {/* Login Button */}
           <Button
@@ -89,6 +84,7 @@ export default function LoginForm() {
             color="primary"
             size="large"
             loading={isSubmitting}
+            loadingPosition="start"
             type="submit"
             sx={{ borderRadius: 50 }}
           >
@@ -103,7 +99,7 @@ export default function LoginForm() {
           component="button"
           underline="hover"
           fontWeight="medium"
-          onClick={() => setAuthMode("signup")}
+          onClick={() => dispatch(setAuthMode("signup"))}
           sx={{
             verticalAlign: "baseline",
           }}

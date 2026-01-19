@@ -23,6 +23,7 @@ export default function ScheduleFormButtons({
       color="primary"
       size="large"
       loading={isLoading}
+      loadingPosition="start"
       sx={{ borderRadius: 2 }}
       onClick={onClick}
     >

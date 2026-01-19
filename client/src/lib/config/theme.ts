@@ -17,7 +17,7 @@ declare module "@mui/material/styles" {
   interface PaletteColor {
     extraLight?: string;
   }
-  
+
   interface SimplePaletteColorOptions {
     extraLight?: string;
   }
@@ -29,15 +29,21 @@ const theme = createTheme({
   },
   components: {
     MuiButton: {
+      defaultProps: {
+        disableRipple: true,
+      },
       styleOverrides: {
-        root: {
+        root: ({ ownerState }) => ({
+          ...(ownerState.loading && {
+            opacity: 0.75,
+          }),
           textTransform: "none",
           boxShadow: "none",
           "&:hover": {
             boxShadow: "none",
           },
           fontWeight: 600,
-        },
+        }),
         sizeLarge: {
           height: "48px",
         },
