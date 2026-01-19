@@ -5,7 +5,6 @@ import { RouterProvider } from "react-router";
 import router from "./lib/config/router.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./lib/config/theme.ts";
-import AuthContextProvider from "./components/context-providers/AuthContextProvider.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import store from "@/store";
 import { Provider } from "react-redux";
@@ -27,11 +26,9 @@ enableMocking().then(() => {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
-          <AuthContextProvider>
-            <ThemeProvider theme={theme}>
-              <RouterProvider router={router} />
-            </ThemeProvider>
-          </AuthContextProvider>
+          <ThemeProvider theme={theme}>
+            <RouterProvider router={router} />
+          </ThemeProvider>
         </Provider>
       </QueryClientProvider>
     </StrictMode>,
