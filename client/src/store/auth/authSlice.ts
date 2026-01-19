@@ -1,5 +1,69 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AuthError, Session } from "@supabase/supabase-js";
+import supabase from "@/lib/config/supabaseClient";
+import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
+import type { SignupFormInputs } from "@/lib/forms/signUpFormSchema";
+import {
+  createAsyncThunk,
+  createSlice,
+  isAnyOf,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
+import { AuthError, type Session } from "@supabase/supabase-js";
+
+export const loginUser = createAsyncThunk<
+  Session | null,
+  LoginFormInputs,
+  { rejectValue: AuthError }
+>("auth/loginUser", async ({ email, password }, { rejectWithValue }) => {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) throw error;
+
+    return data.session;
+  } catch (error) {
+    console.error("[REDUX] Login error: ", error);
+    return rejectWithValue(error as AuthError);
+  }
+});
+
+export const signUpUser = createAsyncThunk<
+  Session | null,
+  Pick<SignupFormInputs, "email" | "confirmPassword">,
+  { rejectValue: AuthError }
+>(
+  "auth/signUpUser",
+  async ({ email, confirmPassword }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password: confirmPassword,
+      });
+
+      if (error) throw error;
+      return data.session;
+    } catch (error) {
+      console.error("[REDUX] Signup error: ", error);
+      return rejectWithValue(error as AuthError);
+    }
+  },
+);
+
+export const logoutUser = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: AuthError }
+>("auth/logoutUser", async (_, { rejectWithValue }) => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+  } catch (error) {
+    console.error("[REDUX] Logout error: ", error);
+    return rejectWithValue(error as AuthError);
+  }
+});
 
 export type AuthMode = "login" | "signup" | null;
 
@@ -32,6 +96,31 @@ export const authSlice = createSlice({
       state.authError = null;
       state.authSession = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      //Success Matcher for Log out
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.authSession = null;
+        state.authError = null;
+      })
+      // Success Matcher for Login & Signup
+      .addMatcher(
+        isAnyOf(loginUser.fulfilled, signUpUser.fulfilled),
+        (state, action) => {
+          state.authSession = action.payload;
+          state.authError = null;
+        },
+      )
+      // Reject Matcher for Login, Signup, and Logout
+      .addMatcher(
+        isAnyOf(loginUser.rejected, signUpUser.rejected, logoutUser.rejected),
+        (state, action) => {
+          if (action.payload) {
+            state.authError = action.payload as AuthError;
+          }
+        },
+      );
   },
 });
 
