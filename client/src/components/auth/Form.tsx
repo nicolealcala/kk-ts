@@ -1,4 +1,3 @@
-import React from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -8,7 +7,7 @@ import SignupForm from "./SignupForm";
 import AuthTabs from "./AuthTabs";
 import { useAppSelector } from "@/utils/hooks/useRedux";
 
-function Form() {
+export default function Form() {
   const { authMode } = useAppSelector((state) => state.auth);
 
   const variants: Variants = {
@@ -64,5 +63,3 @@ function Form() {
     </Container>
   );
 }
-
-export default React.memo(Form);

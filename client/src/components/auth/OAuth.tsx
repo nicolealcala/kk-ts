@@ -1,9 +1,8 @@
 import Button from "@mui/material/Button";
 import GoogleIconColored from "../icons/Google";
-import React from "react";
 import { useAppSelector } from "@/utils/hooks/useRedux";
 
-function OAuth() {
+export default function OAuth() {
   const { authMode } = useAppSelector((state) => state.auth);
   return (
     <Button
@@ -27,5 +26,3 @@ function OAuth() {
     </Button>
   );
 }
-
-export default React.memo(OAuth);
