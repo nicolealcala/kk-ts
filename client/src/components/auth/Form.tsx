@@ -31,7 +31,7 @@ export default function Form() {
   const direction = authMode === "login" ? -1 : 1;
 
   return (
-    <Container maxWidth="xs" sx={{ pt: 8.5 }}>
+    <Container maxWidth="xs">
       <Typography variant="h4" component="h1" align="center" fontWeight="bold">
         {authMode === "login" ? "Welcome Back" : "Create an Account"}
       </Typography>

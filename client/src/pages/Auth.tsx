@@ -50,7 +50,7 @@ export default function AuthPage() {
           }}
         />
       </Box>
-      <Box sx={{ flex: 1.5, display: "flex", pb: 6 }}>
+      <Box sx={{ flex: 1.5, display: "flex", pt: 8.5, pb: 6 }}>
         <Form />
       </Box>
     </Box>
