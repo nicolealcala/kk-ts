@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { RouterProvider } from "react-router";
-import router from "./lib/config/router.ts";
+import router from "./lib/config/router.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./lib/config/theme.ts";
 import AuthContextProvider from "./components/context-providers/AuthContextProvider.tsx";
