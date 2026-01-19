@@ -5,7 +5,6 @@ import FormHelperText from "@mui/material/FormHelperText";
 import FormLabel from "@mui/material/FormLabel";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
-import React from "react";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
 
 type ScheduleFormRadioGroupProps<TName extends FieldPath<ScheduleFormInputs>> =
@@ -17,7 +16,9 @@ type ScheduleFormRadioGroupProps<TName extends FieldPath<ScheduleFormInputs>> =
     radioItems: { value: string; label: string }[];
   };
 
-function ScheduleFormRadioGroup<TName extends FieldPath<ScheduleFormInputs>>({
+export default function ScheduleFormRadioGroup<
+  TName extends FieldPath<ScheduleFormInputs>,
+>({
   field,
   label,
   error,
@@ -51,5 +52,3 @@ function ScheduleFormRadioGroup<TName extends FieldPath<ScheduleFormInputs>>({
     </FormControl>
   );
 }
-
-export default React.memo(ScheduleFormRadioGroup);

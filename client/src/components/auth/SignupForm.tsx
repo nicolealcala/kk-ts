@@ -1,27 +1,19 @@
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
 import { useAuth } from "@/lib/contexts/AuthContext";
-import  supabase  from "@/lib/config/supabaseClient";
+import supabase from "@/lib/config/supabaseClient";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
-
-const signupSchema = z.object({
-  fname: z.string().min(3, "First name must be at least 3 characters"),
-  lname: z.string().min(3, "Last name must be at least 3 characters"),
-  email: z.email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-type SignupFormInputs = z.infer<typeof signupSchema>;
+import FormTextField from "../shared/FormTextField";
+import PasswordField from "./PasswordField";
+import type { SignupFormInputs } from "@/lib/forms/signUpFormSchema";
+import signupSchema from "@/lib/forms/signUpFormSchema";
 
 export default function SignupForm() {
   const { authError, setAuthMode, setAuthSession, setAuthError } = useAuth();
@@ -65,47 +57,42 @@ export default function SignupForm() {
         <Stack spacing={2}>
           <Stack direction="row" spacing={2}>
             {/* First Name Field */}
-            <TextField
-              fullWidth
+            <FormTextField
               label="First Name"
-              {...register("fname")}
+              registration={register("fname")}
               error={!!errors.fname}
               helperText={errors.fname?.message}
             />
 
             {/* Last Name Field */}
-            <TextField
-              fullWidth
+            <FormTextField
               label="Last Name"
-              {...register("lname")}
+              registration={register("lname")}
               error={!!errors.lname}
               helperText={errors.lname?.message}
             />
           </Stack>
 
           {/* Email Field */}
-          <TextField
-            fullWidth
+          <FormTextField
             label="Email"
-            {...register("email")}
+            registration={register("email")}
             error={!!errors.email}
             helperText={errors.email?.message}
           />
 
           {/* Password Field */}
-          <TextField
-            fullWidth
+          <PasswordField
             label="Password"
-            {...register("password")}
+            registration={register("password")}
             error={!!errors.password}
             helperText={errors.password?.message}
           />
 
           {/* Confirm Password Field */}
-          <TextField
-            fullWidth
+          <PasswordField
             label="Confirm Password"
-            {...register("confirmPassword")}
+            registration={register("confirmPassword")}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword?.message}
           />

@@ -38,7 +38,7 @@ const modalityOptions = [
   { value: "onsite", label: "In-Person" },
 ];
 
-function ScheduleForm({
+export default function ScheduleForm({
   openDrawer,
   setOpenDrawer,
   selectedEvent,
@@ -305,5 +305,3 @@ function ScheduleForm({
     </Drawer>
   );
 }
-
-export default React.memo(ScheduleForm);

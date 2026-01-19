@@ -1,17 +1,14 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router";
-import DashboardPage from "./pages/Dashboard.tsx";
-import ApplicationsPage from "./pages/Applications.tsx";
-import SchedulesPage from "./pages/Schedules.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import RootLayout from "./components/layout/index.tsx";
+import { RouterProvider } from "react-router";
+import router from "./lib/config/router.tsx";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./lib/config/theme.ts";
-import AuthPage from "./pages/Auth.tsx";
 import AuthContextProvider from "./components/context-providers/AuthContextProvider.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import store from "@/store";
+import { Provider } from "react-redux";
 
 // Create a RQ client
 const queryClient = new QueryClient();
@@ -25,33 +22,18 @@ async function enableMocking() {
   return worker.start();
 }
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootLayout />,
-    children: [
-      { index: true, element: <DashboardPage /> },
-      { path: "/applications", element: <ApplicationsPage /> },
-      { path: "/schedules", element: <SchedulesPage /> },
-    ],
-  },
-  {
-    path: "/auth",
-    element: <AuthPage />,
-  },
-  { path: "*", element: <NotFound /> },
-]);
-
 enableMocking().then(() => {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
-      <ThemeProvider theme={theme}>
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
           <AuthContextProvider>
-            <RouterProvider router={router} />
+            <ThemeProvider theme={theme}>
+              <RouterProvider router={router} />
+            </ThemeProvider>
           </AuthContextProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
-    </StrictMode>
+        </Provider>
+      </QueryClientProvider>
+    </StrictMode>,
   );
 });

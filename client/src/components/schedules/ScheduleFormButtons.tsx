@@ -7,6 +7,7 @@ type ScheduleFormButtonProps = {
   variant?: "contained" | "outlined";
   onClick?: () => void;
 };
+
 export default function ScheduleFormButtons({
   children,
   type,

@@ -6,7 +6,6 @@ import {
 } from "@mui/x-date-pickers/DatePicker";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
 import { DateTime } from "luxon";
-import React from "react";
 import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 
 type ScheduleFormDatePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
@@ -16,7 +15,9 @@ type ScheduleFormDatePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
     error: boolean;
   };
 
-function ScheduleFormDatePicker<TName extends FieldPath<ScheduleFormInputs>>({
+export default function ScheduleFormDatePicker<
+  TName extends FieldPath<ScheduleFormInputs>,
+>({
   field,
   errorMessage,
   error,
@@ -45,5 +46,3 @@ function ScheduleFormDatePicker<TName extends FieldPath<ScheduleFormInputs>>({
     </LocalizationProvider>
   );
 }
-
-export default React.memo(ScheduleFormDatePicker);
