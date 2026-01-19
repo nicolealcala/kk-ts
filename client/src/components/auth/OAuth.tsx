@@ -1,12 +1,10 @@
 import Button from "@mui/material/Button";
-// import Divider from "@mui/material/Divider";
 import GoogleIconColored from "../icons/Google";
-// import Typography from "@mui/material/Typography";
-import { useAuth } from "@/lib/contexts/AuthContext";
 import React from "react";
+import { useAppSelector } from "@/utils/hooks/useRedux";
 
 function OAuth() {
-  const { authMode } = useAuth();
+  const { authMode } = useAppSelector((state) => state.auth);
   return (
     <Button
       fullWidth

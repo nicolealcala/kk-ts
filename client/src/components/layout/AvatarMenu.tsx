@@ -7,14 +7,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
-import  supabase  from "@/lib/config/supabaseClient";
-import { useNavigate } from "react-router";
+import { useAppDispatch } from "@/utils/hooks/useRedux";
+import { logoutUser } from "@/store/auth/authSlice";
 
 export default function AvatarMenu() {
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
 
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -25,12 +25,10 @@ export default function AvatarMenu() {
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error(error);
-      return;
-    } else {
-      navigate("/auth");
+    try {
+      await dispatch(logoutUser()).unwrap();
+    } catch (error) {
+      console.error("[AVATAR MENU]: ", error);
     }
   };
 

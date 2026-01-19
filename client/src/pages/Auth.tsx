@@ -8,7 +8,7 @@ export default function AuthPage() {
       component="article"
       sx={{
         display: "flex",
-        height: "100dvh",
+        minHeight: "100dvh",
         width: "100%",
         bgcolor: "white",
       }}
@@ -50,7 +50,7 @@ export default function AuthPage() {
           }}
         />
       </Box>
-      <Box sx={{ flex: 1.5, display: "flex" }}>
+      <Box sx={{ flex: 1.5, display: "flex", pb: 6 }}>
         <Form />
       </Box>
     </Box>

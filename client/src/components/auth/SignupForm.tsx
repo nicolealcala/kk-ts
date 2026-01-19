@@ -6,17 +6,18 @@ import Stack from "@mui/material/Stack";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
-import { useAuth } from "@/lib/contexts/AuthContext";
-import supabase from "@/lib/config/supabaseClient";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
 import FormTextField from "../shared/FormTextField";
 import PasswordField from "./PasswordField";
 import type { SignupFormInputs } from "@/lib/forms/signUpFormSchema";
 import signupSchema from "@/lib/forms/signUpFormSchema";
+import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { setAuthMode, signUpUser } from "@/store/auth/authSlice";
 
 export default function SignupForm() {
-  const { authError, setAuthMode, setAuthSession, setAuthError } = useAuth();
+  const { authError } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
   const {
@@ -35,16 +36,15 @@ export default function SignupForm() {
   });
 
   //TO DO: Update submit logic
-  async function onSubmit(formData: SignupFormInputs) {
-    const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.confirmPassword,
-    });
-
-    if (error) setAuthError(error);
-
-    setAuthSession(data.session);
-    navigate("/");
+  async function onSubmit(
+    formData: Pick<SignupFormInputs, "email" | "confirmPassword">,
+  ) {
+    try {
+      await dispatch(signUpUser(formData));
+      navigate("/");
+    } catch (error) {
+      console.error("[FORM]: Signup error: ", error);
+    }
   }
   return (
     <>
@@ -98,7 +98,7 @@ export default function SignupForm() {
           />
 
           {/* Error Message */}
-          {authError && <Alert severity="error">{authError.message}</Alert>}
+          {authError && <Alert severity="error">{authError}</Alert>}
 
           {/* Signup Button */}
           <Button
@@ -106,6 +106,7 @@ export default function SignupForm() {
             color="primary"
             size="large"
             loading={isSubmitting}
+            loadingPosition="start"
             sx={{ borderRadius: 50 }}
             type="submit"
           >
@@ -120,7 +121,7 @@ export default function SignupForm() {
           component="button"
           underline="hover"
           fontWeight="medium"
-          onClick={() => setAuthMode("login")}
+          onClick={() => dispatch(setAuthMode("login"))}
           sx={{
             verticalAlign: "baseline",
           }}
