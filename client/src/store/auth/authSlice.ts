@@ -12,7 +12,7 @@ import { AuthError, type Session } from "@supabase/supabase-js";
 export const loginUser = createAsyncThunk<
   Session | null,
   LoginFormInputs,
-  { rejectValue: AuthError }
+  { rejectValue: string }
 >("auth/loginUser", async ({ email, password }, { rejectWithValue }) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -25,14 +25,16 @@ export const loginUser = createAsyncThunk<
     return data.session;
   } catch (error) {
     console.error("[REDUX] Login error: ", error);
-    return rejectWithValue(error as AuthError);
+    if (error instanceof Error || error instanceof AuthError)
+      return rejectWithValue(error.message);
+    return rejectWithValue("An error occured");
   }
 });
 
 export const signUpUser = createAsyncThunk<
   Session | null,
   Pick<SignupFormInputs, "email" | "confirmPassword">,
-  { rejectValue: AuthError }
+  { rejectValue: string }
 >(
   "auth/signUpUser",
   async ({ email, confirmPassword }, { rejectWithValue }) => {
@@ -46,30 +48,33 @@ export const signUpUser = createAsyncThunk<
       return data.session;
     } catch (error) {
       console.error("[REDUX] Signup error: ", error);
-      return rejectWithValue(error as AuthError);
+      if (error instanceof Error || error instanceof AuthError)
+        return rejectWithValue(error.message);
+      return rejectWithValue("An error occured");
     }
   },
 );
 
-export const logoutUser = createAsyncThunk<
-  void,
-  void,
-  { rejectValue: AuthError }
->("auth/logoutUser", async (_, { rejectWithValue }) => {
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-  } catch (error) {
-    console.error("[REDUX] Logout error: ", error);
-    return rejectWithValue(error as AuthError);
-  }
-});
+export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error) {
+      console.error("[REDUX] Logout error: ", error);
+      if (error instanceof Error || error instanceof AuthError)
+        return rejectWithValue(error.message);
+      return rejectWithValue("An error occured");
+    }
+  },
+);
 
 export type AuthMode = "login" | "signup" | null;
 
 interface AuthState {
   authMode: AuthMode;
-  authError: AuthError | null;
+  authError: string | null;
   authSession: Session | null;
 }
 
@@ -86,7 +91,7 @@ export const authSlice = createSlice({
     setAuthMode: (state, action: PayloadAction<AuthMode>) => {
       state.authMode = action.payload;
     },
-    setAuthError: (state, action: PayloadAction<AuthError | null>) => {
+    setAuthError: (state, action: PayloadAction<string | null>) => {
       state.authError = action.payload;
     },
     setAuthSession: (state, action: PayloadAction<Session | null>) => {
@@ -117,7 +122,7 @@ export const authSlice = createSlice({
         isAnyOf(loginUser.rejected, signUpUser.rejected, logoutUser.rejected),
         (state, action) => {
           if (action.payload) {
-            state.authError = action.payload as AuthError;
+            state.authError = action.payload;
           }
         },
       );
