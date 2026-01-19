@@ -6,7 +6,7 @@ import HeatmapComponent, {
   type ScheduleData,
 } from "../shared/HeatmapComponent";
 import type { Schedule } from "@/lib/types/schedules";
-import { transformWeeklySchedules } from "@/lib/utils/date";
+import { transformWeeklySchedules } from "@/utils/date";
 
 type WeeklyScheduleProps = {
   schedule: Schedule[];

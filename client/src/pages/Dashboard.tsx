@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentYear } from "@/lib/utils/date";
+import { getCurrentYear } from "@/utils/date";
 import DashboardSkeleton from "@/components/dashboard/Skeleton";
 import type { KPIChartType } from "@/lib/types/dashboard";
 import Kpi from "@/components/dashboard/Kpi";

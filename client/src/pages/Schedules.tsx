@@ -6,7 +6,7 @@ import Stack from "@mui/material/Stack";
 import { useState } from "react";
 import type { Schedule } from "@/lib/types/schedules";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
-import { useSchedules } from "@/lib/utils/hooks/useSchedules";
+import { useSchedules } from "@/utils/hooks/useSchedules";
 
 export type OpenDrawerValues = "create" | "update" | null;
 

@@ -2,11 +2,11 @@ export function getCurrentYear() {
   return new Date().getFullYear();
 }
 
-import { type Schedule } from "../types/schedules";
+import { type Schedule } from "@/lib/types/schedules";
 
 /**
  * Function to convert UTC string start and end dates into locale form
- * 
+ *
  * @param start
  * @param end
  * @returns

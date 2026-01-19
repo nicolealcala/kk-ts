@@ -5,7 +5,7 @@ import ChartKpi from "@/components/dashboard/ChartKpi";
 import WeeklySchedule from "@/components/dashboard/OldWeeklySchedule";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getCurrentYear } from "@/lib/utils/date";
+import { getCurrentYear } from "@/utils/date";
 import DashboardSkeleton from "@/components/dashboard/Skeleton";
 import type { ChartData, KPIChartType } from "@/lib/types/dashboard";
 import type { Schedule } from "@/lib/types/schedules";
@@ -16,7 +16,7 @@ export default function DashboardPage() {
     queryKey: [`dashboard-${currentYear}`],
     queryFn: async () => {
       return fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`
+        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`,
       ).then((res) => res.json());
     },
   });
@@ -61,8 +61,8 @@ export default function DashboardPage() {
                       sentiment === 0
                         ? "neutral"
                         : sentiment > 0
-                        ? "positive"
-                        : "negative"
+                          ? "positive"
+                          : "negative"
                     }
                     value={data.kpis[key].result}
                     data={kpiData.data}

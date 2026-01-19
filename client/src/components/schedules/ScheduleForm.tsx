@@ -17,10 +17,10 @@ import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
 import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
 import Divider from "@mui/material/Divider";
-import { convertDateToIso } from "@/lib/utils/date";
+import { convertDateToIso } from "@/utils/date";
 import type { CalendarEvent } from "@/pages/Schedules";
 import type { OpenDrawerValues } from "@/pages/Schedules";
-import { useSchedules } from "@/lib/utils/hooks/useSchedules";
+import { useSchedules } from "@/utils/hooks/useSchedules";
 import scheduleFormSchema, {
   initialValues,
   type ScheduleFormInputs,
