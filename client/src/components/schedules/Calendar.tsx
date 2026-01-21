@@ -4,8 +4,8 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "@/styles/schedules.scss";
 import React, { useMemo, useState } from "react";
 import CustomToolbar, { type CustomToolbarProps } from "./CalendarToolbar";
-import type { OpenDrawerValues, CalendarEvent } from "@/pages/Schedules";
-import type { Schedule } from "@/lib/types/schedules";
+import type { OpenDrawerValues } from "@/pages/Schedules";
+import type { CalendarEvent, Schedule } from "@/lib/types/schedules";
 
 const localizer = luxonLocalizer(DateTime);
 

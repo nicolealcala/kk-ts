@@ -21,3 +21,14 @@ export interface OnsiteSchedule extends BaseSchedule {
 }
 
 export type Schedule = RemoteSchedule | OnsiteSchedule;
+
+/**
+ * [CALENDAR]
+ *
+ * This type is primarily used in Calendar component, since it only accepts
+ * JS Date for start and end props.
+ */
+export type CalendarEvent = Omit<Schedule, "start" | "end"> & {
+  start: Date;
+  end: Date;
+};

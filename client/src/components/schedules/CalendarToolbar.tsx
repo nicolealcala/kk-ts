@@ -8,8 +8,8 @@ import Typography from "@mui/material/Typography";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import type { ButtonGroupProps } from "@mui/material/ButtonGroup";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import type { CalendarEvent } from "@/pages/Schedules";
 import React from "react";
+import type { CalendarEvent } from "@/lib/types/schedules";
 
 function StyledButtonGroup({ children, sx, ...rest }: ButtonGroupProps) {
   return (

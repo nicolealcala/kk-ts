@@ -5,7 +5,6 @@ import Select, { type SelectProps } from "@mui/material/Select";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
 import FormHelperText from "@mui/material/FormHelperText";
 import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
-import React from "react";
 
 type ScheduleFormTextFieldProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<SelectProps, "name"> & {

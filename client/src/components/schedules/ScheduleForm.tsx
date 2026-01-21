@@ -18,13 +18,13 @@ import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
 import Divider from "@mui/material/Divider";
 import { convertDateToIso } from "@/utils/date";
-import type { CalendarEvent } from "@/pages/Schedules";
 import type { OpenDrawerValues } from "@/pages/Schedules";
 import { useSchedules } from "@/utils/hooks/useSchedules";
 import scheduleFormSchema, {
   initialValues,
   type ScheduleFormInputs,
 } from "@/lib/forms/scheduleFormSchema";
+import type { CalendarEvent } from "@/lib/types/schedules";
 
 type ScheduleFormProps = {
   openDrawer: OpenDrawerValues;
