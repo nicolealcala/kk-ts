@@ -6,7 +6,7 @@ import { Outlet, useNavigate } from "react-router";
 import Header from "./Header";
 import Sidebar, { DrawerHeader } from "./Sidebar";
 import Loader from "../shared/Loader";
-import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import supabase from "@/lib/config/supabaseClient";
 import { setAuthSession } from "@/store/auth/authSlice";
 export default function RootLayout() {
@@ -14,7 +14,7 @@ export default function RootLayout() {
   const [isLoading, setIsLoading] = React.useState(true);
 
   const dispatch = useAppDispatch();
-  const { authSession } = useAppSelector((state) => state.auth);
+  const authSession = useAppSelector((state) => state.auth.session);
 
   const navigate = useNavigate();
 

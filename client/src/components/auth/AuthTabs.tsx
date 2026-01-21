@@ -1,15 +1,15 @@
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setAuthError, setAuthMode } from "@/store/auth/authSlice";
 
 export default function AuthTabs() {
   const dispatch = useAppDispatch();
-  const { authMode } = useAppSelector((state) => state.auth);
+  const formType = useAppSelector((state) => state.auth.formType);
 
   return (
     <Tabs
-      value={authMode}
+      value={formType}
       onChange={(_, v) => {
         dispatch(setAuthError(null));
         dispatch(setAuthMode(v));

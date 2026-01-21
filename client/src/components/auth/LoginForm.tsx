@@ -12,12 +12,12 @@ import PasswordField from "./PasswordField";
 import FormTextField from "../shared/FormTextField";
 import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
 import loginSchema from "@/lib/forms/loginFormSchema";
-import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginUser, setAuthMode } from "@/store/auth/authSlice";
 
 export default function LoginForm() {
   const dispatch = useAppDispatch();
-  const { authError } = useAppSelector((state) => state.auth);
+  const error = useAppSelector((state) => state.auth.error);
 
   const navigate = useNavigate();
 
@@ -76,7 +76,7 @@ export default function LoginForm() {
           </Stack>
 
           {/* Error Message */}
-          {authError && <Alert severity="error">{authError}</Alert>}
+          {error && <Alert severity="error">{error}</Alert>}
 
           {/* Login Button */}
           <Button

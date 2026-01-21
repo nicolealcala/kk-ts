@@ -1,9 +1,10 @@
 import Button from "@mui/material/Button";
 import GoogleIconColored from "../icons/Google";
-import { useAppSelector } from "@/utils/hooks/useRedux";
+import { useAppSelector } from "@/store/hooks";
 
 export default function OAuth() {
-  const { authMode } = useAppSelector((state) => state.auth);
+  const formType = useAppSelector((state) => state.auth.formType);
+
   return (
     <Button
       fullWidth
@@ -22,7 +23,7 @@ export default function OAuth() {
         },
       }}
     >
-      {authMode === "login" ? "Login" : "Sign up"} with Google
+      {formType === "login" ? "Login" : "Sign up"} with Google
     </Button>
   );
 }

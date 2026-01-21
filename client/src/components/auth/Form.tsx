@@ -5,10 +5,10 @@ import { AnimatePresence, motion, type Variants } from "motion/react";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";
 import AuthTabs from "./AuthTabs";
-import { useAppSelector } from "@/utils/hooks/useRedux";
+import { useAppSelector } from "@/store/hooks";
 
 export default function Form() {
-  const { authMode } = useAppSelector((state) => state.auth);
+  const formType = useAppSelector((state) => state.auth.formType);
 
   const variants: Variants = {
     enter: (direction: number) => ({
@@ -28,12 +28,12 @@ export default function Form() {
     }),
   };
 
-  const direction = authMode === "login" ? -1 : 1;
+  const direction = formType === "login" ? -1 : 1;
 
   return (
     <Container maxWidth="xs">
       <Typography variant="h4" component="h1" align="center" fontWeight="bold">
-        {authMode === "login" ? "Welcome Back" : "Create an Account"}
+        {formType === "login" ? "Welcome Back" : "Create an Account"}
       </Typography>
       <Typography variant="body2" color="text.secondary" align="center" mt={1}>
         The smarter way to track your career, no formulas required.
@@ -45,7 +45,7 @@ export default function Form() {
 
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
-          key={authMode}
+          key={formType}
           custom={direction}
           variants={variants}
           initial="enter"
@@ -57,7 +57,7 @@ export default function Form() {
           }}
           style={{ width: "100%", position: "relative" }}
         >
-          {authMode === "login" ? <LoginForm /> : <SignupForm />}
+          {formType === "login" ? <LoginForm /> : <SignupForm />}
         </motion.div>
       </AnimatePresence>
     </Container>

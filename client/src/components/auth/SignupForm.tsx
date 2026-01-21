@@ -12,11 +12,11 @@ import FormTextField from "../shared/FormTextField";
 import PasswordField from "./PasswordField";
 import type { SignupFormInputs } from "@/lib/forms/signUpFormSchema";
 import signupSchema from "@/lib/forms/signUpFormSchema";
-import { useAppDispatch, useAppSelector } from "@/utils/hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setAuthMode, signUpUser } from "@/store/auth/authSlice";
 
 export default function SignupForm() {
-  const { authError } = useAppSelector((state) => state.auth);
+  const error = useAppSelector((state) => state.auth.error);
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
@@ -98,7 +98,7 @@ export default function SignupForm() {
           />
 
           {/* Error Message */}
-          {authError && <Alert severity="error">{authError}</Alert>}
+          {error && <Alert severity="error">{error}</Alert>}
 
           {/* Signup Button */}
           <Button

@@ -7,7 +7,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Person from "@mui/icons-material/Person";
 import Settings from "@mui/icons-material/Settings";
-import { useAppDispatch } from "@/utils/hooks/useRedux";
+import { useAppDispatch } from "@/store/hooks";
 import { logoutUser } from "@/store/auth/authSlice";
 
 export default function AvatarMenu() {

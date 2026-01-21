@@ -73,15 +73,15 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
 export type AuthMode = "login" | "signup" | null;
 
 interface AuthState {
-  authMode: AuthMode;
-  authError: string | null;
-  authSession: Session | null;
+  formType: AuthMode;
+  error: string | null;
+  session: Session | null;
 }
 
 const initialState: AuthState = {
-  authMode: "login",
-  authError: null,
-  authSession: null,
+  formType: "login",
+  error: null,
+  session: null,
 };
 
 export const authSlice = createSlice({
@@ -89,32 +89,32 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     setAuthMode: (state, action: PayloadAction<AuthMode>) => {
-      state.authMode = action.payload;
+      state.formType = action.payload;
     },
     setAuthError: (state, action: PayloadAction<string | null>) => {
-      state.authError = action.payload;
+      state.error = action.payload;
     },
     setAuthSession: (state, action: PayloadAction<Session | null>) => {
-      state.authSession = action.payload;
+      state.session = action.payload;
     },
     clearAuth: (state) => {
-      state.authError = null;
-      state.authSession = null;
+      state.error = null;
+      state.session = null;
     },
   },
   extraReducers: (builder) => {
     builder
       //Success Matcher for Log out
       .addCase(logoutUser.fulfilled, (state) => {
-        state.authSession = null;
-        state.authError = null;
+        state.session = null;
+        state.error = null;
       })
       // Success Matcher for Login & Signup
       .addMatcher(
         isAnyOf(loginUser.fulfilled, signUpUser.fulfilled),
         (state, action) => {
-          state.authSession = action.payload;
-          state.authError = null;
+          state.session = action.payload;
+          state.error = null;
         },
       )
       // Reject Matcher for Login, Signup, and Logout
@@ -122,7 +122,7 @@ export const authSlice = createSlice({
         isAnyOf(loginUser.rejected, signUpUser.rejected, logoutUser.rejected),
         (state, action) => {
           if (action.payload) {
-            state.authError = action.payload;
+            state.error = action.payload;
           }
         },
       );
