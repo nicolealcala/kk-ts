@@ -1,29 +1,31 @@
 import Button from "@mui/material/Button";
 import { AddRounded, FileUploadOutlined } from "@mui/icons-material";
 import NoDocumentIllustration from "../illustrations/NoDocumentIllustration";
-import { Box } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import { Typography } from "@mui/material";
 
 function EmptyApplications() {
   return (
-    <Box className="flex flex-col justify-center items-center-safe rounded-xl bg-white h-full w-full border-3 border-dashed">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        height: "100%",
+        alignItems: "center",
+        pb: 4,
+      }}
+    >
       <NoDocumentIllustration />
-      <p>
-        <strong>No applications yet</strong>
-      </p>
-      <p className="opacity-70">Insert an application record to get started</p>
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <Button
-          variant="contained"
-          size="large"
-          sx={{
-            marginTop: 4,
-            borderRadius: 3,
-          }}
-          startIcon={<AddRounded />}
-        >
-          New record
-        </Button>
+      <Typography variant="body1" fontWeight={600} gutterBottom>
+        No applications yet
+      </Typography>
 
+      <Typography color="textSecondary" gutterBottom>
+        Add an application record to get started
+      </Typography>
+      <Stack direction="row" spacing={2} mt={2}>
         <Button
           variant="outlined"
           size="large"
@@ -35,7 +37,19 @@ function EmptyApplications() {
         >
           Upload CSV
         </Button>
-      </Box>
+
+        <Button
+          variant="contained"
+          size="large"
+          sx={{
+            marginTop: 4,
+            borderRadius: 3,
+          }}
+          startIcon={<AddRounded />}
+        >
+          New record
+        </Button>
+      </Stack>
     </Box>
   );
 }

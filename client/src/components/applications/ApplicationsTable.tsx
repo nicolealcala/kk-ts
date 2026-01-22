@@ -1,15 +1,18 @@
-import { type GridRowsProp, type GridColDef, DataGrid } from "@mui/x-data-grid";
+import {
+  //type GridRowsProp,
+  type GridColDef,
+  DataGrid,
+  type DataGridProps,
+} from "@mui/x-data-grid";
 import ApplicationSourceLink from "./ApplicationSourceLink";
 import Chip from "@mui/material/Chip";
 import { cn } from "@/utils/tailwind";
 import ApplicationMenu from "./AppicationMenu";
-import { mockData } from "../../lib/table/applications";
-import type {
-  ApplicationStatus,
-  WorkArrangement,
-} from "../../lib/types/applications";
+import type { WorkArrangement } from "../../lib/types/applications";
+import ApplicationSalaryRange from "./ApplicationSalaryRange";
+import EmptyApplications from "./EmptyApplications";
 
-const applicationStatuses: ApplicationStatus[] = [
+const applicationStatuses = [
   {
     value: "applied",
     color: "bg-blue-50! text-blue-500!",
@@ -32,16 +35,8 @@ const applicationStatuses: ApplicationStatus[] = [
   },
 ];
 
-const rows: GridRowsProp = mockData.map((data) => ({
-  ...data,
-  date: new Date(data.date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  }),
-}));
-
 const columns: GridColDef[] = [
-  { field: "date", headerName: "Date", flex: 1, display: "text" },
+  { field: "createDate", headerName: "Date", flex: 1, display: "text" },
   {
     field: "position",
     headerName: "Position",
@@ -66,6 +61,9 @@ const columns: GridColDef[] = [
     display: "text",
     flex: 2,
     maxWidth: 150,
+    renderCell: (params) => (
+      <ApplicationSalaryRange salary={params.row.salary} />
+    ),
   },
   {
     field: "source",
@@ -113,7 +111,7 @@ const columns: GridColDef[] = [
     display: "flex",
     flex: 2.5,
     renderCell: (params) => {
-      const status = params.row.status.toLowerCase();
+      const status = params.row.currentStatus.toLowerCase();
 
       const statusConfig = applicationStatuses.find(
         (s) => s.value.toLowerCase() === status,
@@ -137,17 +135,31 @@ const columns: GridColDef[] = [
 
 const PAGINATION_MODEL = { page: 0, pageSize: 10 };
 
-export default function ApplicationsTable() {
+type ApplicationsTableProps<T, K extends keyof T> = Partial<Omit<T, K>> &
+  Required<Pick<T, K>>;
+
+export default function ApplicationsTable({
+  loading,
+  ...props
+}: ApplicationsTableProps<DataGridProps, "loading">) {
   return (
     <DataGrid
-      rows={rows}
       columns={columns}
-      checkboxSelection
+      checkboxSelection={props.rows && props.rows.length > 0}
       disableColumnResize
       disableRowSelectionOnClick
       initialState={{ pagination: { paginationModel: PAGINATION_MODEL } }}
       pageSizeOptions={[10, 15]}
       getRowHeight={() => "auto"}
+      loading={loading}
+      slotProps={{
+        loadingOverlay: {
+          variant: "skeleton",
+          noRowsVariant: "skeleton",
+        },
+      }}
+      slots={{ noRowsOverlay: EmptyApplications }}
+      {...props}
       sx={{
         borderRadius: 3,
         maxWidth: "100%",
@@ -167,8 +179,9 @@ export default function ApplicationsTable() {
           fontSize: "16px",
           fontWeight: "400",
         },
-        "& .MuiDataGrid-cell[data-field='date']": {
+        "& .MuiDataGrid-cell[data-field='createDate']": {
           fontSize: "14px",
+          color: "text.secondary",
         },
       }}
     />

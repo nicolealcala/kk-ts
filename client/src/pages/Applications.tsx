@@ -1,9 +1,19 @@
 import Box from "@mui/material/Box";
 import ApplicationsTable from "../components/applications/ApplicationsTable";
-import EmptyApplications from "../components/applications/EmptyApplications";
-import { mockData } from "../lib/table/applications";
+//import EmptyApplications from "../components/applications/EmptyApplications";
+import { useQuery } from "@tanstack/react-query";
+import { getApplications } from "@/lib/services/applicationsService";
 
 export default function ApplicationsPage() {
+  const currentLocalDate = new Date().toLocaleDateString();
+
+  const { isPending, data } = useQuery({
+    queryKey: ["applications"],
+    queryFn: () => getApplications(currentLocalDate),
+  });
+
+  console.log(data);
+
   return (
     <Box
       component="article"
@@ -15,7 +25,7 @@ export default function ApplicationsPage() {
         width: "100%",
       }}
     >
-      {mockData.length > 0 ? <ApplicationsTable /> : <EmptyApplications />}
+      {data && <ApplicationsTable loading={isPending} rows={data} />}
     </Box>
   );
 }

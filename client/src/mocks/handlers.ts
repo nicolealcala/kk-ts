@@ -3,6 +3,8 @@ import schedulesData from "@/mocks/data/schedulesData";
 import type { Schedule } from "@/lib/types/schedules";
 import { http, HttpResponse } from "msw";
 import { v4 as uuidv4 } from "uuid";
+import applicationsData from "./data/applicationsData";
+import { convertUtcToShortenedLocaleDate } from "@/utils/date";
 
 export const handlers = [
   http.get("/api/context", () => {
@@ -15,6 +17,19 @@ export const handlers = [
     return HttpResponse.json({
       ...dashboardData,
     });
+  }),
+
+  http.get("/api/applications", () => {
+    const transformedData = applicationsData.map((app) => {
+      const currentStatus = app.statusHistory.at(-1);
+      return {
+        ...app,
+        createDate: convertUtcToShortenedLocaleDate(app.createDate),
+        currentStatus: currentStatus?.status || "applied",
+        location: `${app.location.city}, ${app.location.country}`,
+      };
+    });
+    return HttpResponse.json(transformedData);
   }),
 
   http.get("/api/schedules", () => {
