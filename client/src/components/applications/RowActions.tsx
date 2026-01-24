@@ -1,8 +1,8 @@
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
-import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import type { ApplicationRow } from "./Columns";
+import { TrashIcon } from "@heroicons/react/24/solid";
 
 export default function RowActions({ row }: { row: ApplicationRow }) {
   return (
@@ -24,8 +24,12 @@ export default function RowActions({ row }: { row: ApplicationRow }) {
           e.stopPropagation(); // Prevent triggering row click/expansion
           console.log("Delete ID:", row.original.id);
         }}
+        sx={{
+          width: 34,
+          height: 34,
+        }}
       >
-        <DeleteRoundedIcon />
+        <TrashIcon style={{ width: 20, height: 20 }} />
       </IconButton>
     </Stack>
   );
