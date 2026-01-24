@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useReducer, useState } from "react";
 import { columns, type CustomApplication } from "./Columns";
-import Stack from "@mui/material/Stack";
 
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -145,6 +144,7 @@ function ApplicationsTable({
         setIsFilterOpen={setIsFilterOpen}
         filters={filters}
         dispatch={dispatch}
+        selectedRowCount={Object.keys(rowSelection).length}
       />
 
       <TableContainer
@@ -255,14 +255,19 @@ function ApplicationsTable({
                     }}
                   >
                     <TableCell colSpan={row.getVisibleCells().length}>
-                      <Stack py={1.5}>
-                        <div className="font-bold text-gray-700 mb-2">
+                      <Box py={1.5} px={2}>
+                        <Typography
+                          variant="body2"
+                          component="p"
+                          fontWeight="semiBold"
+                          gutterBottom
+                        >
                           Job Description
-                        </div>
-                        <div className="text-sm text-gray-600 whitespace-pre-wrap">
+                        </Typography>
+                        <Typography variant="body2" component="p">
                           {row.original.description}
-                        </div>
-                      </Stack>
+                        </Typography>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 )}
