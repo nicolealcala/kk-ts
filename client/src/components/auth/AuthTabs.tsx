@@ -28,12 +28,12 @@ export default function AuthTabs() {
       <Tab
         label="Login"
         value="login"
-        sx={{ fontWeight: 600, textTransform: "none" }}
+        sx={{ fontWeight: "semiBold", textTransform: "none" }}
       />
       <Tab
         label="Sign up"
         value="signup"
-        sx={{ fontWeight: 600, textTransform: "none" }}
+        sx={{ fontWeight: "semiBold", textTransform: "none" }}
       />
     </Tabs>
   );

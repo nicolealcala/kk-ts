@@ -77,7 +77,7 @@ export default function ChartKpi({
             width: "45%",
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+          <Typography variant="h5" sx={{ fontWeight: "semiBold" }}>
             {value}
           </Typography>
           <KpiChip sentiment={sentiment} />
@@ -127,7 +127,7 @@ function KpiChip({ sentiment = "positive" }: { sentiment: KPISentiment }) {
         mt: 1,
         "& .MuiChip-label": {
           pr: 1,
-          fontWeight: 600,
+          fontWeight: "semiBold",
           fontSize: "12px",
         },
         "& .MuiChip-deleteIcon": {

@@ -164,7 +164,7 @@ export default function ApplicationsDataGrid({
         borderRadius: 3,
         maxWidth: "100%",
         "& .MuiDataGrid-columnHeaderTitle": {
-          fontWeight: "600",
+          fontWeight: "semiBold",
           fontFamily: "'Figtree', sans-serif",
           fontSize: "16px",
           color: "black",
@@ -177,7 +177,7 @@ export default function ApplicationsDataGrid({
           alignItems: "center",
           py: 1,
           fontSize: "16px",
-          fontWeight: "400",
+          fontWeight: "regular",
         },
         "& .MuiDataGrid-cell[data-field='createDate']": {
           fontSize: "14px",

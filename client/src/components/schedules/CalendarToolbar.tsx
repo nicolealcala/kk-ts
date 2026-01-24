@@ -91,7 +91,7 @@ function CustomToolbar(toolbar: CustomToolbarProps & { onAdd: () => void }) {
           variant="body1"
           component="h1"
           alignContent="center"
-          fontWeight={500}
+          fontWeight="medium"
         >
           {toolbar.label}
         </Typography>

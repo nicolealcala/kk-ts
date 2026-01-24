@@ -34,8 +34,8 @@ export default function Kpi({ title, value, sentiment }: ChartKpiProps) {
     title === "funnelYield"
       ? `${value}%`
       : title === "topSource"
-      ? value
-      : `${value} Days`;
+        ? value
+        : `${value} Days`;
   return (
     <Paper
       elevation={0}
@@ -60,7 +60,7 @@ export default function Kpi({ title, value, sentiment }: ChartKpiProps) {
       </Typography>
       <Divider sx={{ mb: 3 }} />
       <Stack direction="row" alignItems="end" gap={1.5}>
-        <Typography variant="h4" sx={{ fontWeight: 600 }}>
+        <Typography variant="h4" sx={{ fontWeight: "semiBold" }}>
           {renderValue}
         </Typography>
         <KpiChip sentiment={sentiment} />
@@ -104,7 +104,7 @@ function KpiChip({ sentiment = "positive" }: { sentiment: KPISentiment }) {
         mb: 0.5,
         "& .MuiChip-label": {
           pr: 1,
-          fontWeight: 600,
+          fontWeight: "semiBold",
           fontSize: "12px",
         },
         "& .MuiChip-deleteIcon": {

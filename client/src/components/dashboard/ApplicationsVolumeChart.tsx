@@ -37,7 +37,7 @@ function ApplicationsVolumeChart({ data }: { data: ChartData[] }) {
       }}
     >
       {/* TO DO: Replace with select component */}
-      <Typography variant="h6" className="capitalize" sx={{ fontWeight: 500 }}>
+      <Typography variant="h6" className="capitalize" sx={{ fontWeight: "medium" }}>
         {chartCategory} Applications
       </Typography>
       <Divider />

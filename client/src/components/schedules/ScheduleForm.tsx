@@ -125,7 +125,7 @@ export default function ScheduleForm({
           overflow: "hidden",
         }}
       >
-        <Typography variant="h5" component="h1" fontWeight={500} px={2.5}>
+        <Typography variant="h5" component="h1" fontWeight="medium" px={2.5}>
           {openDrawer === "create" ? "Create a new event" : "Update event"}
         </Typography>
         <Box

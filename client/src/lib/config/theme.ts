@@ -54,7 +54,7 @@ const theme = createTheme({
           "&:hover": {
             boxShadow: "none",
           },
-          fontWeight: 600,
+          fontWeight: "semiBold",
         }),
         sizeLarge: {
           height: "48px",
