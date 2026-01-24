@@ -29,7 +29,10 @@ export const handlers = [
         location: `${app.location.city}, ${app.location.country}`,
       };
     });
-    return HttpResponse.json(transformedData);
+    return HttpResponse.json({
+      applications: transformedData,
+      totalCount: transformedData.length,
+    });
   }),
 
   http.get("/api/schedules", () => {

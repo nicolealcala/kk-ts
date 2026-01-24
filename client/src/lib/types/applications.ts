@@ -14,12 +14,12 @@ type JobLocation = {
   postalCode?: number;
 };
 
-type JobSource = {
+export type JobSource = {
   platform?: string;
   link?: string;
 };
 
-type ApplicationStatus = {
+export type ApplicationStatus = {
   status: string;
   date: string;
 };
@@ -38,6 +38,7 @@ export interface Application {
   source: JobSource;
   statusHistory: ApplicationStatus[];
   salary?: SalaryRange;
+  description?: string;
   createDate: string;
   updateDate: string;
 }

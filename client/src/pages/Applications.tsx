@@ -1,8 +1,7 @@
 import Box from "@mui/material/Box";
-import ApplicationsTable from "../components/applications/ApplicationsTable";
-//import EmptyApplications from "../components/applications/EmptyApplications";
 import { useQuery } from "@tanstack/react-query";
 import { getApplications } from "@/lib/services/applicationsService";
+import ApplicationsTable from "../components/applications/ApplicationsTable";
 
 export default function ApplicationsPage() {
   const currentLocalDate = new Date().toLocaleDateString();
@@ -12,8 +11,9 @@ export default function ApplicationsPage() {
     queryFn: () => getApplications(currentLocalDate),
   });
 
-  console.log(data);
-
+  if (isPending) {
+    return <div>Loading applications...</div>;
+  }
   return (
     <Box
       component="article"
@@ -25,7 +25,12 @@ export default function ApplicationsPage() {
         width: "100%",
       }}
     >
-      {data && <ApplicationsTable loading={isPending} rows={data} />}
+      {data && (
+        <ApplicationsTable
+          data={data.applications}
+          totalCount={data.totalCount}
+        />
+      )}
     </Box>
   );
 }
