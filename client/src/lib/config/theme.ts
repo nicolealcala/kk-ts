@@ -21,11 +21,23 @@ declare module "@mui/material/styles" {
   interface SimplePaletteColorOptions {
     extraLight?: string;
   }
+
+  interface TypographyVariants {
+    fontWeightSemiBold: number;
+    fontWeightExtraBold: number;
+  }
+
+  interface TypographyVariantsOptions {
+    fontWeightSemiBold?: number;
+    fontWeightExtraBold?: number;
+  }
 }
 const theme = createTheme({
   cssVariables: true,
   typography: {
     fontFamily: "'Figtree', sans-serif",
+    fontWeightSemiBold: 600,
+    fontWeightExtraBold: 800,
   },
   components: {
     MuiButton: {
