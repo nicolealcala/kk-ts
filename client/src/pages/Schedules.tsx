@@ -7,8 +7,8 @@ import { useState } from "react";
 import type { CalendarEvent } from "@/lib/types/schedules";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
 import { useSchedules } from "@/utils/hooks/useSchedules";
+import type { OpenDrawerValues } from "@/lib/types/forms";
 
-export type OpenDrawerValues = "create" | "update" | null;
 
 export default function SchedulesPage() {
   const [openDrawer, setOpenDrawer] = useState<OpenDrawerValues>(null);
