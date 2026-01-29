@@ -64,11 +64,28 @@ export default function ScheduleForm({
     defaultValues: initialValues,
   });
 
+  /**
+   * Watch modality and date field for dependency updates.
+   *
+   * Modality: for toggling between link (remote) and address (onsite) fields
+   * SelectedDate: reference for start and end times (since MUI uses DateTime)
+   */
   const modality = useWatch({
     control,
     name: "modality",
   });
 
+  const selectedDate = useWatch({
+    control,
+    name: "date",
+  });
+
+  /**
+   * When an existing event is selected, pass its values to the form.
+   *
+   * Convert Date objects from `react-big-calendar` events into string (ISO)
+   * to match zod and backend schema.
+   */
   useEffect(() => {
     if (selectedEvent) {
       const startIsoString = convertDateToIso(selectedEvent.start);
@@ -84,13 +101,17 @@ export default function ScheduleForm({
     }
   }, [selectedEvent, reset]);
 
+  /**
+   * When toggling between "remote" and "onsite" modality, reset states
+   * for address and link fields for cleanup
+   */
   useEffect(() => {
     if (modality === "remote") resetField("address");
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
+  
   const currentLocalDate = new Date().toLocaleDateString();
-
   const { saveSchedule } = useSchedules(currentLocalDate);
 
   async function onSubmit(formData: ScheduleFormInputs) {
@@ -110,11 +131,6 @@ export default function ScheduleForm({
     setSelectedEvent(null);
     setOpenDrawer(null);
   }
-
-  const selectedDate = useWatch({
-    control,
-    name: "date",
-  });
 
   return (
     <Drawer open={!!openDrawer} onClose={handleCancel} anchor="right">
