@@ -38,7 +38,7 @@ export default function SearchAndFilter({
   selectedRowCount,
 }: SearchAndFilterProps) {
   return (
-    <Stack direction="column" spacing={1} mb={1}>
+    <Stack direction="column" spacing={1} mb={1.5}>
       <Stack direction="row">
         <Typography
           variant="body1"
