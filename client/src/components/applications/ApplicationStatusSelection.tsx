@@ -6,7 +6,7 @@ const statusOptions = [
   { label: "Applied", value: "applied" },
   { label: "Interviewing", value: "interviewing" },
   { label: "Offered", value: "offered" },
-  { label: "Rejected", value: "rejected" },
+  { label: "Not Selected", value: "not-selected" },
   { label: "Withdrawn", value: "withdrawn" },
   { label: "Accepted", value: "accepted" },
   { label: "Ghosted", value: "ghosted" },
@@ -16,7 +16,7 @@ const statusColors = {
   applied: "bg-blue-50! text-blue-500!",
   interviewing: "bg-yellow-50! text-yellow-500!",
   offered: "bg-green-50! text-green-500!",
-  rejected: "bg-red-50! text-red-500!",
+  "not-selected": "bg-red-50! text-red-500!",
   ghosted: "bg-gray-50! text-gray-500!",
   withdrawn: "bg-purple-50! text-purple-500!",
 };

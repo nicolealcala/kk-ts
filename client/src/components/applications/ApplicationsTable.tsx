@@ -9,7 +9,6 @@ import {
 } from "@tanstack/react-table";
 import { useMemo, useReducer, useState } from "react";
 import { columns, type CustomApplication } from "./Columns";
-
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -18,25 +17,24 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 
-import SortRoundedIcon from "@mui/icons-material/SortRounded";
+import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
+
 import Typography from "@mui/material/Typography";
-import ApplicationTableHeader from "./ApplicationTableHeader";
 import React from "react";
 
 import { blueGrey } from "@mui/material/colors";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
-import SearchAndFilter from "./SearchAndFilter";
-
+import Toolbar from "./Toolbar";
 export type FilterState = {
   count: number;
   arrangement: string[];
   status: string[];
 };
 
-// We use this to identify which arrays we are allowed to toggle
+// Identify which filter category is being modified
 type FilterCategory = "arrangement" | "status";
 
 export type FilterAction =
@@ -86,13 +84,17 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
   }
 }
 
+type ApplicationsTableProps = {
+  data: CustomApplication[];
+  setSelectedApplication: React.Dispatch<
+    React.SetStateAction<CustomApplication | null>
+  >;
+};
+
 function ApplicationsTable({
   data,
-  totalCount,
-}: {
-  data: CustomApplication[];
-  totalCount: number;
-}) {
+  setSelectedApplication,
+}: ApplicationsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -103,11 +105,11 @@ function ApplicationsTable({
     () => [
       {
         id: "workArrangement",
-        value: filters.arrangement.length ? filters.arrangement : "",
+        value: filters.arrangement,
       },
       {
         id: "currentStatus",
-        value: filters.status.length ? filters.status : "",
+        value: filters.status,
       },
     ],
     [filters.arrangement, filters.status],
@@ -122,6 +124,11 @@ function ApplicationsTable({
       columnFilters,
       rowSelection,
     },
+    meta: {
+      onEditRow: (row: CustomApplication) => {
+        setSelectedApplication(row);
+      },
+    },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection, // Sync state
     onSortingChange: setSorting,
@@ -135,16 +142,14 @@ function ApplicationsTable({
 
   return (
     <Box sx={{ width: "100%" }}>
-      <ApplicationTableHeader totalCount={totalCount} />
-
-      <SearchAndFilter
+      <Toolbar
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
         isFilterOpen={isFilterOpen}
         setIsFilterOpen={setIsFilterOpen}
         filters={filters}
         dispatch={dispatch}
-        selectedRowCount={Object.keys(rowSelection).length}
+        rowSelection={rowSelection}
       />
 
       <TableContainer
@@ -156,12 +161,13 @@ function ApplicationsTable({
         <Table
           sx={{
             "& .MuiTableCell-root": {
-              py: 1,
+              py: 0.5,
+              fontSize: "16px",
             },
             "& .MuiTableCell-head": {
               position: "relative", // Needed to anchor the Divider
               bgcolor: blueGrey[50],
-              py: 2,
+              py: 1,
             },
             //Column dividers
             "& .MuiTableCell-head:not(:last-child):after": {
@@ -208,7 +214,13 @@ function ApplicationsTable({
                       )}
                       {/* Sort Indicators */}
                       {header.column.getCanSort() && (
-                        <Typography variant="body1" component="span">
+                        <Typography
+                          variant="body1"
+                          component="span"
+                          display="flex"
+                          alignItems="start"
+                          color="text.disabled"
+                        >
                           {{
                             asc: (
                               <ArrowUpwardRoundedIcon
@@ -223,7 +235,7 @@ function ApplicationsTable({
                               />
                             ),
                           }[header.column.getIsSorted() as string] ?? (
-                            <SortRoundedIcon />
+                            <UnfoldMoreRoundedIcon />
                           )}
                         </Typography>
                       )}
@@ -234,45 +246,71 @@ function ApplicationsTable({
             ))}
           </TableHead>
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <React.Fragment key={row.id}>
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-
-                {/* The Expanded Row Content */}
-                {row.getIsExpanded() && (
-                  <TableRow
-                    sx={{
-                      bgcolor: (theme) => alpha(theme.palette.grey[50], 0.75),
-                    }}
-                  >
-                    <TableCell colSpan={row.getVisibleCells().length}>
-                      <Box py={1.5} px={2}>
-                        <Typography
-                          variant="body2"
-                          component="p"
-                          fontWeight="semiBold"
-                          gutterBottom
-                        >
-                          Job Description
-                        </Typography>
-                        <Typography variant="body2" component="p">
-                          {row.original.description}
-                        </Typography>
-                      </Box>
-                    </TableCell>
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                )}
-              </React.Fragment>
-            ))}
+
+                  {/* The Expanded Row Content */}
+                  {row.getIsExpanded() && (
+                    <TableRow
+                      sx={{
+                        bgcolor: (theme) => alpha(theme.palette.grey[50], 0.75),
+                      }}
+                    >
+                      <TableCell colSpan={row.getVisibleCells().length}>
+                        <Box py={1.5} px={2}>
+                          <Typography
+                            variant="body2"
+                            component="p"
+                            fontWeight="semiBold"
+                            gutterBottom
+                          >
+                            Job Description
+                          </Typography>
+                          <Typography variant="body2" component="p">
+                            {row.original.description}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              // No rows found (Empty State)
+              <TableRow>
+                <TableCell colSpan={table.getAllColumns().length}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    textAlign="center"
+                    py={1}
+                  >
+                    {data.length === 0 ? (
+                      // Initial Empty Table
+                      <Typography variant="body1">
+                        No Applications Yet
+                      </Typography>
+                    ) : (
+                      //Empty search and filter result
+                      <Typography variant="body1">No results found</Typography>
+                    )}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

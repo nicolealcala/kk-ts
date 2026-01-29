@@ -80,8 +80,23 @@ export const columns = [
   }),
   columnHelper.accessor("location", {
     header: "Location",
-    // Assumes location is a string based on your provided Rows data
-    //cell: (info) => info.getValue(),
+    cell: (info) => {
+      const location = info.getValue();
+      const renderedLocation = Object.values(location)
+        .filter(
+          (val: string | number) => val && val !== undefined && val !== null,
+        )
+        .join(", ");
+      return (
+        <Typography
+          variant="body1"
+          color={renderedLocation ? "initial" : "textSecondary"}
+          fontStyle={renderedLocation ? "normal" : "italic"}
+        >
+          {renderedLocation ? renderedLocation : "Not Disclosed"}
+        </Typography>
+      );
+    },
   }),
   columnHelper.accessor("salary", {
     header: "Salary Range",
@@ -98,7 +113,7 @@ export const columns = [
         hybrid: "bg-blue-50! text-blue-500!",
         onsite: "bg-yellow-50! text-yellow-400!",
       };
-      return (
+      return val ? (
         <Chip
           label={val.toUpperCase()}
           size="small"
@@ -107,6 +122,10 @@ export const columns = [
             chipClassName[val as keyof typeof chipClassName],
           )}
         />
+      ) : (
+        <Typography variant="body1" color="text.secondary" fontStyle="italic">
+          Not Disclosed
+        </Typography>
       );
     },
   }),
