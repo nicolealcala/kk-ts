@@ -49,7 +49,7 @@ export default function ApplicationStatusSelection({
           px: 1.5,
           display: "flex",
           alignItems: "center",
-          fontSize: "small",
+          fontSize: "14px",
           fontWeight: "medium",
         },
       }}

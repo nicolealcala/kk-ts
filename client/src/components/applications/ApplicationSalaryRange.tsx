@@ -11,7 +11,7 @@ export default function ApplicationSalaryRange({
 }: ApplicationSalaryRangeProps) {
   if (!salary?.minAmount && !salary?.maxAmount)
     return (
-      <Typography variant="body2" color="text.secondary" fontStyle="italic">
+      <Typography variant="body1" color="text.secondary" fontStyle="italic">
         Not Disclosed
       </Typography>
     );
@@ -25,7 +25,7 @@ export default function ApplicationSalaryRange({
     : false;
 
   return (
-    <Typography variant="body2">
+    <Typography variant="body1">
       {min} {min && "-"} {max}
     </Typography>
   );
