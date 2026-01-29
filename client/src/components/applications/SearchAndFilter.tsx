@@ -64,11 +64,10 @@ export default function SearchAndFilter({
               input: {
                 sx: {
                   "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider", // Replace with your color
+                    borderColor: "divider",
                   },
                 },
               },
-              htmlInput: { sx: { py: "6.75px" } },
             }}
           />
 
