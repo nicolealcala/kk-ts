@@ -1,17 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchSchedules,
-  updateSchedule,
-} from "@/lib/services/schedulesService";
+import { getSchedules, updateSchedule } from "@/lib/services/schedulesService";
 import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 
 export function useSchedules(currentLocalDate: string) {
+  const key = "schedules";
   const queryClient = useQueryClient();
 
   // --- GET Query ---
   const query = useQuery({
-    queryKey: ["schedules", currentLocalDate],
-    queryFn: () => fetchSchedules(currentLocalDate),
+    queryKey: [key, currentLocalDate],
+    queryFn: () => getSchedules(currentLocalDate),
   });
 
   // --- SAVE Mutation (Create or Update) ---
@@ -20,7 +18,7 @@ export function useSchedules(currentLocalDate: string) {
       updateSchedule(data, id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["schedules", currentLocalDate],
+        queryKey: [key, currentLocalDate],
       });
     },
     onError: (error: Error) => {
