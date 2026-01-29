@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { CurrencyOption } from "@/utils/hooks/useRestCountries";
+import type { CurrencyOption } from "@/utils/hooks/useRestCountriesData";
 import {
   Autocomplete,
   TextField,
