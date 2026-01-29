@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import FormTextField from "../shared/form/FormTextField";
@@ -8,15 +9,16 @@ import type { FilterAction, FilterState } from "./ApplicationsTable";
 import ApplicationFilters from "./ApplicationFilters";
 import Divider from "@mui/material/Divider";
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
 
-type SearchAndFilterProps = {
+type ToolbarProps = {
   globalFilter: string;
   setGlobalFilter: React.Dispatch<React.SetStateAction<string>>;
   isFilterOpen: boolean;
   setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
   filters: FilterState;
   dispatch: React.ActionDispatch<[action: FilterAction]>;
-  selectedRowCount: number;
+  rowSelection: {};
 };
 
 const filterStyles = {
@@ -28,15 +30,22 @@ const filterStyles = {
     color: "text.primary",
   },
 };
-export default function SearchAndFilter({
+export default function Toolbar({
   globalFilter,
   setGlobalFilter,
   isFilterOpen,
   setIsFilterOpen,
   filters,
   dispatch,
-  selectedRowCount,
-}: SearchAndFilterProps) {
+  rowSelection,
+}: ToolbarProps) {
+  const currentLocalDate = new Date().toLocaleDateString();
+  const { deleteApplication } = useApplicationsData(currentLocalDate);
+
+  async function deleteSelected(ids: string[]) {
+    deleteApplication(ids);
+  }
+
   return (
     <Stack direction="column" spacing={1} mb={1.5}>
       <Stack direction="row">
@@ -110,10 +119,16 @@ export default function SearchAndFilter({
             )}
           </Button>
 
-          {selectedRowCount > 0 && (
-            <Button color="error" variant="outlined">
+          {Object.keys(rowSelection).length > 0 && (
+            <Button
+              color="error"
+              variant="outlined"
+              onClick={() =>
+                deleteSelected(Object.keys(rowSelection).map((k) => k))
+              }
+            >
               <TrashIcon className="size-4.5 mr-2" />
-              Delete {selectedRowCount} selected
+              Delete {Object.keys(rowSelection).length} selected
             </Button>
           )}
         </Stack>
