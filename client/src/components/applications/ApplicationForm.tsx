@@ -20,7 +20,7 @@ import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import FormButtons from "../shared/form/FormButtons";
 import type { CustomApplication } from "./Columns";
-import { useApplications } from "@/utils/hooks/useApplications";
+import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
 import useRestCountries from "@/utils/hooks/useRestCountries";
 
 type ApplicationFormProps = {
@@ -87,7 +87,7 @@ export default function ApplicationForm({
 
   const currentLocalDate = new Date().toLocaleDateString();
 
-  const { saveApplication } = useApplications(currentLocalDate);
+  const { saveApplication } = useApplicationsData(currentLocalDate);
 
   async function onSubmit(formData: ApplicationFormInputs) {
     saveApplication(

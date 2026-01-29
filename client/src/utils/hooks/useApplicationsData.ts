@@ -5,7 +5,7 @@ import {
 } from "@/lib/services/applicationsService";
 import type { ApplicationFormInputs } from "@/lib/forms/applicationFormSchema";
 
-export function useApplications(currentLocalDate: string) {
+export function useApplicationsData(currentLocalDate: string) {
   const key = "applications";
   const queryClient = useQueryClient();
 
