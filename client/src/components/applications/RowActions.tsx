@@ -1,12 +1,18 @@
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import type { ApplicationRow } from "./Columns";
 import { TrashIcon } from "@heroicons/react/24/solid";
 
-export default function RowActions({ row }: { row: ApplicationRow }) {
+type ApplicationRowProps = {
+  row: ApplicationRow;
+  onOpen: () => void;
+};
+
+export default function RowActions({ row, onOpen }: ApplicationRowProps) {
   return (
-    <Stack direction="row" spacing={1}>
+    <Stack direction="row" spacing={1} maxWidth="fit-content">
       <IconButton
         size="small"
         onClick={() => row.toggleExpanded()}
@@ -14,10 +20,30 @@ export default function RowActions({ row }: { row: ApplicationRow }) {
         sx={{
           transform: row.getIsExpanded() ? "rotate(180deg)" : "rotate(0deg)",
           transition: "0.2s",
+          "&:hover": {
+            color: "black",
+          },
         }}
       >
         <ExpandMoreRoundedIcon />
       </IconButton>
+      <IconButton
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation(); 
+          onOpen();
+          console.log("Update ID:", row.original.id);
+        }}
+        sx={{
+          transition: "0.2s",
+          "&:hover": {
+            color: "black",
+          },
+        }}
+      >
+        <EditRoundedIcon />
+      </IconButton>
+
       <IconButton
         size="small"
         onClick={(e) => {
@@ -27,6 +53,10 @@ export default function RowActions({ row }: { row: ApplicationRow }) {
         sx={{
           width: 34,
           height: 34,
+          transition: "0.2s",
+          "&:hover": {
+            color: "black",
+          },
         }}
       >
         <TrashIcon style={{ width: 20, height: 20 }} />
