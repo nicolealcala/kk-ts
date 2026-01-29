@@ -9,6 +9,8 @@ import Loader from "../shared/Loader";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import supabase from "@/lib/config/supabaseClient";
 import { setAuthSession } from "@/store/auth/authSlice";
+import { ToastContainer, Slide } from "react-toastify";
+
 export default function RootLayout() {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -88,6 +90,19 @@ export default function RootLayout() {
           <DrawerHeader className="w-full" />
           <React.Suspense fallback={<Loader />}>
             <Outlet />
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick={false}
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              transition={Slide}
+            />
           </React.Suspense>
         </Container>
       </Box>
