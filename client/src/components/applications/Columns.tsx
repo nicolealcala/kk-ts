@@ -29,6 +29,22 @@ export type ApplicationRow = Row<CustomApplication>;
 
 const columnHelper = createColumnHelper<CustomApplication>();
 
+const filterIncludesCellValue = (
+  row: Row<CustomApplication>,
+  columnId: string,
+  filterValue: string[],
+) => {
+  const safeFilterValue = Array.isArray(filterValue)
+    ? filterValue
+    : filterValue
+      ? [filterValue]
+      : [];
+
+  if (safeFilterValue.length === 0) return true;
+  const rowValue = row.getValue(columnId) as string;
+  return safeFilterValue.includes(rowValue);
+};
+
 export const columns = [
   {
     id: "select",
@@ -74,6 +90,7 @@ export const columns = [
   }),
   columnHelper.accessor("workArrangement", {
     header: "Arrangement",
+    filterFn: filterIncludesCellValue,
     cell: (info) => {
       const val = info.getValue();
       const chipClassName = {
@@ -99,6 +116,7 @@ export const columns = [
   }),
   columnHelper.accessor("currentStatus", {
     header: "Status",
+    filterFn: filterIncludesCellValue,
     cell: ({ getValue, row }) => (
       <ApplicationStatusSelection getValue={getValue} row={row} />
     ),
