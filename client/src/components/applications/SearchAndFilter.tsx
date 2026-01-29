@@ -1,6 +1,6 @@
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import FormTextField from "../shared/FormTextField";
+import FormTextField from "../shared/form/FormTextField";
 import Button from "@mui/material/Button";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
@@ -41,7 +41,7 @@ export default function SearchAndFilter({
     <Stack direction="column" spacing={1} mb={1}>
       <Stack direction="row">
         <Typography
-          variant="body2"
+          variant="body1"
           component="p"
           alignSelf="end"
           mr={2}
@@ -84,6 +84,9 @@ export default function SearchAndFilter({
             sx={{
               maxWidth: "fit-content",
               ...(isFilterOpen ? filterStyles.open : filterStyles.closed),
+              "&:hover": {
+                bgcolor: isFilterOpen ? "primary.dark" : "grey.200",
+              },
             }}
             onClick={() => {
               setIsFilterOpen((prev) => !prev);

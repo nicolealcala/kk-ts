@@ -9,7 +9,7 @@ import OAuth from "./OAuth";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
 import PasswordField from "./PasswordField";
-import FormTextField from "../shared/FormTextField";
+import FormTextField from "../shared/form/FormTextField";
 import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
 import loginSchema from "@/lib/forms/loginFormSchema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";

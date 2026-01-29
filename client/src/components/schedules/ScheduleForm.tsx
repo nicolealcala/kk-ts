@@ -7,9 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Stack from "@mui/material/Stack";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
-import ScheduleFormButtons from "./ScheduleFormButtons";
-import ScheduleFormTextField from "./ScheduleFormTextField";
-import ScheduleFormSelect from "./ScheduleFormSelect";
+import ControlledFormTextField from "../shared/form/ControlledFormTextField";
+import ControlledFormSelect from "../shared/form/ControlledFormSelect";
 import ScheduleFormTimePicker, {
   DependentTimePicker,
 } from "./ScheduleFormTimePicker";
@@ -25,6 +24,7 @@ import scheduleFormSchema, {
 } from "@/lib/forms/scheduleFormSchema";
 import type { CalendarEvent } from "@/lib/types/schedules";
 import type { OpenDrawerValues } from "@/lib/types/forms";
+import FormButtons from "../shared/form/FormButtons";
 
 type ScheduleFormProps = {
   openDrawer: OpenDrawerValues;
@@ -36,6 +36,13 @@ type ScheduleFormProps = {
 const modalityOptions = [
   { value: "remote", label: "Remote" },
   { value: "onsite", label: "In-Person" },
+];
+
+const typeValues = [
+  { label: "Interview", value: "interview" },
+  { label: "Assessment", value: "assessment" },
+  { label: "Task", value: "task" },
+  { label: "Other", value: "other" },
 ];
 
 export default function ScheduleForm({
@@ -123,6 +130,7 @@ export default function ScheduleForm({
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
+          maxWidth: "600px",
         }}
       >
         <Typography variant="h5" component="h1" fontWeight="medium" px={2.5}>
@@ -138,18 +146,13 @@ export default function ScheduleForm({
         >
           <Stack spacing={3}>
             {/* Title Field */}
-            <Controller
+
+            <ControlledFormTextField
               name="title"
               control={control}
-              render={({ field }) => (
-                <ScheduleFormTextField
-                  field={field}
-                  label="Title"
-                  error={!!errors.title}
-                  errorMessage={errors.title?.message}
-                  placeholder="Event title"
-                />
-              )}
+              label="Title"
+              error={!!errors.title}
+              placeholder="Event title"
             />
 
             {/* Description Field */}
@@ -172,7 +175,7 @@ export default function ScheduleForm({
               )}
             />
 
-            <Stack direction="row" spacing={2} maxWidth="500px">
+            <Stack direction="row" spacing={2}>
               {/* Date Field */}
               <Controller
                 name="date"
@@ -226,17 +229,12 @@ export default function ScheduleForm({
           <Stack spacing={2.5}>
             <Stack direction="row" spacing={2}>
               {/* Type Field */}
-              <Controller
+
+              <ControlledFormSelect
                 name="type"
                 control={control}
-                render={({ field }) => (
-                  <ScheduleFormSelect
-                    field={field}
-                    label="Type"
-                    error={!!errors.type}
-                    errorMessage={errors.type?.message}
-                  />
-                )}
+                label="Type"
+                items={typeValues}
               />
 
               {/* Modality Field */}
@@ -257,49 +255,35 @@ export default function ScheduleForm({
 
             {/* Link / Address Field */}
             {modality === "remote" ? (
-              <Controller
+              <ControlledFormTextField
                 name="link"
                 control={control}
-                render={({ field }) => (
-                  <ScheduleFormTextField
-                    field={field}
-                    label="Meeting Link (URL)"
-                    error={!!errors.link}
-                    errorMessage={errors.link?.message}
-                  />
-                )}
+                label="Meeting Link (URL)"
               />
             ) : (
-              <Controller
+              <ControlledFormTextField
                 name="address"
                 control={control}
-                render={({ field }) => (
-                  <ScheduleFormTextField
-                    field={field}
-                    label="Office/Location Address"
-                    error={!!errors.address}
-                    errorMessage={errors.address?.message}
-                  />
-                )}
+                label="Office/Location Address"
               />
             )}
           </Stack>
         </Box>
         <Stack direction="row" spacing={2} width="100%" px={2.5}>
           {/* Cancel Button */}
-          <ScheduleFormButtons
+          <FormButtons
             type="button"
             variant="outlined"
-            isLoading={isSubmitting}
+            loading={isSubmitting}
             onClick={handleCancel}
           >
             Cancel
-          </ScheduleFormButtons>
+          </FormButtons>
 
           {/* Save Button */}
-          <ScheduleFormButtons type="submit" isLoading={isSubmitting}>
+          <FormButtons type="submit" loading={isSubmitting}>
             Save
-          </ScheduleFormButtons>
+          </FormButtons>
         </Stack>
       </Box>
     </Drawer>
