@@ -1,18 +1,14 @@
+import type { JobSource } from "@/lib/types/applications";
 import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 
-type ApplicationSource = {
-  platform: string;
-  link: string;
-};
-
-function ApplicationSourceLink({ source }: { source: ApplicationSource }) {
+function ApplicationSourceLink({ source }: { source: JobSource }) {
   return (
     <a
       className="inline-flex items-center text-primary hover:underline underline-offset-2"
       href={source.link}
       target="_blank"
     >
-      {source.platform}&nbsp;
+      <span className="capitalize">{source.platform}</span>&nbsp;
       <OpenInNewRoundedIcon fontSize="inherit" className="mb-0.5" />
     </a>
   );

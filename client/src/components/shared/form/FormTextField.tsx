@@ -20,7 +20,9 @@ export default function FormTextField({
       error={error}
       slotProps={{
         formHelperText: { sx: { mx: 0.5 } },
+        ...props.slotProps,
       }}
+      sx={{ bgcolor: "background.paper", ...props.sx }}
     />
   );
 }

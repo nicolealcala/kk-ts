@@ -27,7 +27,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
   const currentDay = useMemo(() => new Date().getDay(), []);
   const hours = Array.from(
     { length: config.end - config.start + 1 },
-    (_, i) => config.start + i
+    (_, i) => config.start + i,
   );
 
   const formatHour = (hour: number): string => {
@@ -55,18 +55,18 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ pr: 2, fontWeight: 500, alignSelf: "center" }}
+            sx={{ pr: 2, fontWeight: "medium", alignSelf: "center" }}
           >
             {formatHour(hour)}
           </Typography>
 
           {DAYS.map((_, dayIndex) => {
             const active = activeSlots.some(
-              (s) => s.day === dayIndex && hour >= s.start && hour < s.end
+              (s) => s.day === dayIndex && hour >= s.start && hour < s.end,
             );
 
             const scheduleItem = activeSlots.find(
-              (s) => s.day === dayIndex && hour >= s.start && hour < s.end
+              (s) => s.day === dayIndex && hour >= s.start && hour < s.end,
             );
 
             return (
@@ -109,7 +109,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({
         <Typography
           key={`day-${i}`}
           variant="button"
-          fontWeight="700"
+          fontWeight="bold"
           align="center"
           color={currentDay === i + 1 ? "primary.light" : "text.secondary"}
           sx={{ alignSelf: "center" }}

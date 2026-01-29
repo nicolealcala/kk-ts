@@ -6,9 +6,8 @@ import Stack from "@mui/material/Stack";
 import { useState } from "react";
 import type { CalendarEvent } from "@/lib/types/schedules";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
-import { useSchedules } from "@/utils/hooks/useSchedules";
-
-export type OpenDrawerValues = "create" | "update" | null;
+import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
+import type { OpenDrawerValues } from "@/lib/types/forms";
 
 export default function SchedulesPage() {
   const [openDrawer, setOpenDrawer] = useState<OpenDrawerValues>(null);
@@ -18,7 +17,7 @@ export default function SchedulesPage() {
 
   const currentLocalDate = new Date().toLocaleDateString();
 
-  const { schedules, isLoading, error } = useSchedules(currentLocalDate);
+  const { schedules, isLoading, error } = useSchedulesData(currentLocalDate);
 
   if (isLoading) return <SchedulesSkeleton />;
 

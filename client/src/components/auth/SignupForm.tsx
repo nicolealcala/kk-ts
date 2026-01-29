@@ -8,7 +8,7 @@ import Typography from "@mui/material/Typography";
 import OAuth from "./OAuth";
 import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
-import FormTextField from "../shared/FormTextField";
+import FormTextField from "../shared/form/FormTextField";
 import PasswordField from "./PasswordField";
 import type { SignupFormInputs } from "@/lib/forms/signUpFormSchema";
 import signupSchema from "@/lib/forms/signUpFormSchema";

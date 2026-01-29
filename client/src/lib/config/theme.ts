@@ -21,11 +21,23 @@ declare module "@mui/material/styles" {
   interface SimplePaletteColorOptions {
     extraLight?: string;
   }
+
+  interface TypographyVariants {
+    fontWeightSemiBold: number;
+    fontWeightExtraBold: number;
+  }
+
+  interface TypographyVariantsOptions {
+    fontWeightSemiBold?: number;
+    fontWeightExtraBold?: number;
+  }
 }
 const theme = createTheme({
   cssVariables: true,
   typography: {
     fontFamily: "'Figtree', sans-serif",
+    fontWeightSemiBold: 600,
+    fontWeightExtraBold: 800,
   },
   components: {
     MuiButton: {
@@ -42,10 +54,14 @@ const theme = createTheme({
           "&:hover": {
             boxShadow: "none",
           },
-          fontWeight: 600,
+          fontWeight: "semiBold",
         }),
         sizeLarge: {
           height: "48px",
+          fontSize: "16px",
+        },
+        sizeMedium: {
+          fontSize: "16px",
         },
       },
     },

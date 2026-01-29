@@ -59,3 +59,16 @@ export function transformWeeklySchedules(data: Schedule[]) {
 export function convertDateToIso(date: Date | string) {
   return date instanceof Date ? date.toISOString() : date;
 }
+
+/**
+ * Function to convert UTC date string to locale date string (shortened without year)
+ * @param dateString
+ * @returns string
+ */
+
+export function convertUtcToShortenedLocaleDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}

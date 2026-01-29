@@ -110,7 +110,7 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                     <Typography
                       variant="body1"
                       component="span"
-                      fontWeight={500}
+                      fontWeight="medium"
                       sx={{ ml: 1 }}
                       className="line-clamp-1"
                     >

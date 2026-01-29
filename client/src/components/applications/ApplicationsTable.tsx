@@ -1,176 +1,321 @@
-import { type GridRowsProp, type GridColDef, DataGrid } from "@mui/x-data-grid";
-import ApplicationSourceLink from "./ApplicationSourceLink";
-import Chip from "@mui/material/Chip";
-import { cn } from "@/utils/tailwind";
-import ApplicationMenu from "./AppicationMenu";
-import { mockData } from "../../lib/table/applications";
-import type {
-  ApplicationStatus,
-  WorkArrangement,
-} from "../../lib/types/applications";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+  type SortingState,
+  getExpandedRowModel,
+} from "@tanstack/react-table";
+import { useMemo, useReducer, useState } from "react";
+import { columns, type CustomApplication } from "./Columns";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 
-const applicationStatuses: ApplicationStatus[] = [
-  {
-    value: "applied",
-    color: "bg-blue-50! text-blue-500!",
-  },
-  {
-    value: "interviewing",
-    color: "bg-yellow-50! text-yellow-500!",
-  },
-  {
-    value: "offered",
-    color: "bg-green-50! text-green-500!",
-  },
-  {
-    value: "rejected",
-    color: "bg-red-50! text-red-500!",
-  },
-  {
-    value: "ghosted",
-    color: "bg-gray-50! text-gray-500!",
-  },
-];
+import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded";
+import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
+import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 
-const rows: GridRowsProp = mockData.map((data) => ({
-  ...data,
-  date: new Date(data.date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  }),
-}));
+import Typography from "@mui/material/Typography";
+import React from "react";
 
-const columns: GridColDef[] = [
-  { field: "date", headerName: "Date", flex: 1, display: "text" },
-  {
-    field: "position",
-    headerName: "Position",
-    display: "flex",
-    flex: 2,
-    renderCell: (params) => {
-      const position = params.row.position;
+import { blueGrey } from "@mui/material/colors";
+import { alpha } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Toolbar from "./Toolbar";
+export type FilterState = {
+  count: number;
+  arrangement: string[];
+  status: string[];
+};
 
-      return <div className="flex line-clamp-2!">{position}</div>;
-    },
-  },
-  {
-    field: "organization",
-    headerName: "Organization",
-    display: "text",
-    flex: 2,
-  },
-  { field: "location", headerName: "Location", display: "text", flex: 2 },
-  {
-    field: "salary",
-    headerName: "Salary Range",
-    display: "text",
-    flex: 2,
-    maxWidth: 150,
-  },
-  {
-    field: "source",
-    headerName: "Source",
-    minWidth: 128,
-    display: "flex",
-    renderCell: (params) => (
-      <ApplicationSourceLink source={params.row.source} />
-    ),
-  },
-  {
-    field: "workArrangement",
-    headerName: "Arrangement",
-    display: "flex",
-    flex: 1.5,
-    headerAlign: "center",
-    renderCell: (params) => {
-      type ChipClassName = {
-        [K in WorkArrangement]: string;
+// Identify which filter category is being modified
+type FilterCategory = "arrangement" | "status";
+
+export type FilterAction =
+  | { type: "TOGGLE_FILTER"; category: FilterCategory; value: string }
+  | { type: "CLEAR_ALL" };
+
+const initialState: FilterState = {
+  count: 0,
+  arrangement: [],
+  status: [],
+};
+
+// Helper function to calculate count based on active categories
+const calculateCount = (arrangement: string[], status: string[]): number => {
+  let activeCategories = 0;
+  if (arrangement.length > 0) activeCategories++;
+  if (status.length > 0) activeCategories++;
+  return activeCategories;
+};
+
+function filterReducer(state: FilterState, action: FilterAction): FilterState {
+  switch (action.type) {
+    case "TOGGLE_FILTER": {
+      const { category, value } = action;
+
+      // 1. Calculate the new list for the specific category
+      const newList = state[category].includes(value)
+        ? state[category].filter((v) => v !== value)
+        : [...state[category], value];
+
+      // 2. Prepare the upcoming state to calculate the count
+      const nextArrangement =
+        category === "arrangement" ? newList : state.arrangement;
+      const nextStatus = category === "status" ? newList : state.status;
+
+      // 3. Return state with the derived count
+      return {
+        ...state,
+        [category]: newList,
+        count: calculateCount(nextArrangement, nextStatus),
       };
+    }
+    case "CLEAR_ALL":
+      return initialState;
+    default:
+      return state;
+  }
+}
 
-      const chipClassName: ChipClassName = {
-        remote: "bg-green-50! text-green-500!",
-        hybrid: "bg-blue-50! text-blue-500!",
-        onsite: "bg-yellow-50! text-yellow-400!",
-      };
+type ApplicationsTableProps = {
+  data: CustomApplication[];
+  setSelectedApplication: React.Dispatch<
+    React.SetStateAction<CustomApplication | null>
+  >;
+};
 
-      const arrangement = (
-        params.row.workArrangement as string
-      ).toLowerCase() as WorkArrangement;
+function ApplicationsTable({
+  data,
+  setSelectedApplication,
+}: ApplicationsTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, dispatch] = useReducer(filterReducer, initialState);
+  const [rowSelection, setRowSelection] = useState({}); // State to track selection
 
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <Chip
-            label={arrangement.toUpperCase()}
-            className={cn("text-xs font-medium", chipClassName[arrangement])}
-          />
-        </div>
-      );
+  const columnFilters = useMemo(
+    () => [
+      {
+        id: "workArrangement",
+        value: filters.arrangement,
+      },
+      {
+        id: "currentStatus",
+        value: filters.status,
+      },
+    ],
+    [filters.arrangement, filters.status],
+  );
+
+  const table = useReactTable({
+    data,
+    columns: columns,
+    state: {
+      sorting,
+      globalFilter,
+      columnFilters,
+      rowSelection,
     },
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    display: "flex",
-    flex: 2.5,
-    renderCell: (params) => {
-      const status = params.row.status.toLowerCase();
-
-      const statusConfig = applicationStatuses.find(
-        (s) => s.value.toLowerCase() === status,
-      );
-
-      const chipClassName = statusConfig?.color ?? "bg-gray-50! text-gray-500!";
-
-      return (
-        <div className="flex w-full h-full items-center justify-between!">
-          <Chip
-            label={status.toUpperCase()}
-            className={cn("text-xs font-medium", chipClassName)}
-          />
-
-          <ApplicationMenu />
-        </div>
-      );
+    meta: {
+      onEditRow: (row: CustomApplication) => {
+        setSelectedApplication(row);
+      },
     },
-  },
-];
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection, // Sync state
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getRowCanExpand: () => true,
+    getExpandedRowModel: getExpandedRowModel(),
+  });
 
-const PAGINATION_MODEL = { page: 0, pageSize: 10 };
-
-export default function ApplicationsTable() {
   return (
-    <DataGrid
-      rows={rows}
-      columns={columns}
-      checkboxSelection
-      disableColumnResize
-      disableRowSelectionOnClick
-      initialState={{ pagination: { paginationModel: PAGINATION_MODEL } }}
-      pageSizeOptions={[10, 15]}
-      getRowHeight={() => "auto"}
-      sx={{
-        borderRadius: 3,
-        maxWidth: "100%",
-        "& .MuiDataGrid-columnHeaderTitle": {
-          fontWeight: "600",
-          fontFamily: "'Figtree', sans-serif",
-          fontSize: "16px",
-          color: "black",
-        },
-        fontFamily: "'Inter', sans-serif",
-        "& .MuiDataGrid-cell": {
-          whiteSpace: "normal",
-          lineHeight: "1.5rem",
-          display: "flex",
-          alignItems: "center",
-          py: 1,
-          fontSize: "16px",
-          fontWeight: "400",
-        },
-        "& .MuiDataGrid-cell[data-field='date']": {
-          fontSize: "14px",
-        },
-      }}
-    />
+    <Box sx={{ width: "100%" }}>
+      <Toolbar
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+        isFilterOpen={isFilterOpen}
+        setIsFilterOpen={setIsFilterOpen}
+        filters={filters}
+        dispatch={dispatch}
+        rowSelection={rowSelection}
+      />
+
+      <TableContainer
+        component={Paper}
+        elevation={0}
+        sx={{ borderRadius: 2 }}
+        className="border subtle-shadow"
+      >
+        <Table
+          sx={{
+            "& .MuiTableCell-root": {
+              py: 0.5,
+              fontSize: "16px",
+            },
+            "& .MuiTableCell-head": {
+              position: "relative", // Needed to anchor the Divider
+              bgcolor: blueGrey[50],
+              py: 1,
+            },
+            //Column dividers
+            "& .MuiTableCell-head:not(:last-child):after": {
+              content: '""',
+              position: "absolute",
+              right: 0,
+              top: "25%",
+              height: "50%",
+              width: "1px",
+              backgroundColor: (theme) => theme.palette.divider,
+            },
+            "& .MuiTableRow-root:hover": {
+              backgroundColor: alpha(blueGrey[50], 0.3),
+            },
+            "& .MuiTableBody-root .MuiTableRow-root:last-child .MuiTableCell-root":
+              {
+                borderBottom: 0,
+              },
+          }}
+          aria-label="Applications table"
+        >
+          <TableHead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableCell
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <Typography
+                      variant="body1"
+                      component="p"
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                      fontWeight="medium"
+                      sx={{
+                        cursor: header.column.getCanSort() ? "pointer" : "auto",
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                      {/* Sort Indicators */}
+                      {header.column.getCanSort() && (
+                        <Typography
+                          variant="body1"
+                          component="span"
+                          display="flex"
+                          alignItems="start"
+                          color="text.disabled"
+                        >
+                          {{
+                            asc: (
+                              <ArrowUpwardRoundedIcon
+                                fontSize="small"
+                                sx={{ width: "24px" }}
+                              />
+                            ),
+                            desc: (
+                              <ArrowDownwardRoundedIcon
+                                fontSize="small"
+                                sx={{ width: "24px" }}
+                              />
+                            ),
+                          }[header.column.getIsSorted() as string] ?? (
+                            <UnfoldMoreRoundedIcon />
+                          )}
+                        </Typography>
+                      )}
+                    </Typography>
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row) => (
+                <React.Fragment key={row.id}>
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+
+                  {/* The Expanded Row Content */}
+                  {row.getIsExpanded() && (
+                    <TableRow
+                      sx={{
+                        bgcolor: (theme) => alpha(theme.palette.grey[50], 0.75),
+                      }}
+                    >
+                      <TableCell colSpan={row.getVisibleCells().length}>
+                        <Box py={1.5} px={2}>
+                          <Typography
+                            variant="body2"
+                            component="p"
+                            fontWeight="semiBold"
+                            gutterBottom
+                          >
+                            Job Description
+                          </Typography>
+                          <Typography variant="body2" component="p">
+                            {row.original.description}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              // No rows found (Empty State)
+              <TableRow>
+                <TableCell colSpan={table.getAllColumns().length}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    textAlign="center"
+                    py={1}
+                  >
+                    {data.length === 0 ? (
+                      // Initial Empty Table
+                      <Typography variant="body1">
+                        No Applications Yet
+                      </Typography>
+                    ) : (
+                      //Empty search and filter result
+                      <Typography variant="body1">No results found</Typography>
+                    )}
+                  </Box>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 }
+
+export default ApplicationsTable;

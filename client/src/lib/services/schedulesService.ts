@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import type { ScheduleFormInputs } from "../forms/scheduleFormSchema";
 
-export const fetchSchedules = async (currentLocalDate: string) => {
+export const getSchedules = async (currentLocalDate: string) => {
   const response = await fetch(
     `${import.meta.env.VITE_BASE_URL}/api/schedules?date=${currentLocalDate}`,
   );
@@ -21,7 +21,7 @@ export const updateSchedule = async (
     : `${import.meta.env.VITE_BASE_URL}/api/schedules`;
 
   const response = await fetch(url, {
-    method: isUpdate ? "PUT" : "POST",
+    method: isUpdate ? "PATCH" : "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       ...formData,
@@ -31,5 +31,5 @@ export const updateSchedule = async (
   });
 
   if (!response.ok) throw new Error("Save failed");
-  return response.json();
+  return await response.json();
 };
