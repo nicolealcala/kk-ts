@@ -8,7 +8,7 @@ function ApplicationSourceLink({ source }: { source: JobSource }) {
       href={source.link}
       target="_blank"
     >
-      {source.platform}&nbsp;
+      <span className="capitalize">{source.platform}</span>&nbsp;
       <OpenInNewRoundedIcon fontSize="inherit" className="mb-0.5" />
     </a>
   );
