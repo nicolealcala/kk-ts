@@ -7,14 +7,26 @@ import ApplicationSalaryRange from "./ApplicationSalaryRange";
 import ApplicationStatusSelection from "./ApplicationStatusSelection";
 import RowActions from "./RowActions";
 import Checkbox from "@mui/material/Checkbox";
-import type { Table, Row } from "@tanstack/react-table";
+import type { Table, Row, RowData } from "@tanstack/react-table";
+import Typography from "@mui/material/Typography";
+import "@tanstack/react-table";
+import { convertUtcToShortenedLocaleDate } from "@/utils/date";
+
+/**
+ * Extend Table Row functionality for editing an item
+ */
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    onEditRow: (row: TData) => void;
+  }
+}
 
 export type CustomApplication = Application & {
   currentStatus: string;
 };
 export type ApplicationTable = Table<CustomApplication>;
 export type ApplicationRow = Row<CustomApplication>;
-//TO DO: Add Action / Expand button for notes
+
 const columnHelper = createColumnHelper<CustomApplication>();
 
 export const columns = [
@@ -38,7 +50,11 @@ export const columns = [
   },
   columnHelper.accessor("createDate", {
     header: "Date",
-    // cell: (info) => info.getValue(),
+    cell: (info) => (
+      <Typography variant="caption" color="initial">
+        {convertUtcToShortenedLocaleDate(info.getValue())}
+      </Typography>
+    ),
   }),
   columnHelper.accessor("position", {
     header: "Position",
@@ -70,7 +86,7 @@ export const columns = [
           label={val.toUpperCase()}
           size="small"
           className={cn(
-            "text-xs font-medium",
+            "text-sm! font-medium",
             chipClassName[val as keyof typeof chipClassName],
           )}
         />
@@ -90,6 +106,11 @@ export const columns = [
   columnHelper.display({
     id: "actions",
     header: "Actions",
-    cell: (props) => <RowActions row={props.row} />,
+    cell: ({ row, table }) => (
+      <RowActions
+        row={row}
+        onOpen={() => table.options.meta?.onEditRow(row.original)}
+      />
+    ),
   }),
 ];
