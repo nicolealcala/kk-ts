@@ -27,7 +27,6 @@ export const handlers = [
       return {
         ...app,
         currentStatus: currentStatus?.status || "applied",
-        location: `${app.location.city}, ${app.location.country}`,
       };
     });
     return HttpResponse.json({
@@ -37,13 +36,24 @@ export const handlers = [
   }),
 
   http.post("/api/applications", async ({ request }) => {
-    const newApplication = (await request.json()) as Application;
+    const newApplication = (await request.json()) as Omit<
+      Application,
+      "statusHistory"
+    > & {
+      status: string;
+    };
 
     const savedApplication = {
       ...newApplication,
       id: uuidv4(),
-      createdAt: new Date().toISOString(),
+      statusHistory: [
+        { status: newApplication.status, date: new Date().toISOString() },
+      ],
+      createDate: new Date().toISOString(),
+      updateDate: new Date().toISOString(),
     };
+
+    applicationsData.push(savedApplication);
 
     console.log("Mock DB Updated:", applicationsData);
 
@@ -52,16 +62,41 @@ export const handlers = [
 
   http.patch("/api/applications/:id", async ({ request, params }) => {
     const { id } = params;
-    const updatedData = (await request.json()) as Application;
+    const updatedData = (await request.json()) as Omit<
+      Application,
+      "statusHistory"
+    > & {
+      status: string;
+    };
+
+    const savedData = {
+      ...updatedData,
+      statusHistory: [
+        { status: updatedData.status, date: new Date().toISOString() },
+      ],
+      createDate: new Date().toISOString(),
+      updateDate: new Date().toISOString(),
+    };
 
     const index = applicationsData.findIndex((item) => item.id === id);
 
     if (index !== -1) {
-      applicationsData[index] = { ...applicationsData[index], ...updatedData };
+      applicationsData[index] = { ...applicationsData[index], ...savedData };
       return HttpResponse.json(applicationsData[index]);
     }
 
     return new HttpResponse(null, { status: 404 });
+  }),
+
+  http.delete("/api/applications", async ({ request }) => {
+    const ids = await request.json();
+
+    const isMultipleDeletion = Array.isArray(ids);
+
+    const updatedApplications = applicationsData.filter((a) =>
+      isMultipleDeletion ? !ids.includes(a.id) : a.id !== ids,
+    );
+    return HttpResponse.json(updatedApplications, { status: 200 });
   }),
 
   // Schedules

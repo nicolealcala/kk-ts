@@ -1,9 +1,8 @@
 import type { ApplicationFormInputs } from "../forms/applicationFormSchema";
 
-export async function getApplications(currentLocaleDate: string) {
-  const response = await fetch(
-    `${import.meta.env.VITE_BASE_URL}/api/applications?date=${currentLocaleDate}`,
-  );
+const URL = `${import.meta.env.VITE_BASE_URL}/api/applications`;
+export async function getApplications(currentLocaleDate?: string) {
+  const response = await fetch(`${URL}?date=${currentLocaleDate}`);
 
   if (!response.ok) throw new Error("Failed to fetch applications");
 
@@ -15,9 +14,7 @@ export const updateApplication = async (
   selectedId?: string,
 ) => {
   const isUpdate = !!selectedId;
-  const url = isUpdate
-    ? `${import.meta.env.VITE_BASE_URL}/api/applications/${selectedId}`
-    : `${import.meta.env.VITE_BASE_URL}/api/applications`;
+  const url = isUpdate ? `${URL}/${selectedId}` : URL;
 
   const response = await fetch(url, {
     method: isUpdate ? "PATCH" : "POST",
@@ -26,5 +23,16 @@ export const updateApplication = async (
   });
 
   if (!response.ok) throw new Error("Save failed");
+  return await response.json();
+};
+
+export const deleteApplication = async (id: string | string[]) => {
+  const response = await fetch(URL, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(id),
+  });
+
+  if (!response.ok) throw new Error("Failed to delete");
   return await response.json();
 };
