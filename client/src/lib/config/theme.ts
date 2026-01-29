@@ -58,6 +58,10 @@ const theme = createTheme({
         }),
         sizeLarge: {
           height: "48px",
+          fontSize: "16px",
+        },
+        sizeMedium: {
+          fontSize: "16px",
         },
       },
     },
