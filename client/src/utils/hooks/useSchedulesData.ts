@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getSchedules, updateSchedule } from "@/lib/services/schedulesService";
 import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
 
-export function useSchedules(currentLocalDate: string) {
+export function useSchedulesData(currentLocalDate: string) {
   const key = "schedules";
   const queryClient = useQueryClient();
 

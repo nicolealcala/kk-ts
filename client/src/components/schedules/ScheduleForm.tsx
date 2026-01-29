@@ -17,7 +17,7 @@ import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
 import Divider from "@mui/material/Divider";
 import { convertDateToIso } from "@/utils/date";
-import { useSchedules } from "@/utils/hooks/useSchedules";
+import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
 import scheduleFormSchema, {
   initialValues,
   type ScheduleFormInputs,
@@ -110,9 +110,8 @@ export default function ScheduleForm({
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  
   const currentLocalDate = new Date().toLocaleDateString();
-  const { saveSchedule } = useSchedules(currentLocalDate);
+  const { saveSchedule } = useSchedulesData(currentLocalDate);
 
   async function onSubmit(formData: ScheduleFormInputs) {
     saveSchedule(
