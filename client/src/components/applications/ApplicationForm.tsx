@@ -36,6 +36,7 @@ const jobTypeOptions = [
   { value: "gig", label: "Gig" },
   { value: "partime", label: "Part-time" },
   { value: "fulltime", label: "Full-time" },
+  { value: "contract", label: "Contract" },
 ];
 const modalityOptions = [
   { value: "remote", label: "Remote" },
@@ -183,7 +184,7 @@ export default function ApplicationForm({
               </Box>
             </Stack>
 
-            <Stack direction="row" spacing={2} width={500}>
+            <Stack direction="row" spacing={2}>
               {/* Job Type Field */}
               <ControlledFormSelect
                 name="type"
