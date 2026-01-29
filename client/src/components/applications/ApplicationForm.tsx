@@ -21,7 +21,7 @@ import rehypeSanitize from "rehype-sanitize";
 import FormButtons from "../shared/form/FormButtons";
 import type { CustomApplication } from "./Columns";
 import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
-import useRestCountries from "@/utils/hooks/useRestCountries";
+import useRestCountriesData from "@/utils/hooks/useRestCountriesData";
 
 type ApplicationFormProps = {
   openDrawer: OpenDrawerValues;
@@ -102,7 +102,7 @@ export default function ApplicationForm({
     console.log(formData);
   }
 
-  const { countries, currencies, isLoading } = useRestCountries();
+  const { countries, currencies, isLoading } = useRestCountriesData();
 
   React.useEffect(() => {
     if (selectedApplication) {
