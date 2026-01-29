@@ -21,6 +21,8 @@ export type SalaryRange = {
   minAmount?: number;
   maxAmount?: number;
 };
+
+export type JobType = "gig" | "parttime" | "fulltime" | "contract" | "other";
 export interface Application {
   id: string;
   organization: string;
@@ -29,6 +31,7 @@ export interface Application {
   workArrangement: WorkArrangement;
   source: JobSource;
   statusHistory: ApplicationStatus[];
+  type: JobType;
   salary?: SalaryRange;
   description?: string;
   createDate: string;
