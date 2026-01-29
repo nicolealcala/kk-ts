@@ -86,7 +86,9 @@ export default function RootLayout() {
           }}
         >
           <DrawerHeader className="w-full" />
-          <Outlet />
+          <React.Suspense fallback={<Loader />}>
+            <Outlet />
+          </React.Suspense>
         </Container>
       </Box>
     )
