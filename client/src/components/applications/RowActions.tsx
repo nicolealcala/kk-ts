@@ -4,6 +4,7 @@ import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import type { ApplicationRow } from "./Columns";
 import { TrashIcon } from "@heroicons/react/24/solid";
+import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
 
 type ApplicationRowProps = {
   row: ApplicationRow;
@@ -11,6 +12,12 @@ type ApplicationRowProps = {
 };
 
 export default function RowActions({ row, onOpen }: ApplicationRowProps) {
+  const currentLocalDate = new Date().toLocaleDateString();
+  const { deleteApplication } = useApplicationsData(currentLocalDate);
+
+  async function deleteRowItem(ids: string) {
+    deleteApplication(ids);
+  }
   return (
     <Stack direction="row" spacing={1} maxWidth="fit-content">
       <IconButton
@@ -30,7 +37,7 @@ export default function RowActions({ row, onOpen }: ApplicationRowProps) {
       <IconButton
         size="small"
         onClick={(e) => {
-          e.stopPropagation(); 
+          e.stopPropagation();
           onOpen();
           console.log("Update ID:", row.original.id);
         }}
@@ -47,8 +54,8 @@ export default function RowActions({ row, onOpen }: ApplicationRowProps) {
       <IconButton
         size="small"
         onClick={(e) => {
-          e.stopPropagation(); // Prevent triggering row click/expansion
-          console.log("Delete ID:", row.original.id);
+          e.stopPropagation();
+          deleteRowItem(row.original.id);
         }}
         sx={{
           width: 34,
