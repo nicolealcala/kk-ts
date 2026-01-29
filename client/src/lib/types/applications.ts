@@ -1,13 +1,5 @@
 export type WorkArrangement = "remote" | "hybrid" | "onsite";
 
-/**
- * [CLIENT]
- */
-// export type ApplicationStatus = {
-//   value: string;
-//   color: string;
-// };
-
 type JobLocation = {
   country?: string;
   city?: string;
