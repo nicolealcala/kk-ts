@@ -10,7 +10,7 @@ const applicationFormSchema = z.object({
       postalCode: z.string().optional(),
     })
     .optional(),
-  workArrangement: z.enum(["onsite", "remote", "hybrid"]).optional(),
+  workArrangement: z.enum(["onsite", "remote", "hybrid", ""]).optional(),
   source: z.object({
     platform: z.string().nonempty("Platform is required"),
     link: z.url("Invalid URL").nonempty("Job posting link is required"),
@@ -22,7 +22,7 @@ const applicationFormSchema = z.object({
       maxAmount: z.number().min(0),
     })
     .optional(),
-  type: z.enum(["gig", "fulltime", "partime"]).optional(),
+  type: z.enum(["gig", "fulltime", "partime", "contract", ""]).optional(),
   description: z.string().optional(),
   status: z
     .enum([
@@ -43,11 +43,12 @@ export const initialValues: ApplicationFormInputs = {
   organization: "",
   position: "",
   location: { country: "", city: "", postalCode: "" },
-  workArrangement: undefined,
+  workArrangement: "",
   source: { platform: "", link: "" },
   salary: { currency: "", minAmount: 0, maxAmount: 0 },
-  type: undefined,
+  type: "",
   description: "",
   status: "applied",
 };
+
 export default applicationFormSchema;
