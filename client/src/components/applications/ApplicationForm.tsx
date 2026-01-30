@@ -289,7 +289,7 @@ export default function ApplicationForm({
           <FormButtons
             type="button"
             variant="outlined"
-            loading={isSubmitting}
+            disabled={isSubmitting}
             onClick={handleCancel}
           >
             Cancel

@@ -317,7 +317,7 @@ export default function ScheduleForm({
           <FormButtons
             type="button"
             variant="outlined"
-            loading={isSubmitting}
+            disabled={isSubmitting}
             onClick={handleCancel}
           >
             Cancel
