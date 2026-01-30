@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import type { ScheduleFormInputs } from "../forms/scheduleFormSchema";
 
+const URL = `${import.meta.env.VITE_BASE_URL}/api/schedules`;
+
 export const getSchedules = async (currentLocalDate: string) => {
-  const response = await fetch(
-    `${import.meta.env.VITE_BASE_URL}/api/schedules?date=${currentLocalDate}`,
-  );
+  const response = await fetch(`${URL}?date=${currentLocalDate}`);
 
   if (!response.ok) throw new Error("Failed to fetch schedules");
 
@@ -16,9 +16,7 @@ export const updateSchedule = async (
   selectedId?: string,
 ) => {
   const isUpdate = !!selectedId;
-  const url = isUpdate
-    ? `${import.meta.env.VITE_BASE_URL}/api/schedules/${selectedId}`
-    : `${import.meta.env.VITE_BASE_URL}/api/schedules`;
+  const url = isUpdate ? `${URL}/${selectedId}` : URL;
 
   const response = await fetch(url, {
     method: isUpdate ? "PATCH" : "POST",
@@ -31,5 +29,15 @@ export const updateSchedule = async (
   });
 
   if (!response.ok) throw new Error("Save failed");
+  return await response.json();
+};
+
+export const deleteSchedule = async (id: string) => {
+  const response = await fetch(`${URL}/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) throw new Error("Failed to delete");
   return await response.json();
 };

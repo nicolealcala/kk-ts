@@ -1,6 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getSchedules, updateSchedule } from "@/lib/services/schedulesService";
+import {
+  deleteSchedule,
+  getSchedules,
+  updateSchedule,
+} from "@/lib/services/schedulesService";
 import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
+import { toast } from "react-toastify";
 
 export function useSchedulesData(currentLocalDate: string) {
   const key = "schedules";
@@ -20,9 +25,26 @@ export function useSchedulesData(currentLocalDate: string) {
       queryClient.invalidateQueries({
         queryKey: [key, currentLocalDate],
       });
+      toast.success("Event saved successfully");
     },
-    onError: (error: Error) => {
-      alert(error.message);
+    onError: (error) => {
+      console.error("Failed to save schedule: ", error);
+      toast.error("Failed to save event");
+    },
+  });
+
+  // --- DELETE Mutation  ---
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteSchedule(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [key, currentLocalDate],
+      });
+      toast.success("Event deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to delet schedule: ", error);
+      toast.error("Failed to delete event");
     },
   });
 
@@ -36,5 +58,8 @@ export function useSchedulesData(currentLocalDate: string) {
     // Actions
     saveSchedule: saveMutation.mutate,
     isSaving: saveMutation.isPending,
+
+    deleteSchedule: deleteMutation.mutate,
+    isDeleting: deleteMutation.isPending,
   };
 }

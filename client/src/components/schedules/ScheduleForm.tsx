@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import { DrawerHeader } from "../layout/Sidebar";
 import Box from "@mui/material/Box";
@@ -25,6 +25,9 @@ import scheduleFormSchema, {
 import type { CalendarEvent } from "@/lib/types/schedules";
 import type { OpenDrawerValues } from "@/lib/types/forms";
 import FormButtons from "../shared/form/FormButtons";
+import Button from "@mui/material/Button";
+import ConfirmationModal from "../shared/ConfirmationModal";
+import DeleteHeader from "../shared/header-icons/DeleteHeader";
 
 type ScheduleFormProps = {
   openDrawer: OpenDrawerValues;
@@ -51,6 +54,8 @@ export default function ScheduleForm({
   selectedEvent,
   setSelectedEvent,
 }: ScheduleFormProps) {
+  const [openModal, setOpenModal] = useState(false);
+
   const {
     reset,
     resetField,
@@ -110,8 +115,9 @@ export default function ScheduleForm({
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  const currentLocalDate = new Date().toLocaleDateString();
-  const { saveSchedule } = useSchedulesData(currentLocalDate);
+  const currentLocalDate = new Date().toISOString().split("T")[0];
+  const { saveSchedule, deleteSchedule, isDeleting } =
+    useSchedulesData(currentLocalDate);
 
   async function onSubmit(formData: ScheduleFormInputs) {
     saveSchedule(
@@ -123,6 +129,16 @@ export default function ScheduleForm({
         },
       },
     );
+  }
+
+  async function onDelete({ id }: Pick<CalendarEvent, "id">) {
+    deleteSchedule(id, {
+      onSuccess: () => {
+        setOpenDrawer(null);
+        setOpenModal(false);
+        reset();
+      },
+    });
   }
 
   function handleCancel() {
@@ -148,9 +164,21 @@ export default function ScheduleForm({
           maxWidth: "600px",
         }}
       >
-        <Typography variant="h5" component="h1" fontWeight="medium" px={2.5}>
-          {openDrawer === "create" ? "Create a new event" : "Update event"}
-        </Typography>
+        <Stack direction="row" justifyContent="space-between" px={2.5}>
+          <Typography
+            variant="h5"
+            component="h1"
+            fontWeight="medium"
+            display="flex"
+            alignItems="center"
+          >
+            {openDrawer === "create" ? "Create a new event" : "Update event"}
+          </Typography>
+
+          {openDrawer === "update" && selectedEvent && (
+            <Button onClick={() => setOpenModal(true)}>Remove event</Button>
+          )}
+        </Stack>
         <Box
           sx={{
             p: 2.5,
@@ -289,7 +317,7 @@ export default function ScheduleForm({
           <FormButtons
             type="button"
             variant="outlined"
-            loading={isSubmitting}
+            disabled={isSubmitting}
             onClick={handleCancel}
           >
             Cancel
@@ -301,6 +329,31 @@ export default function ScheduleForm({
           </FormButtons>
         </Stack>
       </Box>
+      <ConfirmationModal
+        open={openModal}
+        title="Are you sure?"
+        message={
+          <Typography variant="body1" color="textSecondary">
+            This will permanently delete{" "}
+            <Typography
+              variant="body1"
+              component="span"
+              color="initial"
+              fontWeight="medium"
+            >
+              {selectedEvent?.title}
+            </Typography>{" "}
+            from your schedule. Once deleted, it cannot be undone.
+          </Typography>
+        }
+        handleClose={() => setOpenModal(false)}
+        handleConfirm={() => {
+          return selectedEvent && onDelete({ id: selectedEvent?.id });
+        }}
+        confirmButtonColor="error"
+        loading={isDeleting}
+        headerIcon={<DeleteHeader />}
+      />
     </Drawer>
   );
 }

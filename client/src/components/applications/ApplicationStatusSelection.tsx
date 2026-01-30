@@ -54,6 +54,7 @@ export default function ApplicationStatusSelection({
         },
       }}
       onChange={(e) =>
+        //TO DO: Make a PATCH request when this is updated
         console.log("Update ID:", row.original.id, "to", e.target.value)
       }
       // Custom rendering of the selected value

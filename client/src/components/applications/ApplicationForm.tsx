@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Drawer from "@mui/material/Drawer";
 import { DrawerHeader } from "../layout/Sidebar";
 import type { ApplicationFormInputs } from "@/lib/forms/applicationFormSchema";
@@ -86,8 +85,7 @@ export default function ApplicationForm({
     setOpenDrawer(null);
   }
 
-  const currentLocalDate = new Date().toLocaleDateString();
-
+  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { saveApplication } = useApplicationsData(currentLocalDate);
 
   async function onSubmit(formData: ApplicationFormInputs) {
@@ -100,7 +98,6 @@ export default function ApplicationForm({
         },
       },
     );
-    console.log(formData);
   }
 
   const { countries, currencies, isLoading } = useRestCountriesData();
@@ -291,7 +288,7 @@ export default function ApplicationForm({
           <FormButtons
             type="button"
             variant="outlined"
-            loading={isSubmitting}
+            disabled={isSubmitting}
             onClick={handleCancel}
           >
             Cancel

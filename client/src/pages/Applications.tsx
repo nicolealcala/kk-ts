@@ -13,8 +13,8 @@ export default function ApplicationsPage() {
   const [openDrawer, setOpenDrawer] = React.useState<OpenDrawerValues>(null);
   const [selectedApplication, setSelectedApplication] =
     React.useState<CustomApplication | null>(null);
-  const currentLocalDate = new Date().toLocaleDateString();
 
+  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { applications, totalCount, isLoading } =
     useApplicationsData(currentLocalDate);
 

@@ -12,7 +12,7 @@ type ApplicationRowProps = {
 };
 
 export default function RowActions({ row, onOpen }: ApplicationRowProps) {
-  const currentLocalDate = new Date().toLocaleDateString();
+  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { deleteApplication } = useApplicationsData(currentLocalDate);
 
   async function deleteRowItem(ids: string) {
@@ -39,7 +39,6 @@ export default function RowActions({ row, onOpen }: ApplicationRowProps) {
         onClick={(e) => {
           e.stopPropagation();
           onOpen();
-          console.log("Update ID:", row.original.id);
         }}
         sx={{
           transition: "0.2s",

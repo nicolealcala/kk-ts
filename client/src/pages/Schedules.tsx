@@ -15,8 +15,7 @@ export default function SchedulesPage() {
     null,
   );
 
-  const currentLocalDate = new Date().toLocaleDateString();
-
+  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { schedules, isLoading, error } = useSchedulesData(currentLocalDate);
 
   if (isLoading) return <SchedulesSkeleton />;
