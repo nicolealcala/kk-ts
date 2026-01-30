@@ -89,14 +89,31 @@ export const handlers = [
   }),
 
   http.delete("/api/applications", async ({ request }) => {
-    const ids = await request.json();
+    const url = new URL(request.url);
 
-    const isMultipleDeletion = Array.isArray(ids);
+    const ids = url.searchParams.get("ids");
 
-    const updatedApplications = applicationsData.filter((a) =>
-      isMultipleDeletion ? !ids.includes(a.id) : a.id !== ids,
-    );
-    return HttpResponse.json(updatedApplications, { status: 200 });
+    if (!ids)
+      return HttpResponse.json(
+        { message: "No application IDs provided" },
+        { status: 200 },
+      );
+
+    for (let i = applicationsData.length - 1; i >= 0; i--) {
+      if (ids.includes(applicationsData[i].id)) applicationsData.splice(i, 1);
+    }
+
+    return HttpResponse.json(applicationsData, { status: 200 });
+  }),
+
+  http.delete("/api/applications/:id", async ({ params }) => {
+    const { id } = params;
+
+    const index = applicationsData.findIndex((a) => a.id === id);
+
+    applicationsData.splice(index, 1);
+
+    return HttpResponse.json(applicationsData, { status: 200 });
   }),
 
   // Schedules
@@ -131,6 +148,16 @@ export const handlers = [
       return HttpResponse.json(schedulesData[index]);
     }
 
-    return new HttpResponse(null, { status: 404 });
+    return HttpResponse.json(null, { status: 404 });
+  }),
+
+  http.delete("/api/schedules/:id", async ({ params }) => {
+    const { id } = params;
+
+    const index = schedulesData.findIndex((d) => d.id === id);
+
+    schedulesData.splice(index, 1);
+
+    return HttpResponse.json(schedulesData, { status: 200 });
   }),
 ];

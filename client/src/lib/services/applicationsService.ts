@@ -27,13 +27,15 @@ export const updateApplication = async (
 };
 
 export const deleteApplication = async (idOrIds: string | string[]) => {
-  const isBulkDeletion = Array.isArray(idOrIds);
-  const url = isBulkDeletion ? URL : `${URL}/:id`;
+  const isBulkDelete = Array.isArray(idOrIds);
+
+  const url = isBulkDelete
+    ? `${URL}?ids=${idOrIds.map((id) => id)}`
+    : `${URL}/${idOrIds}`;
 
   const response = await fetch(url, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(idOrIds),
   });
 
   if (!response.ok) throw new Error("Failed to delete");
