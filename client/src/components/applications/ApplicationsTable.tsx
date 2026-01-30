@@ -130,7 +130,8 @@ function ApplicationsTable({
       },
     },
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection, // Sync state
+    getRowId: (row) => row.id,
+    onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),

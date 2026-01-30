@@ -34,12 +34,18 @@ export function useApplicationsData(currentLocalDate?: string) {
 
   // --- DELETE Mutation  ---
   const deleteMutation = useMutation({
-    mutationFn: (id: string | string[]) => deleteApplication(id),
-    onSuccess: () => {
+    mutationFn: (idOrIds: string | string[]) => deleteApplication(idOrIds),
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: [key, currentLocalDate],
       });
-      toast.success("Application deleted successfully");
+
+      const isBulkDelete = Array.isArray(variables) && variables.length > 1;
+      toast.success(
+        isBulkDelete
+          ? "Applications deleted successfully"
+          : "Application deleted successfully",
+      );
     },
     onError: () => {
       toast.error("Failed to delete application");
