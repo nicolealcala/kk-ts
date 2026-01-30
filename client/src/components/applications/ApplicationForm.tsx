@@ -99,7 +99,6 @@ export default function ApplicationForm({
         },
       },
     );
-    console.log(formData);
   }
 
   const { countries, currencies, isLoading } = useRestCountriesData();

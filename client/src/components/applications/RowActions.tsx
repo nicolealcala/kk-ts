@@ -39,7 +39,6 @@ export default function RowActions({ row, onOpen }: ApplicationRowProps) {
         onClick={(e) => {
           e.stopPropagation();
           onOpen();
-          console.log("Update ID:", row.original.id);
         }}
         sx={{
           transition: "0.2s",
