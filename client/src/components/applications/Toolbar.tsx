@@ -10,6 +10,7 @@ import ApplicationFilters from "./ApplicationFilters";
 import Divider from "@mui/material/Divider";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
+import React from "react";
 
 type ToolbarProps = {
   globalFilter: string;
@@ -19,6 +20,7 @@ type ToolbarProps = {
   filters: FilterState;
   dispatch: React.ActionDispatch<[action: FilterAction]>;
   rowSelection: {};
+  setRowSelection: React.Dispatch<React.SetStateAction<{}>>;
 };
 
 const filterStyles = {
@@ -38,13 +40,20 @@ export default function Toolbar({
   filters,
   dispatch,
   rowSelection,
+  setRowSelection,
 }: ToolbarProps) {
   const currentLocalDate = new Date().toISOString().split("T")[0];
   const { deleteApplication } = useApplicationsData(currentLocalDate);
 
   async function deleteSelected(ids: string[]) {
-    deleteApplication(ids);
+    deleteApplication(ids, {
+      onSuccess: () => {
+        setRowSelection({});
+      },
+    });
   }
+
+  React.useEffect(() => {}, [rowSelection]);
 
   return (
     <Stack direction="column" spacing={1} mb={1.5}>
