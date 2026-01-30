@@ -86,8 +86,7 @@ export default function ApplicationForm({
     setOpenDrawer(null);
   }
 
-  const currentLocalDate = new Date().toLocaleDateString();
-
+  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { saveApplication } = useApplicationsData(currentLocalDate);
 
   async function onSubmit(formData: ApplicationFormInputs) {

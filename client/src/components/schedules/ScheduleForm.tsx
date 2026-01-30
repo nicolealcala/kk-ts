@@ -110,7 +110,7 @@ export default function ScheduleForm({
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  const currentLocalDate = new Date().toLocaleDateString();
+  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { saveSchedule } = useSchedulesData(currentLocalDate);
 
   async function onSubmit(formData: ScheduleFormInputs) {
