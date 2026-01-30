@@ -151,6 +151,7 @@ function ApplicationsTable({
         filters={filters}
         dispatch={dispatch}
         rowSelection={rowSelection}
+        setRowSelection={setRowSelection}
       />
 
       <TableContainer
