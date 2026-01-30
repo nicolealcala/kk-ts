@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Drawer from "@mui/material/Drawer";
 import { DrawerHeader } from "../layout/Sidebar";
 import type { ApplicationFormInputs } from "@/lib/forms/applicationFormSchema";
