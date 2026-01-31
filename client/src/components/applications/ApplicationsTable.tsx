@@ -6,6 +6,7 @@ import {
   flexRender,
   type SortingState,
   getExpandedRowModel,
+  type RowSelectionState,
 } from "@tanstack/react-table";
 import { useMemo, useReducer, useState } from "react";
 import { columns, type CustomApplication } from "./Columns";
@@ -28,6 +29,13 @@ import { blueGrey } from "@mui/material/colors";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Toolbar from "./Toolbar";
+import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
+import ConfirmationModal from "../shared/ConfirmationModal";
+import Span from "../shared/typography/Span";
+import DeleteHeader from "../shared/header-icons/DeleteHeader";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+
 export type FilterState = {
   count: number;
   arrangement: string[];
@@ -99,7 +107,65 @@ function ApplicationsTable({
   const [globalFilter, setGlobalFilter] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, dispatch] = useReducer(filterReducer, initialState);
-  const [rowSelection, setRowSelection] = useState({}); // State to track selection
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({}); // State to track selection
+  const [openModal, setOpenModal] = useState(false);
+  const [applicationToDelete, setApplicationToDelete] = useState<
+    CustomApplication | CustomApplication[] | null
+  >(null);
+
+  const currentLocalDate = new Date().toISOString().split("T")[0];
+  const { deleteApplication } = useApplicationsData(currentLocalDate);
+
+  const onSuccess = () => {
+    setApplicationToDelete(null);
+    setOpenModal(false);
+  };
+
+  const handleConfirmDeleteOne = () => {
+    const appId = (applicationToDelete as CustomApplication)?.id;
+
+    console.log("RowSelection: ", rowSelection);
+    console.log("app to delete: ", applicationToDelete);
+    if (!appId) {
+      console.log("no single id");
+      return;
+    }
+
+    deleteApplication((applicationToDelete as CustomApplication).id as string, {
+      onSuccess: () => {
+        setRowSelection((prev) => {
+          const updatedRowSelection = { ...prev };
+          delete updatedRowSelection[appId];
+          return updatedRowSelection;
+        });
+        onSuccess();
+      },
+    });
+  };
+
+  const handleDeleteMany = () => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    setApplicationToDelete(selectedRows.map((row) => row.original));
+    setOpenModal(true);
+  };
+
+  const handleConfirmDeleteMany = () => {
+    const ids = (applicationToDelete as CustomApplication[])?.map(
+      (app) => app.id,
+    );
+
+    if (ids.length === 0) {
+      console.log("no ids");
+      return;
+    }
+
+    deleteApplication(ids as string[], {
+      onSuccess: () => {
+        onSuccess();
+        setRowSelection({});
+      },
+    });
+  };
 
   const columnFilters = useMemo(
     () => [
@@ -125,11 +191,15 @@ function ApplicationsTable({
       rowSelection,
     },
     meta: {
+      //rowSelection,
       onEditRow: (row: CustomApplication) => {
         setSelectedApplication(row);
       },
+      onDeleteRow: (row: CustomApplication) => {
+        setApplicationToDelete(row);
+        setOpenModal(true);
+      },
     },
-    enableRowSelection: true,
     getRowId: (row) => row.id,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -152,6 +222,7 @@ function ApplicationsTable({
         dispatch={dispatch}
         rowSelection={rowSelection}
         setRowSelection={setRowSelection}
+        handleDeleteMany={handleDeleteMany}
       />
 
       <TableContainer
@@ -316,8 +387,71 @@ function ApplicationsTable({
           </TableBody>
         </Table>
       </TableContainer>
+      <ConfirmationModal
+        open={openModal}
+        title="Are you sure?"
+        message={
+          applicationToDelete && Array.isArray(applicationToDelete) ? (
+            <DeleteManyMessages applicationsToDelete={applicationToDelete} />
+          ) : (
+            <DeleteOneMessage applicationToDelete={applicationToDelete} />
+          )
+        }
+        handleClose={() => setOpenModal(false)}
+        handleConfirm={
+          Object.keys(rowSelection).length > 0 &&
+          Array.isArray(applicationToDelete)
+            ? handleConfirmDeleteMany
+            : handleConfirmDeleteOne
+        }
+        confirmButtonColor="error"
+        headerIcon={<DeleteHeader />}
+      />
     </Box>
   );
 }
 
+function DeleteOneMessage({
+  applicationToDelete,
+}: {
+  applicationToDelete: CustomApplication | null;
+}) {
+  if (!applicationToDelete) return null;
+  return (
+    <Typography variant="body1" color="textSecondary" component="p">
+      This will permanently delete your application for&nbsp;
+      <Span>{applicationToDelete.position}</Span>
+      &nbsp;position at <Span>{applicationToDelete.organization}</Span>.
+    </Typography>
+  );
+}
+
+function DeleteManyMessages({
+  applicationsToDelete,
+}: {
+  applicationsToDelete: CustomApplication[] | null;
+}) {
+  if (!applicationsToDelete || applicationsToDelete.length === 0) return null;
+  return (
+    <>
+      <Typography variant="body1" color="textSecondary" component="p">
+        This will permanently delete the following applications:
+      </Typography>
+      <List sx={{ listStyleType: "disc", pl: 4 }}>
+        {applicationsToDelete.map((app) => (
+          <ListItem key={app.id} sx={{ display: "list-item", py: 0, pl: 0 }}>
+            <Span>{app.position}</Span>
+            <Span color="textSecondary" fontWeight="normal">
+              &nbsp;
+              {app.organization && "–"} {app.organization}
+            </Span>
+          </ListItem>
+        ))}
+      </List>
+      <Typography variant="body1" color="textSecondary" component="p">
+        Once deleted, it cannot be undone.
+      </Typography>
+    </>
+  );
+}
 export default ApplicationsTable;
