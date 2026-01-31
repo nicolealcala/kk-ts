@@ -21,7 +21,7 @@ export default function ApplicationFilters({
     filters.arrangement.length > 0 || filters.status.length > 0;
 
   return (
-    <Stack direction="row" justifyContent="space-between" pb={1}>
+    <Stack direction="row" justifyContent="space-between" pb={2.5}>
       <Stack direction="row" spacing={4} justifyContent="start">
         {/* Work Arrangement Selection */}
         <FilterGroup
