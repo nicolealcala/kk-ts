@@ -23,6 +23,7 @@ export default function ApplicationFilters({
   return (
     <Stack direction="row" justifyContent="space-between" pb={1}>
       <Stack direction="row" spacing={4} justifyContent="start">
+        {/* Work Arrangement Selection */}
         <FilterGroup
           label="Arrangement"
           options={[
@@ -86,7 +87,7 @@ function FilterGroup({
   onChange: (value: string) => void;
 }) {
   return (
-    <Stack sx={{ width: "fit-content" }}>
+    <Stack sx={{ width: "fit-content", pl: 1 }}>
       <Typography
         variant="body2"
         component="span"
@@ -100,7 +101,7 @@ function FilterGroup({
           sx={{
             width: "fit-content",
             display: "grid",
-            gridTemplateColumns: options.length > 4 ? "auto auto" : "auto",
+            gridTemplateColumns: "auto",
             gridTemplateRows:
               options.length > 4
                 ? "repeat(4, auto)"
@@ -127,6 +128,9 @@ function FilterGroup({
                         "&.MuiCheckbox-root": {
                           p: 0,
                           borderRadius: 0.5,
+                        },
+                        "&.Mui-checked": {
+                          color: "initial",
                         },
                       }}
                     />
