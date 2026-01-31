@@ -47,8 +47,14 @@ export function useApplicationsData(currentLocalDate?: string) {
           : "Application deleted successfully",
       );
     },
-    onError: () => {
-      toast.error("Failed to delete application");
+    onError: (_, variables) => {
+      const isBulkDelete = Array.isArray(variables) && variables.length > 1;
+
+      toast.error(
+        isBulkDelete
+          ? "Failed to delete applications"
+          : "Failed to delete application",
+      );
     },
   });
 

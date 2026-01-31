@@ -14,7 +14,10 @@ function EmptyApplications() {
         justifyContent: "center",
         height: "100%",
         alignItems: "center",
-        pb: 4,
+        borderRadius: 2.5,
+        border: "3px dashed",
+        borderColor: "grey.300",
+        pb: 7,
       }}
     >
       <NoDocumentIllustration />

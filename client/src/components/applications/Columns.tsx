@@ -18,6 +18,7 @@ import { convertUtcToShortenedLocaleDate } from "@/utils/date";
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     onEditRow: (row: TData) => void;
+    onDeleteRow: (row: TData) => void;
   }
 }
 
@@ -45,7 +46,7 @@ const filterIncludesCellValue = (
   return safeFilterValue.includes(rowValue);
 };
 
-export const columns = [
+export const getColumns = () => [
   {
     id: "select",
     header: ({ table }: { table: ApplicationTable }) => (
@@ -146,7 +147,8 @@ export const columns = [
     cell: ({ row, table }) => (
       <RowActions
         row={row}
-        onOpen={() => table.options.meta?.onEditRow(row.original)}
+        onEditRow={() => table.options.meta?.onEditRow(row.original)}
+        onDeleteRow={() => table.options.meta?.onDeleteRow(row.original)}
       />
     ),
   }),

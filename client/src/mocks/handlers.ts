@@ -29,6 +29,8 @@ export const handlers = [
         currentStatus: currentStatus?.status || "applied",
       };
     });
+
+    transformedData.sort((a, b) => b.createDate.localeCompare(a.createDate));
     return HttpResponse.json({
       applications: transformedData,
       totalCount: transformedData.length,

@@ -9,9 +9,7 @@ import type { FilterAction, FilterState } from "./ApplicationsTable";
 import ApplicationFilters from "./ApplicationFilters";
 import Divider from "@mui/material/Divider";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
 import React from "react";
-
 type ToolbarProps = {
   globalFilter: string;
   setGlobalFilter: React.Dispatch<React.SetStateAction<string>>;
@@ -21,6 +19,7 @@ type ToolbarProps = {
   dispatch: React.ActionDispatch<[action: FilterAction]>;
   rowSelection: {};
   setRowSelection: React.Dispatch<React.SetStateAction<{}>>;
+  handleDeleteMany: () => void;
 };
 
 const filterStyles = {
@@ -40,24 +39,13 @@ export default function Toolbar({
   filters,
   dispatch,
   rowSelection,
-  setRowSelection,
+  handleDeleteMany,
 }: ToolbarProps) {
-  const currentLocalDate = new Date().toISOString().split("T")[0];
-  const { deleteApplication } = useApplicationsData(currentLocalDate);
-
-  async function deleteSelected(ids: string[]) {
-    deleteApplication(ids, {
-      onSuccess: () => {
-        setRowSelection({});
-      },
-    });
-  }
-
   React.useEffect(() => {}, [rowSelection]);
 
   return (
-    <Stack direction="column" spacing={1} mb={1.5}>
-      <Stack direction="row">
+    <Stack direction="column" spacing={0} mb={2}>
+      <Stack direction="row" mb={1.5}>
         <Typography
           variant="body1"
           component="p"
@@ -129,13 +117,7 @@ export default function Toolbar({
           </Button>
 
           {Object.keys(rowSelection).length > 0 && (
-            <Button
-              color="error"
-              variant="outlined"
-              onClick={() =>
-                deleteSelected(Object.keys(rowSelection).map((k) => k))
-              }
-            >
+            <Button color="error" variant="outlined" onClick={handleDeleteMany}>
               <TrashIcon className="size-4.5 mr-2" />
               Delete {Object.keys(rowSelection).length} selected
             </Button>
@@ -144,7 +126,7 @@ export default function Toolbar({
       </Stack>
       {isFilterOpen && (
         <>
-          <Divider />
+          <Divider sx={{ mb: 2.5 }} />
           <ApplicationFilters filters={filters} dispatch={dispatch} />
         </>
       )}
