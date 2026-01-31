@@ -41,12 +41,11 @@ export default function Toolbar({
   rowSelection,
   handleDeleteMany,
 }: ToolbarProps) {
-
   React.useEffect(() => {}, [rowSelection]);
 
   return (
-    <Stack direction="column" spacing={1} mb={1.5}>
-      <Stack direction="row">
+    <Stack direction="column" spacing={0} mb={2}>
+      <Stack direction="row" mb={1.5}>
         <Typography
           variant="body1"
           component="p"
@@ -127,7 +126,7 @@ export default function Toolbar({
       </Stack>
       {isFilterOpen && (
         <>
-          <Divider />
+          <Divider sx={{ mb: 2.5 }} />
           <ApplicationFilters filters={filters} dispatch={dispatch} />
         </>
       )}
