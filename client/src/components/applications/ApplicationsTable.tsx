@@ -191,7 +191,6 @@ function ApplicationsTable({
       rowSelection,
     },
     meta: {
-      //rowSelection,
       onEditRow: (row: CustomApplication) => {
         setSelectedApplication(row);
       },
