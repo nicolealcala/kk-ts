@@ -2,7 +2,6 @@ import Button, { type ButtonOwnProps } from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 
@@ -67,11 +66,7 @@ export default function ConfirmationModal({
       >
         {title}
       </DialogTitle>
-      <DialogContent sx={{ pt: 0 }}>
-        <DialogContentText id="alert-dialog-description">
-          {message}
-        </DialogContentText>
-      </DialogContent>
+      <DialogContent sx={{ pt: 0 }}>{message}</DialogContent>
       <DialogActions sx={{ px: 3, pb: 3 }}>
         {/* Cancel Button */}
         <Button
