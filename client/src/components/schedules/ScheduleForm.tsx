@@ -28,6 +28,7 @@ import FormButtons from "../shared/form/FormButtons";
 import Button from "@mui/material/Button";
 import ConfirmationModal from "../shared/ConfirmationModal";
 import DeleteHeader from "../shared/header-icons/DeleteHeader";
+import Span from "../shared/typography/Span";
 
 type ScheduleFormProps = {
   openDrawer: OpenDrawerValues;
@@ -333,17 +334,10 @@ export default function ScheduleForm({
         open={openModal}
         title="Are you sure?"
         message={
-          <Typography variant="body1" color="textSecondary">
-            This will permanently delete{" "}
-            <Typography
-              variant="body1"
-              component="span"
-              color="initial"
-              fontWeight="medium"
-            >
-              {selectedEvent?.title}
-            </Typography>{" "}
-            from your schedule. Once deleted, it cannot be undone.
+          <Typography variant="body1" component="p" color="textSecondary">
+            This will permanently delete&nbsp;
+            <Span>{selectedEvent?.title}</Span> from your schedule. Once
+            deleted, it cannot be undone.
           </Typography>
         }
         handleClose={() => setOpenModal(false)}
