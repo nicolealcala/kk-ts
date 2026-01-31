@@ -9,7 +9,7 @@ import {
   type RowSelectionState,
 } from "@tanstack/react-table";
 import { useMemo, useReducer, useState } from "react";
-import { columns, type CustomApplication } from "./Columns";
+import { getColumns, type CustomApplication } from "./Columns";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -180,6 +180,8 @@ function ApplicationsTable({
     ],
     [filters.arrangement, filters.status],
   );
+
+  const columns = useMemo(() => getColumns(), [rowSelection]);
 
   const table = useReactTable({
     data,

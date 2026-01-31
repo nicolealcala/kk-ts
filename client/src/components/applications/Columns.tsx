@@ -46,7 +46,7 @@ const filterIncludesCellValue = (
   return safeFilterValue.includes(rowValue);
 };
 
-export const columns = [
+export const getColumns = () => [
   {
     id: "select",
     header: ({ table }: { table: ApplicationTable }) => (
