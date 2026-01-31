@@ -21,7 +21,7 @@ export default function RowActions({
       <IconButton
         size="small"
         onClick={() => row.toggleExpanded()}
-        disabled={!row.original.description}
+        disabled={!row.original.description || row.getIsSelected()}
         sx={{
           transform: row.getIsExpanded() ? "rotate(180deg)" : "rotate(0deg)",
           transition: "0.2s",
@@ -34,6 +34,7 @@ export default function RowActions({
       </IconButton>
       <IconButton
         size="small"
+        disabled={row.getIsSelected()}
         onClick={(e) => {
           e.stopPropagation();
           onEditRow();
@@ -50,6 +51,7 @@ export default function RowActions({
 
       <IconButton
         size="small"
+        disabled={row.getIsSelected()}
         onClick={(e) => {
           e.stopPropagation();
           onDeleteRow();
