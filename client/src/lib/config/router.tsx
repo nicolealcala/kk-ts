@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router";
 import NotFound from "@/pages/NotFound.tsx";
 import RootLayout from "@/components/layout/index.tsx";
+import Dashboard from "@/pages/Dashboard";
+import Loader from "@/components/shared/Loader";
+import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
 
 const router = createBrowserRouter([
   {
@@ -9,13 +12,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        lazy: async () => {
-          const Dashboard = (await import("@/pages/Dashboard.tsx")).default;
-          return { Component: Dashboard };
-        },
+        element: <Dashboard />,
       },
       {
         path: "/applications",
+        HydrateFallback: () => <Loader />,
         lazy: async () => {
           const Applications = (await import("@/pages/Applications.tsx"))
             .default;
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/schedules",
+        HydrateFallback: () => <SchedulesSkeleton />,
         lazy: async () => {
           const Schedules = (await import("@/pages/Schedules.tsx")).default;
           return { Component: Schedules };
