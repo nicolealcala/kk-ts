@@ -4,15 +4,15 @@ import Stack from "@mui/material/Stack";
 import ApplicationsForm from "@/components/applications/ApplicationForm";
 import React from "react";
 import { type OpenDrawerValues } from "@/lib/types/forms";
-import type { CustomApplication } from "@/components/applications/Columns";
 import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
 import Loader from "@/components/shared/Loader";
 import EmptyApplications from "@/components/applications/EmptyApplications";
+import type { Application } from "@/lib/types/applications";
 
 export default function ApplicationsPage() {
   const [openDrawer, setOpenDrawer] = React.useState<OpenDrawerValues>(null);
   const [selectedApplication, setSelectedApplication] =
-    React.useState<CustomApplication | null>(null);
+    React.useState<Application | null>(null);
 
   const currentLocalDate = new Date().toISOString().split("T")[0];
   const { applications, totalCount, isLoading } =

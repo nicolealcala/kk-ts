@@ -18,16 +18,16 @@ import Divider from "@mui/material/Divider";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import FormButtons from "../shared/form/FormButtons";
-import type { CustomApplication } from "./Columns";
 import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
 import useRestCountriesData from "@/utils/hooks/useRestCountriesData";
+import type { Application } from "@/lib/types/applications";
 
 type ApplicationFormProps = {
   openDrawer: OpenDrawerValues;
   setOpenDrawer: React.Dispatch<React.SetStateAction<OpenDrawerValues>>;
-  selectedApplication: CustomApplication | null;
+  selectedApplication: Application | null;
   setSelectedApplication: React.Dispatch<
-    React.SetStateAction<CustomApplication | null>
+    React.SetStateAction<Application | null>
   >;
 };
 
@@ -169,7 +169,7 @@ export default function ApplicationForm({
               {/* Location Field */}
               <Box flex={1}>
                 <ControlledFormAutocomplete
-                  name="location.country"
+                  name="country"
                   control={control}
                   options={countries}
                   loading={isLoading}
@@ -184,14 +184,14 @@ export default function ApplicationForm({
             <Stack direction="row" spacing={2}>
               {/* Job Type Field */}
               <ControlledFormSelect
-                name="type"
+                name="employment_type"
                 control={control}
                 label="Job Type"
                 items={jobTypeOptions}
               />
               {/* Work Arrangement Field */}
               <ControlledFormSelect
-                name="workArrangement"
+                name="work_arrangement"
                 control={control}
                 label="Arrangement"
                 items={modalityOptions}
@@ -213,20 +213,20 @@ export default function ApplicationForm({
 
               <Stack direction="row" spacing={2}>
                 <ControlledFormAutocomplete
-                  name="salary.currency"
+                  name="salary_currency_code"
                   control={control}
                   label={"Currency"}
                   options={currencies}
                 />
 
                 <ControlledFormTextField
-                  name="salary.minAmount"
+                  name="salary_min"
                   control={control}
                   label="Minimum"
                   type="number"
                 />
                 <ControlledFormTextField
-                  name="salary.maxAmount"
+                  name="salary_max"
                   control={control}
                   label="Maximum"
                   type="number"
@@ -243,7 +243,7 @@ export default function ApplicationForm({
                 {/* Source Platform Field*/}
                 <Box sx={{ flex: 1 }}>
                   <ControlledFormSelect
-                    name="source.platform"
+                    name="source_platform"
                     control={control}
                     label="Platform"
                     items={platformOptions}
@@ -253,7 +253,7 @@ export default function ApplicationForm({
                 {/* Source Link Field*/}
                 <Box sx={{ flex: 2 }}>
                   <ControlledFormTextField
-                    name="source.link"
+                    name="source_link"
                     control={control}
                     label="Link"
                     placeholder="Link"

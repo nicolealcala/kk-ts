@@ -5,7 +5,7 @@ function ApplicationSourceLink({ source }: { source: JobSource }) {
   return (
     <a
       className="inline-flex items-center text-primary hover:underline underline-offset-2"
-      href={source.link}
+      href={source.link || "#"}
       target="_blank"
     >
       <span className="capitalize">{source.platform}</span>&nbsp;
