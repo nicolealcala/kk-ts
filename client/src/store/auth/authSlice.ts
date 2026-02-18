@@ -33,15 +33,24 @@ export const loginUser = createAsyncThunk<
 
 export const signUpUser = createAsyncThunk<
   Session | null,
-  Pick<SignupFormInputs, "email" | "confirmPassword">,
+  Omit<SignupFormInputs, "password">,
   { rejectValue: string }
 >(
   "auth/signUpUser",
-  async ({ email, confirmPassword }, { rejectWithValue }) => {
+  async (
+    { first_name, last_name, email, confirmPassword },
+    { rejectWithValue },
+  ) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password: confirmPassword,
+        options: {
+          data: {
+            first_name,
+            last_name,
+          },
+        },
       });
 
       if (error) throw error;

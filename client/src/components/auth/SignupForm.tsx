@@ -27,8 +27,8 @@ export default function SignupForm() {
   } = useForm<SignupFormInputs>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      fname: "",
-      lname: "",
+      first_name: "",
+      last_name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -36,9 +36,7 @@ export default function SignupForm() {
   });
 
   //TO DO: Update submit logic
-  async function onSubmit(
-    formData: Pick<SignupFormInputs, "email" | "confirmPassword">,
-  ) {
+  async function onSubmit(formData: Omit<SignupFormInputs, "password">) {
     try {
       await dispatch(signUpUser(formData));
       navigate("/");
@@ -59,17 +57,17 @@ export default function SignupForm() {
             {/* First Name Field */}
             <FormTextField
               label="First Name"
-              registration={register("fname")}
-              error={!!errors.fname}
-              helperText={errors.fname?.message}
+              registration={register("first_name")}
+              error={!!errors.first_name}
+              helperText={errors.first_name?.message}
             />
 
             {/* Last Name Field */}
             <FormTextField
               label="Last Name"
-              registration={register("lname")}
-              error={!!errors.lname}
-              helperText={errors.lname?.message}
+              registration={register("last_name")}
+              error={!!errors.last_name}
+              helperText={errors.last_name?.message}
             />
           </Stack>
 
