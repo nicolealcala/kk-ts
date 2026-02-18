@@ -9,9 +9,15 @@ import type { FilterAction, FilterState } from "./ApplicationsTable";
 import ApplicationFilters from "./ApplicationFilters";
 import Divider from "@mui/material/Divider";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import type { SortingState } from "@tanstack/react-table";
+
 type ToolbarProps = {
+  firstIndex: number;
+  lastIndex: number;
+  totalFilteredRows: number;
   globalFilter: string;
+  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
   setGlobalFilter: React.Dispatch<React.SetStateAction<string>>;
   isFilterOpen: boolean;
   setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,7 +38,11 @@ const filterStyles = {
   },
 };
 export default function Toolbar({
+  firstIndex,
+  lastIndex,
+  totalFilteredRows,
   globalFilter,
+  setSorting,
   setGlobalFilter,
   isFilterOpen,
   setIsFilterOpen,
@@ -41,10 +51,19 @@ export default function Toolbar({
   rowSelection,
   handleDeleteMany,
 }: ToolbarProps) {
-  React.useEffect(() => {}, [rowSelection]);
+  const [value, setValue] = useState(globalFilter);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setGlobalFilter(value);
+      setSorting([]);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [value, setGlobalFilter, setSorting]);
 
   return (
-    <Stack direction="column" spacing={0} mb={2}>
+    <Stack direction="column" spacing={0}>
       <Stack direction="row" mb={1.5}>
         <Typography
           variant="body1"
@@ -53,12 +72,12 @@ export default function Toolbar({
           mr={2}
           fontWeight="medium"
         >
-          Showing 1-4 out of 4
+          Showing {firstIndex}-{lastIndex} out of {totalFilteredRows}
         </Typography>
         <Stack direction="row" spacing={2} justifyContent="end" flexGrow={1}>
           <FormTextField
-            value={globalFilter ?? ""}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
             placeholder="Search all columns..."
             size="small"
             sx={{
@@ -126,8 +145,12 @@ export default function Toolbar({
       </Stack>
       {isFilterOpen && (
         <>
-          <Divider sx={{ mb: 2.5 }} />
-          <ApplicationFilters filters={filters} dispatch={dispatch} />
+          <Divider sx={{ mb: 2 }} />
+          <ApplicationFilters
+            filters={filters}
+            dispatch={dispatch}
+            setSorting={setSorting}
+          />
         </>
       )}
     </Stack>
