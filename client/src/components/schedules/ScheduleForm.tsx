@@ -340,7 +340,7 @@ export default function ScheduleForm({
             deleted, it cannot be undone.
           </Typography>
         }
-        handleClose={() => setOpenModal(false)}
+        onClose={() => setOpenModal(false)}
         handleConfirm={() => {
           return selectedEvent && onDelete({ id: selectedEvent?.id });
         }}

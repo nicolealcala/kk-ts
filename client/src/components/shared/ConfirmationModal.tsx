@@ -1,15 +1,13 @@
 import Button, { type ButtonOwnProps } from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
+import Dialog, { type DialogProps } from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 
-type ConfirmationModalProps = {
-  open: boolean;
+type ConfirmationModalProps = DialogProps & {
   title: string;
   message: string | React.ReactNode;
-  handleClose: () => void;
   handleConfirm: () => void;
   confirmButtonColor: ButtonOwnProps["color"];
   headerIcon?: React.ReactNode;
@@ -39,21 +37,19 @@ const buttonStyles = {
 };
 
 export default function ConfirmationModal({
-  open,
   title,
   message,
-  handleClose,
   handleConfirm,
   confirmButtonColor,
   headerIcon,
   loading,
+  ...props
 }: ConfirmationModalProps) {
   return (
     <Dialog
-      open={open}
-      onClose={handleClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      {...props}
     >
       {headerIcon && (
         <Box p={3} pb={0}>
@@ -71,7 +67,7 @@ export default function ConfirmationModal({
         {/* Cancel Button */}
         <Button
           variant="outlined"
-          onClick={handleClose}
+          onClick={props.onClose as React.MouseEventHandler<HTMLButtonElement>}
           disabled={loading}
           sx={{
             borderColor: "grey.400",
