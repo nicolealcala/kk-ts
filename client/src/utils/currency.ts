@@ -9,11 +9,13 @@ export const getCurrencySymbol = (currencyCode: string) => {
   );
 };
 
-export const formatCurrency = (amount: number, currency: string) => {
+export const formatCurrency = (
+  val: number | string | null | undefined,
+  currency: string | null | undefined,
+) => {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: currency,
-    // Use 0 decimal places if you don't need cents (e.g., $4,000 instead of $4,000.00)
+    currency: currency || undefined,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(Number(val));
 };

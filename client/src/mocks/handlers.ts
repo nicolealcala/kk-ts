@@ -22,15 +22,10 @@ export const handlers = [
 
   //Applications
   http.get("/api/applications", () => {
-    const transformedData = applicationsData.map((app) => {
-      const currentStatus = app.statusHistory.at(-1);
-      return {
-        ...app,
-        currentStatus: currentStatus?.status || "applied",
-      };
-    });
+    const transformedData = applicationsData;
 
-    transformedData.sort((a, b) => b.createDate.localeCompare(a.createDate));
+    transformedData.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    
     return HttpResponse.json({
       applications: transformedData,
       totalCount: transformedData.length,

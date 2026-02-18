@@ -3,7 +3,6 @@ import type { Application } from "@/lib/types/applications";
 import ApplicationSourceLink from "./ApplicationSourceLink";
 import { cn } from "@/utils/tailwind";
 import Chip from "@mui/material/Chip";
-import ApplicationSalaryRange from "./ApplicationSalaryRange";
 import ApplicationStatusSelection from "./ApplicationStatusSelection";
 import RowActions from "./RowActions";
 import Checkbox from "@mui/material/Checkbox";
@@ -11,6 +10,7 @@ import type { Table, Row, RowData } from "@tanstack/react-table";
 import Typography from "@mui/material/Typography";
 import "@tanstack/react-table";
 import { convertUtcToShortenedLocaleDate } from "@/utils/date";
+import { formatCurrency } from "@/utils/currency";
 
 /**
  * Extend Table Row functionality for editing an item
@@ -22,16 +22,13 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export type CustomApplication = Application & {
-  currentStatus: string;
-};
-export type ApplicationTable = Table<CustomApplication>;
-export type ApplicationRow = Row<CustomApplication>;
+export type ApplicationTable = Table<Application>;
+export type ApplicationRow = Row<Application>;
 
-const columnHelper = createColumnHelper<CustomApplication>();
+const columnHelper = createColumnHelper<Application>();
 
 const filterIncludesCellValue = (
-  row: Row<CustomApplication>,
+  row: Row<Application>,
   columnId: string,
   filterValue: string[],
 ) => {
@@ -65,7 +62,7 @@ export const getColumns = () => [
       />
     ),
   },
-  columnHelper.accessor("createDate", {
+  columnHelper.accessor("created_at", {
     header: "Date",
     cell: (info) => (
       <Typography variant="caption" color="initial">
@@ -79,34 +76,61 @@ export const getColumns = () => [
   columnHelper.accessor("organization", {
     header: "Organization",
   }),
-  columnHelper.accessor("location", {
-    header: "Location",
-    cell: (info) => {
-      const location = info.getValue();
-      const renderedLocation = Object.values(location)
-        .filter(
-          (val: string | number) => val && val !== undefined && val !== null,
-        )
-        .join(", ");
-      return (
+  columnHelper.accessor(
+    (row) => {
+      const { city, country } = row;
+
+      if (!city && !country) return "Not provided";
+      if (!city) return country;
+      if (!country) return city;
+
+      return `${city}, ${country}`;
+    },
+    {
+      id: "location",
+      header: "Location",
+      //filterFn: filterIncludesCellValue,
+      cell: (info) => (
         <Typography
           variant="body1"
-          color={renderedLocation ? "initial" : "textSecondary"}
-          fontStyle={renderedLocation ? "normal" : "italic"}
+          color={
+            info.getValue() === "Not provided" ? "textSecondary" : "initial"
+          }
+          fontStyle={info.getValue() === "Not provided" ? "italic" : "normal"}
         >
-          {renderedLocation ? renderedLocation : "Not Disclosed"}
+          {info.getValue()}
         </Typography>
-      );
+      ),
     },
-  }),
-  columnHelper.accessor("salary", {
-    header: "Salary Range",
-    cell: (info) => <ApplicationSalaryRange salary={info.getValue()} />,
-    enableSorting: false,
-  }),
-  columnHelper.accessor("workArrangement", {
+  ),
+  columnHelper.accessor(
+    (row) => {
+      const { salary_currency_code, salary_min, salary_max } = row;
+      if (!salary_min && !salary_max) return "Not disclosed";
+      if (!salary_min) return formatCurrency(salary_max, salary_currency_code);
+      if (!salary_max) return formatCurrency(salary_min, salary_currency_code);
+      return `${formatCurrency(salary_min, salary_currency_code)} - ${formatCurrency(salary_max, salary_currency_code)}`;
+    },
+    {
+      id: "salary",
+      header: "Salary Range",
+      cell: (info) => (
+        <Typography
+          variant="body1"
+          color={
+            info.getValue() === "Not disclosed" ? "textSecondary" : "initial"
+          }
+          fontStyle={info.getValue() === "Not disclosed" ? "italic" : "normal"}
+        >
+          {info.getValue()}
+        </Typography>
+      ),
+      enableSorting: false,
+    },
+  ),
+  columnHelper.accessor("work_arrangement", {
     header: "Arrangement",
-    filterFn: filterIncludesCellValue,
+    //filterFn: filterIncludesCellValue,
     cell: (info) => {
       const val = info.getValue();
       const chipClassName = {
@@ -130,11 +154,31 @@ export const getColumns = () => [
       );
     },
   }),
-  columnHelper.accessor("source", {
-    header: "Source",
-    cell: (info) => <ApplicationSourceLink source={info.getValue()} />,
-  }),
-  columnHelper.accessor("currentStatus", {
+  columnHelper.accessor(
+    (row) => {
+      const { source_platform, source_link } = row;
+      if (!source_platform && !source_link) return "Not available";
+      return `${source_platform} ${source_link}`;
+    },
+    {
+      id: "source",
+      header: "Source",
+      cell: (info) =>
+        info.getValue() === "Not Available" ? (
+          <Typography variant="body1" color="text.secondary" fontStyle="italic">
+            {info.getValue()}
+          </Typography>
+        ) : (
+          <ApplicationSourceLink
+            source={{
+              platform: info.row.original.source_platform,
+              link: info.row.original.source_link,
+            }}
+          />
+        ),
+    },
+  ),
+  columnHelper.accessor("current_status", {
     header: "Status",
     filterFn: filterIncludesCellValue,
     cell: ({ getValue, row }) => (

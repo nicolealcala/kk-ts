@@ -3,26 +3,34 @@ import * as z from "zod";
 const applicationFormSchema = z.object({
   organization: z.string().nonempty("Organization is required"),
   position: z.string().nonempty("Position is required"),
-  location: z
-    .object({
-      country: z.string().optional(),
-      city: z.string().optional(),
-      postalCode: z.string().optional(),
-    })
+  // location: z
+  //   .object({
+  //     country: z.string().optional(),
+  //     city: z.string().optional(),
+  //     postalCode: z.string().optional(),
+  //   })
+  //   .optional(),
+  country: z.string().optional(),
+  work_arrangement: z.enum(["onsite", "remote", "hybrid", ""]).optional(),
+  // source: z.object({
+  //   platform: z.string().nonempty("Platform is required"),
+  //   link: z.url("Invalid URL").nonempty("Job posting link is required"),
+  // }),
+  source_platform: z.string().nonempty("Platform is required"),
+  source_link: z.url("Invalid URL").nonempty("Job posting link is required"),
+  // salary: z
+  //   .object({
+  //     currency: z.string(),
+  //     minAmount: z.number().min(0),
+  //     maxAmount: z.number().min(0),
+  //   })
+  //   .optional(),
+  salary_currency_code: z.string().optional(),
+  salary_min: z.number().min(0),
+  salary_max: z.number().min(0),
+  employment_type: z
+    .enum(["gig", "fulltime", "partime", "contract", ""])
     .optional(),
-  workArrangement: z.enum(["onsite", "remote", "hybrid", ""]).optional(),
-  source: z.object({
-    platform: z.string().nonempty("Platform is required"),
-    link: z.url("Invalid URL").nonempty("Job posting link is required"),
-  }),
-  salary: z
-    .object({
-      currency: z.string(),
-      minAmount: z.number().min(0),
-      maxAmount: z.number().min(0),
-    })
-    .optional(),
-  type: z.enum(["gig", "fulltime", "partime", "contract", ""]).optional(),
   description: z.string().optional(),
   status: z
     .enum([
@@ -42,11 +50,14 @@ export type ApplicationFormInputs = z.infer<typeof applicationFormSchema>;
 export const initialValues: ApplicationFormInputs = {
   organization: "",
   position: "",
-  location: { country: "", city: "", postalCode: "" },
-  workArrangement: "",
-  source: { platform: "", link: "" },
-  salary: { currency: "", minAmount: 0, maxAmount: 0 },
-  type: "",
+  country: "",
+  work_arrangement: "",
+  source_platform: "",
+  source_link: "",
+  salary_currency_code: "",
+  salary_min: 0,
+  salary_max: 0,
+  employment_type: "",
   description: "",
   status: "applied",
 };
