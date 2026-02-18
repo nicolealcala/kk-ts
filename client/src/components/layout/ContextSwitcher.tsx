@@ -30,7 +30,7 @@ function SelectValue({ value }: { value: SelectValueProps }) {
         src={
           value.organization.img
             ? value.organization.img
-            : "https://www.svgrepo.com/show/508699/landscape-placeholder.svg"
+            : "https://placehold.co/400"
         }
         alt={
           value.organization.img
@@ -57,7 +57,7 @@ function SelectValue({ value }: { value: SelectValueProps }) {
 
 export default function ContextSwitcher() {
   const [currentYear, setCurrentYear] = React.useState<string>(
-    headerItems[0].year
+    headerItems[0].year,
   );
 
   const handleChange = (event: SelectChangeEvent<string>) => {
@@ -66,7 +66,7 @@ export default function ContextSwitcher() {
 
   const currentPeriod = React.useMemo(
     () => headerItems.find((item) => item.year === currentYear),
-    [currentYear]
+    [currentYear],
   );
 
   return (
