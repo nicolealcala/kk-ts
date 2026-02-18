@@ -7,9 +7,10 @@ import {
   type SortingState,
   getExpandedRowModel,
   type RowSelectionState,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { useMemo, useReducer, useState } from "react";
-import { getColumns, type CustomApplication } from "./Columns";
+import { getColumns } from "./Columns";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -35,6 +36,8 @@ import Span from "../shared/typography/Span";
 import DeleteHeader from "../shared/header-icons/DeleteHeader";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import Pagination from "@mui/material/Pagination";
+import type { Application } from "@/lib/types/applications";
 
 export type FilterState = {
   count: number;
@@ -93,9 +96,9 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
 }
 
 type ApplicationsTableProps = {
-  data: CustomApplication[];
+  data: Application[];
   setSelectedApplication: React.Dispatch<
-    React.SetStateAction<CustomApplication | null>
+    React.SetStateAction<Application | null>
   >;
 };
 
@@ -110,8 +113,12 @@ function ApplicationsTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({}); // State to track selection
   const [openModal, setOpenModal] = useState(false);
   const [applicationToDelete, setApplicationToDelete] = useState<
-    CustomApplication | CustomApplication[] | null
+    Application | Application[] | null
   >(null);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const currentLocalDate = new Date().toISOString().split("T")[0];
   const { deleteApplication } = useApplicationsData(currentLocalDate);
@@ -122,7 +129,7 @@ function ApplicationsTable({
   };
 
   const handleConfirmDeleteOne = () => {
-    const appId = (applicationToDelete as CustomApplication)?.id;
+    const appId = (applicationToDelete as Application)?.id;
 
     console.log("RowSelection: ", rowSelection);
     console.log("app to delete: ", applicationToDelete);
@@ -131,7 +138,7 @@ function ApplicationsTable({
       return;
     }
 
-    deleteApplication((applicationToDelete as CustomApplication).id as string, {
+    deleteApplication((applicationToDelete as Application).id as string, {
       onSuccess: () => {
         setRowSelection((prev) => {
           const updatedRowSelection = { ...prev };
@@ -150,9 +157,7 @@ function ApplicationsTable({
   };
 
   const handleConfirmDeleteMany = () => {
-    const ids = (applicationToDelete as CustomApplication[])?.map(
-      (app) => app.id,
-    );
+    const ids = (applicationToDelete as Application[])?.map((app) => app.id);
 
     if (ids.length === 0) {
       console.log("no ids");
@@ -170,18 +175,18 @@ function ApplicationsTable({
   const columnFilters = useMemo(
     () => [
       {
-        id: "workArrangement",
+        id: "work_arrangement",
         value: filters.arrangement,
       },
       {
-        id: "currentStatus",
+        id: "current_status",
         value: filters.status,
       },
     ],
     [filters.arrangement, filters.status],
   );
 
-  const columns = useMemo(() => getColumns(), [rowSelection]);
+  const columns = useMemo(() => getColumns(), []);
 
   const table = useReactTable({
     data,
@@ -191,30 +196,46 @@ function ApplicationsTable({
       globalFilter,
       columnFilters,
       rowSelection,
+      pagination,
     },
     meta: {
-      onEditRow: (row: CustomApplication) => {
+      onEditRow: (row: Application) => {
         setSelectedApplication(row);
       },
-      onDeleteRow: (row: CustomApplication) => {
+      onDeleteRow: (row: Application) => {
         setApplicationToDelete(row);
         setOpenModal(true);
       },
     },
     getRowId: (row) => row.id,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getRowCanExpand: () => true,
     getExpandedRowModel: getExpandedRowModel(),
+    autoResetPageIndex: true,
   });
 
+  // Get the rows that passed the filters
+  const totalFilteredRows = table.getFilteredRowModel().rows.length;
+  const rowsOnCurrentPage = table.getPaginationRowModel().rows.length;
+
+  const { pageIndex, pageSize } = table.getState().pagination;
+  const firstIndex = totalFilteredRows === 0 ? 0 : pageIndex * pageSize + 1;
+  const lastIndex =
+    totalFilteredRows === 0 ? 0 : firstIndex + rowsOnCurrentPage - 1;
+
   return (
-    <Box sx={{ width: "100%" }}>
+    <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
       <Toolbar
+        firstIndex={firstIndex}
+        lastIndex={lastIndex}
+        totalFilteredRows={totalFilteredRows}
         globalFilter={globalFilter}
         setGlobalFilter={setGlobalFilter}
         isFilterOpen={isFilterOpen}
@@ -224,6 +245,7 @@ function ApplicationsTable({
         rowSelection={rowSelection}
         setRowSelection={setRowSelection}
         handleDeleteMany={handleDeleteMany}
+        setSorting={setSorting}
       />
 
       <TableContainer
@@ -388,6 +410,15 @@ function ApplicationsTable({
           </TableBody>
         </Table>
       </TableContainer>
+      {totalFilteredRows > 10 && (
+        <Pagination
+          count={table.getPageCount()}
+          page={table.getState().pagination.pageIndex + 1} // MUI uses 1-based indexing
+          onChange={(_, page) => table.setPageIndex(page - 1)} // Convert back to 0-based
+          shape="rounded"
+          sx={{ mx: "auto", mt: 2 }}
+        />
+      )}
       <ConfirmationModal
         open={openModal}
         title="Are you sure?"
@@ -398,7 +429,7 @@ function ApplicationsTable({
             <DeleteOneMessage applicationToDelete={applicationToDelete} />
           )
         }
-        handleClose={() => setOpenModal(false)}
+        onClose={() => setOpenModal(false)}
         handleConfirm={
           Object.keys(rowSelection).length > 0 &&
           Array.isArray(applicationToDelete)
@@ -407,6 +438,7 @@ function ApplicationsTable({
         }
         confirmButtonColor="error"
         headerIcon={<DeleteHeader />}
+        maxWidth="xs"
       />
     </Box>
   );
@@ -415,7 +447,7 @@ function ApplicationsTable({
 function DeleteOneMessage({
   applicationToDelete,
 }: {
-  applicationToDelete: CustomApplication | null;
+  applicationToDelete: Application | null;
 }) {
   if (!applicationToDelete) return null;
   return (
@@ -430,7 +462,7 @@ function DeleteOneMessage({
 function DeleteManyMessages({
   applicationsToDelete,
 }: {
-  applicationsToDelete: CustomApplication[] | null;
+  applicationsToDelete: Application[] | null;
 }) {
   if (!applicationsToDelete || applicationsToDelete.length === 0) return null;
   return (
