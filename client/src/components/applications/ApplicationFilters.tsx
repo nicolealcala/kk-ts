@@ -6,15 +6,18 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import type { FilterAction, FilterState } from "./ApplicationsTable";
+import type { SortingState } from "@tanstack/react-table";
 
 type ApplicationFiltersProps = {
   filters: FilterState;
   dispatch: React.ActionDispatch<[action: FilterAction]>;
+  setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
 };
 
 export default function ApplicationFilters({
   filters,
   dispatch,
+  setSorting,
 }: ApplicationFiltersProps) {
   // Check if any filter is active to show the "Clear" button
   const hasActiveFilters =
@@ -32,13 +35,14 @@ export default function ApplicationFilters({
             { label: "Onsite", value: "onsite" },
           ]}
           selected={filters.arrangement}
-          onChange={(val: string) =>
+          onChange={(val: string) => {
+            setSorting([]);
             dispatch({
               type: "TOGGLE_FILTER",
               category: "arrangement",
               value: val,
-            })
-          }
+            });
+          }}
         />
 
         {/* Status Section */}
@@ -54,9 +58,10 @@ export default function ApplicationFilters({
             { label: "Ghosted", value: "ghosted" },
           ]}
           selected={filters.status}
-          onChange={(val: string) =>
-            dispatch({ type: "TOGGLE_FILTER", category: "status", value: val })
-          }
+          onChange={(val: string) => {
+            setSorting([]);
+            dispatch({ type: "TOGGLE_FILTER", category: "status", value: val });
+          }}
         />
       </Stack>
 
