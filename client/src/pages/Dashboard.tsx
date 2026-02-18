@@ -16,7 +16,7 @@ export default function Dashboard() {
     queryKey: [`dashboard-${currentYear}`],
     queryFn: async () => {
       return fetch(
-        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`
+        `${import.meta.env.VITE_BASE_URL}/api/dashboard/${currentYear}`,
       ).then((res) => res.json());
     },
   });
@@ -61,8 +61,8 @@ export default function Dashboard() {
                       sentiment === 0
                         ? "neutral"
                         : sentiment > 0
-                        ? "positive"
-                        : "negative"
+                          ? "positive"
+                          : "negative"
                     }
                     value={data.kpis[key].result}
                   />
