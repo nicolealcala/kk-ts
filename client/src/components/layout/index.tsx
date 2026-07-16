@@ -76,7 +76,7 @@ export default function RootLayout() {
           disableGutters
           sx={{
             position: "relative",
-            height: "100dvh",
+            maxHeight: "100dvh",
             display: "flex",
             flexDirection: "column",
             p: 3,
@@ -84,6 +84,7 @@ export default function RootLayout() {
             //bgcolor: "slate.extraLight",
             width: "100%",
             overflow: "hidden",
+            overflowY: "auto",
             minWidth: 0,
           }}
         >

@@ -46,8 +46,8 @@ export const handlers = [
       statusHistory: [
         { status: newApplication.status, date: new Date().toISOString() },
       ],
-      createDate: new Date().toISOString(),
-      updateDate: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     applicationsData.push(savedApplication);
@@ -71,8 +71,8 @@ export const handlers = [
       statusHistory: [
         { status: updatedData.status, date: new Date().toISOString() },
       ],
-      createDate: new Date().toISOString(),
-      updateDate: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const index = applicationsData.findIndex((item) => item.id === id);

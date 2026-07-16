@@ -131,8 +131,6 @@ function ApplicationsTable({
   const handleConfirmDeleteOne = () => {
     const appId = (applicationToDelete as Application)?.id;
 
-    console.log("RowSelection: ", rowSelection);
-    console.log("app to delete: ", applicationToDelete);
     if (!appId) {
       console.log("no single id");
       return;
@@ -172,19 +170,26 @@ function ApplicationsTable({
     });
   };
 
-  const columnFilters = useMemo(
-    () => [
-      {
+  const columnFilters = useMemo(() => {
+    const activeFilters = [];
+
+    // Only include the filter if the array has items
+    if (filters.arrangement && filters.arrangement.length > 0) {
+      activeFilters.push({
         id: "work_arrangement",
         value: filters.arrangement,
-      },
-      {
+      });
+    }
+
+    if (filters.status && filters.status.length > 0) {
+      activeFilters.push({
         id: "current_status",
         value: filters.status,
-      },
-    ],
-    [filters.arrangement, filters.status],
-  );
+      });
+    }
+
+    return activeFilters;
+  }, [filters.arrangement, filters.status]);
 
   const columns = useMemo(() => getColumns(), []);
 

@@ -93,8 +93,7 @@ export default function ApplicationForm({
       { data: formData, id: selectedApplication?.id },
       {
         onSuccess: () => {
-          setOpenDrawer(null);
-          reset();
+          handleCancel();
         },
       },
     );
@@ -198,7 +197,7 @@ export default function ApplicationForm({
               />
               {/* Status Field */}
               <ControlledFormSelect
-                name="status"
+                name="current_status"
                 control={control}
                 label="Status"
                 items={statusOptions}
@@ -268,7 +267,7 @@ export default function ApplicationForm({
               control={control}
               render={({ field }) => (
                 <MDEditor
-                  value={field.value}
+                  value={field.value ?? undefined}
                   onChange={field.onChange}
                   preview="edit"
                   previewOptions={{

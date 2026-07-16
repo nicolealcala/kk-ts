@@ -62,13 +62,15 @@ export const getColumns = () => [
       />
     ),
   },
-  columnHelper.accessor("created_at", {
+  columnHelper.accessor("updated_at", {
+    // id: "updated_at",
     header: "Date",
     cell: (info) => (
       <Typography variant="caption" color="initial">
         {convertUtcToShortenedLocaleDate(info.getValue())}
       </Typography>
     ),
+    sortingFn: "alphanumeric",
   }),
   columnHelper.accessor("position", {
     header: "Position",
@@ -106,7 +108,8 @@ export const getColumns = () => [
   columnHelper.accessor(
     (row) => {
       const { salary_currency_code, salary_min, salary_max } = row;
-      if (!salary_min && !salary_max) return "Not disclosed";
+      if (!salary_currency_code && !salary_min && !salary_max)
+        return "Not disclosed";
       if (!salary_min) return formatCurrency(salary_max, salary_currency_code);
       if (!salary_max) return formatCurrency(salary_min, salary_currency_code);
       return `${formatCurrency(salary_min, salary_currency_code)} - ${formatCurrency(salary_max, salary_currency_code)}`;
@@ -138,19 +141,26 @@ export const getColumns = () => [
         hybrid: "bg-blue-50! text-blue-500!",
         onsite: "bg-yellow-50! text-yellow-400!",
       };
-      return val ? (
+
+      // 1. Check if val exists AND if it exists in our mapping
+      const config = val
+        ? chipClassName[val as keyof typeof chipClassName]
+        : null;
+
+      if (!val || !config) {
+        return (
+          <Typography variant="body1" color="text.secondary" fontStyle="italic">
+            Not Disclosed
+          </Typography>
+        );
+      }
+
+      return (
         <Chip
           label={val.toUpperCase()}
           size="small"
-          className={cn(
-            "text-sm! font-medium",
-            chipClassName[val as keyof typeof chipClassName],
-          )}
+          className={cn("text-sm! font-medium", config)}
         />
-      ) : (
-        <Typography variant="body1" color="text.secondary" fontStyle="italic">
-          Not Disclosed
-        </Typography>
       );
     },
   }),

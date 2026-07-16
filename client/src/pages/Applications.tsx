@@ -21,16 +21,10 @@ export default function ApplicationsPage() {
   if (isLoading) {
     return <Loader />;
   }
+
+  console.log(applications);
   return (
-    <Stack
-      component="article"
-      spacing={3.5}
-      sx={{
-        height: "100%",
-        minHeight: 0,
-        width: "100%",
-      }}
-    >
+    <Stack component="article" spacing={3.5}>
       {applications && applications.length > 0 ? (
         <>
           <ApplicationTableHeader

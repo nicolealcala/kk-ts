@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   deleteApplication,
   getApplications,
-  updateApplication,
+  upsertApplication,
 } from "@/lib/services/applicationsService";
 import type { ApplicationFormInputs } from "@/lib/forms/applicationFormSchema";
 import { toast } from "react-toastify";
@@ -20,14 +20,15 @@ export function useApplicationsData(currentLocalDate?: string) {
   // --- SAVE Mutation (Create or Update) ---
   const saveMutation = useMutation({
     mutationFn: ({ data, id }: { data: ApplicationFormInputs; id?: string }) =>
-      updateApplication(data, id),
+      upsertApplication(data, id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [key, currentLocalDate],
       });
       toast.success("Application saved successfully");
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("[SAVE MUTATION]: ", error.message, error.cause);
       toast.error("Failed to save application");
     },
   });
@@ -47,7 +48,8 @@ export function useApplicationsData(currentLocalDate?: string) {
           : "Application deleted successfully",
       );
     },
-    onError: (_, variables) => {
+    onError: (error, variables) => {
+      console.error("[DELETE MUTATION]: ", error.message, error.cause);
       const isBulkDelete = Array.isArray(variables) && variables.length > 1;
 
       toast.error(

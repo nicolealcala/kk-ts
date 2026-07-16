@@ -100,6 +100,7 @@ export const ControlledFormAutocomplete = <
                     </>
                   ),
                 },
+                formHelperText: { sx: { mx: 0.5 } },
               }}
             />
           )}
