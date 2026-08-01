@@ -31,7 +31,7 @@ export const eventType = pgEnum("event_type", [
 export const eventStatus = pgEnum("event_status", [
   "scheduled",
   "cancelled",
-  "cancelled",
+  "completed",
   "missed",
 ]);
 

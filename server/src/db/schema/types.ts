@@ -4,14 +4,14 @@ export type Country = {
 };
 
 export type JobLocation = {
-  countryCode?: string;
-  state?: string;
-  city?: string;
+  countryCode?: string | null | undefined;
+  state?: string | null | undefined;
+  city?: string | null | undefined;
 };
 
 export type ApplicationSource = {
   platform: string;
-  url?: string;
+  url?: string | null | undefined;
 };
 
 export type EventLocation =

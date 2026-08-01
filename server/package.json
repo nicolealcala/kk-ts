@@ -6,13 +6,15 @@
   "scripts": {
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "db:seed": "tsx src/db/seed/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^1.0.0-rc.4",
     "express": "^5.2.1",
@@ -28,6 +30,7 @@
     "typescript": "^7.0.2"
   },
   "allowScripts": {
-    "esbuild": true
+    "esbuild": true,
+    "bcrypt@6.0.0": true
   }
 }

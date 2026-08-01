@@ -29,10 +29,13 @@ import type {
 import { auditAttributes } from "./columns.helper.js";
 import { sql } from "drizzle-orm";
 
+export * from "./enums.js";
+
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
   email: text("email").notNull().unique(),
-  name: text("name"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
   settings: jsonb("settings").$type<UserSettings>(),
   country: jsonb("country").$type<Country>(),
   passwordHash: text("password_hash"),
@@ -86,8 +89,16 @@ export const applications = pgTable(
     employmentType: employmentType("employment_type"),
     workArrangement: workArrangement("work_arrangement"),
     location: jsonb("location").$type<JobLocation>(),
-    compensationMin: numeric("compensation_min", { precision: 12, scale: 2 }),
-    compensationMax: numeric("compensation_max", { precision: 12, scale: 2 }),
+    compensationMin: numeric("compensation_min", {
+      precision: 12,
+      scale: 2,
+      mode: "number",
+    }),
+    compensationMax: numeric("compensation_max", {
+      precision: 12,
+      scale: 2,
+      mode: "number",
+    }),
     currency: char({ length: 3 }),
     payFrequency: payFrequency("pay_frequency"),
     status: applicationStatus("status").default("applied").notNull(),
@@ -152,12 +163,13 @@ export const experiences = pgTable(
     position: text("position").notNull(),
     employmentType: employmentType("employment_type").notNull(),
     workArrangement: workArrangement("work_arrangement"),
-    salary: numeric("salary", { precision: 12, scale: 2 }),
+    salary: numeric("salary", { precision: 12, scale: 2, mode: "number" }),
     currency: char({ length: 3 }),
     payFrequency: payFrequency("pay_frequency"),
     location: jsonb("location").$type<JobLocation>(),
     startDate: timestamp("start_date", { withTimezone: true }).notNull(),
     endDate: timestamp("end_date", { withTimezone: true }),
+    isCurrent: boolean("is_current").default(false).notNull(),
     summary: text("summary"),
     ...auditAttributes,
   },
@@ -171,6 +183,10 @@ export const experiences = pgTable(
       "experiences_date_range_check",
       sql`${table.endDate} IS NULL 
       OR ${table.endDate} >= ${table.startDate}`,
+    ),
+    check(
+      "experiences_current_end_date_check",
+      sql`${table.isCurrent} = false OR ${table.endDate} IS NULL`,
     ),
   ],
 );
