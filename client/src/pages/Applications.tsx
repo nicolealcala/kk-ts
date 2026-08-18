@@ -6,20 +6,20 @@ import React from "react";
 import { type OpenDrawerValues } from "@/lib/types/forms";
 import type { CustomApplication } from "@/components/applications/Columns";
 import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
-import Loader from "@/components/shared/Loader";
+import ApplicationsSkeleton from "@/components/applications/Skeleton";
 import EmptyApplications from "@/components/applications/EmptyApplications";
+const currentLocalDate = new Date().toISOString().split("T")[0];
 
 export default function ApplicationsPage() {
   const [openDrawer, setOpenDrawer] = React.useState<OpenDrawerValues>(null);
   const [selectedApplication, setSelectedApplication] =
     React.useState<CustomApplication | null>(null);
 
-  const currentLocalDate = new Date().toISOString().split("T")[0];
   const { applications, totalCount, isLoading } =
     useApplicationsData(currentLocalDate);
 
   if (isLoading) {
-    return <Loader />;
+    return <ApplicationsSkeleton />;
   }
   return (
     <Stack
