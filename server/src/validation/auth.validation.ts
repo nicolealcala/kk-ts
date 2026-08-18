@@ -5,7 +5,7 @@ import {
   requiredTextSchema,
 } from "./common.validation.js";
 
-export const createUserCredentialsSchema = z
+export const signUpSchema = z
   .object({
     firstName: requiredTextSchema,
     lastName: requiredTextSchema,
