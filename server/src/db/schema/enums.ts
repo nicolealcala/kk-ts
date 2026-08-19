@@ -13,11 +13,15 @@ export const applicationStatus = pgEnum("application_status", [
   "withdrawn",
 ]);
 
+export type ApplicationStatus = (typeof applicationStatus.enumValues)[number];
+
 export const workArrangement = pgEnum("work_arrangement", [
   "remote",
   "hybrid",
   "onsite",
 ]);
+
+export type WorkArrangement = (typeof workArrangement.enumValues)[number];
 
 export const eventType = pgEnum("event_type", [
   "meeting",

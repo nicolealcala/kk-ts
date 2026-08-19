@@ -9,6 +9,7 @@ export const nullableTextSchema = z
   .nullish();
 
 export const requiredTextSchema = z.string().trim().min(1);
+export const requiredTextArraySchema = z.array(requiredTextSchema).min(1);
 
 export const nullableUrlSchema = z
   .string()
@@ -62,3 +63,7 @@ export const userSettingsSchema = z.object({
   dateFormat: z.enum(["MDY", "DMY", "YMD"]).optional(),
 });
 
+export const resourceParamSchema = z.object({ id: requiredTextSchema });
+
+export type RequiredTextData = z.infer<typeof requiredTextSchema>;
+export type ResourceParam = z.infer<typeof resourceParamSchema>;
