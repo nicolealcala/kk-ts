@@ -1,9 +1,12 @@
 import type { Request, Response, NextFunction } from "express";
 import { z, ZodError } from "zod";
+import { AppError } from "../lib/customErrors.js";
 
-export const validateRequestBody = (schema: z.ZodSchema) => {
+type RequestPart = "body" | "query" | "params";
+
+export const validateRequest = (part: RequestPart, schema: z.ZodSchema) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
+    const result = schema.safeParse(req[part]);
 
     if (!result.success) {
       const cleanErrors = result.error.issues.map((issue) => ({
@@ -11,9 +14,7 @@ export const validateRequestBody = (schema: z.ZodSchema) => {
         message: issue.message,
       }));
 
-      return res
-        .status(400)
-        .json({ message: "Invalid credetials", errors: cleanErrors });
+      return next(new AppError("Invalid Request", 400, cleanErrors));
     }
 
     next();
