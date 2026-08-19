@@ -13,15 +13,15 @@ export const applicationsData: Application[] = [
     },
     workArrangement: "remote",
     source: { platform: "linkedin", link: "#" },
-    statusHistory: [{ status: "applied", date: "2025-05-10T08:00:00Z" }],
+    statusHistory: [{ status: "applied", createdAt: "2025-05-10T08:00:00Z" }],
     salary: {
       currency: "PHP",
       minAmount: 80000,
       maxAmount: 120000,
     },
     type: "fulltime",
-    createDate: "2025-05-10T08:00:00Z",
-    updateDate: "2025-05-10T08:00:00Z",
+    createdAt: "2025-05-10T08:00:00Z",
+    updatedAt: "2025-05-10T08:00:00Z",
   },
   {
     id: "2",
@@ -35,8 +35,8 @@ export const applicationsData: Application[] = [
     workArrangement: "remote",
     source: { platform: "indeed", link: "#" },
     statusHistory: [
-      { status: "applied", date: "2024-04-20T10:30:00Z" },
-      { status: "interviewing", date: "2024-04-22T14:00:00Z" },
+      { status: "applied", createdAt: "2024-04-20T10:30:00Z" },
+      { status: "interviewing", createdAt: "2024-04-22T14:00:00Z" },
     ],
     salary: {
       currency: "USD",
@@ -44,8 +44,8 @@ export const applicationsData: Application[] = [
       maxAmount: 6000,
     },
     type: "contract",
-    createDate: "2024-04-20T10:30:00Z",
-    updateDate: "2024-04-22T14:00:00Z",
+    createdAt: "2024-04-20T10:30:00Z",
+    updatedAt: "2024-04-22T14:00:00Z",
   },
   {
     id: "3",
@@ -59,14 +59,14 @@ export const applicationsData: Application[] = [
     },
     workArrangement: "hybrid",
     source: { platform: "jobstreet", link: "#" },
-    statusHistory: [{ status: "offered", date: "2024-03-15T09:15:00Z" }],
+    statusHistory: [{ status: "offered", createdAt: "2024-03-15T09:15:00Z" }],
     salary: {
       currency: "PHP",
       maxAmount: 150000,
     },
     type: "fulltime",
-    createDate: "2024-03-01T11:00:00Z",
-    updateDate: "2024-03-15T09:15:00Z",
+    createdAt: "2024-03-01T11:00:00Z",
+    updatedAt: "2024-03-15T09:15:00Z",
   },
   {
     id: "4",
@@ -79,10 +79,12 @@ export const applicationsData: Application[] = [
     },
     workArrangement: "remote",
     source: { platform: "jobstreet", link: "#" },
-    statusHistory: [{ status: "not-selected", date: "2024-02-28T16:45:00Z" }],
+    statusHistory: [
+      { status: "not-selected", createdAt: "2024-02-28T16:45:00Z" },
+    ],
     type: "gig",
-    createDate: "2024-02-15T13:20:00Z",
-    updateDate: "2024-02-28T16:45:00Z",
+    createdAt: "2024-02-15T13:20:00Z",
+    updatedAt: "2024-02-28T16:45:00Z",
   },
 ];
 
