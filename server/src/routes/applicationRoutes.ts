@@ -9,7 +9,6 @@ import {
 import { validateRequest } from "../middleware/validationMiddleware.js";
 import {
   requiredTextArraySchema,
-  requiredTextSchema,
   resourceParamSchema,
 } from "../validation/common.validation.js";
 import { AppError } from "../lib/customErrors.js";
@@ -17,10 +16,8 @@ import { AppError } from "../lib/customErrors.js";
 const applicationRouter = Router();
 const applicationService = new ApplicationService();
 
-//TO DO: Replace with extracted userId from JWT
-const userId = "efd06b1c-bc51-4fd6-9c91-5d4c2893a7d4";
-
-export default function applicationRoutes() {
+export default function applicationRoutes(userId: string) {
+  //TO DO: Replace userId with extracted userId from JWT
   applicationRouter.get(
     "/",
     validateRequest("query", applicationListQuerySchema),

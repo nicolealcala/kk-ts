@@ -9,6 +9,7 @@ import applicationRoutes from "./routes/applicationRoutes.js";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
+const testUserId = process.env.TEST_USER!;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -35,7 +36,7 @@ app.use("/api/dashboard", verifyToken(), (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("/api/applications", applicationRoutes());
+app.use("/api/applications", applicationRoutes(testUserId));
 
 app.use((req, _, next) => {
   const error = new AppError(`Resource not found: ${req.originalUrl}`, 404);
