@@ -11,9 +11,12 @@ export type JobSource = {
   link?: string;
 };
 
-export type ApplicationStatus = {
+export type ApplicationStatusHistory = {
+  id?: string;
+  applicationId?: string;
   status: string;
-  date: string;
+  notes?: string;
+  createdAt: string;
 };
 
 export type SalaryRange = {
@@ -30,10 +33,10 @@ export interface Application {
   location: JobLocation;
   workArrangement: WorkArrangement;
   source: JobSource;
-  statusHistory: ApplicationStatus[];
+  statusHistory: ApplicationStatusHistory[];
   type: JobType;
   salary?: SalaryRange;
   description?: string;
-  createDate: string;
-  updateDate: string;
+  createdAt: string;
+  updatedAt: string;
 }

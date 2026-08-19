@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthService } from "../services/auth.service.js";
-import { validateRequestBody } from "../middleware/validationMiddleware.js";
+import { validateRequest } from "../middleware/validationMiddleware.js";
 import { loginSchema, signUpSchema } from "../validation/auth.validation.js";
 
 const authRouter = Router();
@@ -8,7 +8,7 @@ const authRouter = Router();
 export default function authRoutes(isProduction: boolean) {
   authRouter.post(
     "/login",
-    validateRequestBody(loginSchema),
+    validateRequest("body", loginSchema),
     async (req, res, next) => {
       try {
         const { email, password } = req.body;
@@ -32,7 +32,7 @@ export default function authRoutes(isProduction: boolean) {
 
   authRouter.post(
     "/signup",
-    validateRequestBody(signUpSchema),
+    validateRequest("body", signUpSchema),
     async (req, res, next) => {
       try {
         const { firstName, lastName, email, password } = req.body;
@@ -65,5 +65,6 @@ export default function authRoutes(isProduction: boolean) {
     });
     res.json({ message: "User logout successful" });
   });
+
   return authRouter;
 }

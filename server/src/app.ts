@@ -5,9 +5,11 @@ import cookieParser from "cookie-parser";
 import { AppError } from "./lib/customErrors.js";
 import verifyToken from "./middleware/authMiddleware.js";
 import cors from "cors";
+import applicationRoutes from "./routes/applicationRoutes.js";
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
+const testUserId = process.env.TEST_USER!;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -34,6 +36,8 @@ app.use("/api/dashboard", verifyToken(), (req, res) => {
   res.send("Hello World!");
 });
 
+app.use("/api/applications", applicationRoutes(testUserId));
+
 app.use((req, _, next) => {
   const error = new AppError(`Resource not found: ${req.originalUrl}`, 404);
   next(error);
@@ -48,11 +52,16 @@ app.use(
   ) => {
     console.error("Error caught in middleware", err.message);
 
-    const statusCode = err?.statusCode || 500;
-    const responseMessage =
-      statusCode === 500 ? "Internal Server Error" : err.message;
+    if (err instanceof AppError) {
+      return res.status(err.statusCode).json({
+        error: err.message,
+        ...(err.details !== undefined && {
+          details: err.details,
+        }),
+      });
+    }
 
-    res.status(statusCode).json({ error: responseMessage });
+    return res.status(500).json({ error: "Internal Server Error" });
   },
 );
 
