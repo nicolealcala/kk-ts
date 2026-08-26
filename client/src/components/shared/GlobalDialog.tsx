@@ -1,23 +1,15 @@
-import Button, { type ButtonOwnProps } from "@mui/material/Button";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-
-type ConfirmationModalProps = {
-  open: boolean;
-  title: string;
-  message: string | React.ReactNode;
-  handleClose: () => void;
-  handleConfirm: () => void;
-  confirmButtonColor: ButtonOwnProps["color"];
-  headerIcon?: React.ReactNode;
-  loading?: boolean;
-};
+import { useDialogStore } from "@/store/dialog/dialogStore";
+import useShallowStore from "@/store/useShallowStore";
+import { useState } from "react";
 
 const buttonStyles = {
-  primary: {
+  default: {
     bgcolor: "primary.dark",
     color: "primary.contrastText",
   },
@@ -38,22 +30,46 @@ const buttonStyles = {
   },
 };
 
-export default function ConfirmationModal({
-  open,
-  title,
-  message,
-  handleClose,
-  handleConfirm,
-  confirmButtonColor,
-  headerIcon,
-  loading,
-}: ConfirmationModalProps) {
+export default function GlobalDialog() {
+  const { isOpen, title, message, type, headerIcon, onConfirm, closeDialog } =
+    useShallowStore(useDialogStore, (state) => ({
+      isOpen: state.isOpen,
+      title: state.title,
+      message: state.message,
+      type: state.type,
+      headerIcon: state.headerIcon,
+      onConfirm: state.onConfirm,
+      closeDialog: state.closeDialog,
+    }));
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    if (!onConfirm) return;
+    setIsLoading(true);
+
+    try {
+      await onConfirm();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+      closeDialog();
+    }
+  };
   return (
     <Dialog
-      open={open}
-      onClose={handleClose}
+      open={isOpen}
+      onClose={closeDialog}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
+      slotProps={{
+        paper: {
+          sx: {
+            borderRadius: 4,
+          },
+        },
+      }}
     >
       {headerIcon && (
         <Box p={3} pb={0}>
@@ -66,15 +82,16 @@ export default function ConfirmationModal({
       >
         {title}
       </DialogTitle>
-      <DialogContent sx={{ pt: 0 }}>{message}</DialogContent>
+      <DialogContent sx={{ pt: 0, maxWidth: "400px" }}>{message}</DialogContent>
       <DialogActions sx={{ px: 3, pb: 3 }}>
         {/* Cancel Button */}
         <Button
           variant="outlined"
-          onClick={handleClose}
-          disabled={loading}
+          onClick={closeDialog}
+          disabled={isLoading}
           sx={{
             borderColor: "grey.400",
+            borderRadius: 10,
             color: "initial",
             "&:hover": { bgcolor: "grey.50" },
           }}
@@ -85,12 +102,11 @@ export default function ConfirmationModal({
         {/* Confirm Button */}
         <Button
           variant="contained"
-          loading={loading}
+          loading={isLoading}
           loadingPosition="start"
           sx={{
-            ...(confirmButtonColor
-              ? buttonStyles[confirmButtonColor as keyof typeof buttonStyles]
-              : ""),
+            ...(type ? buttonStyles[type as keyof typeof buttonStyles] : ""),
+            borderRadius: 10,
           }}
           onClick={handleConfirm}
           autoFocus

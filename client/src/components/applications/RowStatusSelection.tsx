@@ -1,46 +1,37 @@
 import { cn } from "@/utils/tailwind";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-
-const statusOptions = [
-  { label: "Applied", value: "applied" },
-  { label: "Interviewing", value: "interviewing" },
-  { label: "Offered", value: "offered" },
-  { label: "Not Selected", value: "not-selected" },
-  { label: "Withdrawn", value: "withdrawn" },
-  { label: "Accepted", value: "accepted" },
-  { label: "Ghosted", value: "ghosted" },
-];
+import { statusOptions } from "@/lib/data/applicationComponentValues";
+import type { ApplicationStatusData } from "@/lib/schema/application.validation.ts";
 
 const statusColors = {
   applied: "bg-blue-50! text-blue-500!",
-  interviewing: "bg-yellow-50! text-yellow-500!",
-  offered: "bg-green-50! text-green-500!",
-  "not-selected": "bg-red-50! text-red-500!",
-  ghosted: "bg-gray-50! text-gray-500!",
+  initial_interview: "bg-yellow-50! text-yellow-500!",
+  offer_received: "bg-green-50! text-green-500!",
+  rejected: "bg-red-50! text-red-500!",
+  offer_declined: "bg-gray-50! text-gray-500!",
   withdrawn: "bg-purple-50! text-purple-500!",
 };
 
 type ApplicationStatusSelectionProps = {
-  getValue: () => string;
+  value: ApplicationStatusData;
   row: { original: { id: string } };
 };
 
-export default function ApplicationStatusSelection({
-  getValue,
+export default function RowStatusSelection({
+  value,
   row,
 }: ApplicationStatusSelectionProps) {
-  const currentValue = getValue();
-
   return (
     <Select
-      value={currentValue}
+      value={value}
       size="small"
       className={cn(
-        "w-fit",
-        statusColors[currentValue as keyof typeof statusColors],
+        "w-fit rounded-2xl!",
+        statusColors[value as keyof typeof statusColors],
       )}
       sx={{
+        borderRadius: "100%",
         "& .MuiOutlinedInput-notchedOutline": {
           border: "none",
         },

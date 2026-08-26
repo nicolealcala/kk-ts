@@ -1,14 +1,14 @@
 import Box from "@mui/material/Box";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
-export default function DeleteHeader() {
+export default function DeleteHeaderIcon() {
   return (
     <Box
       p={1}
       sx={{
         bgcolor: "error.extraLight",
         maxWidth: "max-content",
-        borderRadius: 2,
+        borderRadius: 10,
         aspectRatio: 1 / 1,
       }}
     >
