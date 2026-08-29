@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 
-export default function DeleteHeaderIcon() {
+export default function DeleteIcon() {
   return (
     <Box
       p={1}
