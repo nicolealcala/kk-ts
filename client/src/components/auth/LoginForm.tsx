@@ -10,8 +10,8 @@ import { useNavigate } from "react-router";
 import Alert from "@mui/material/Alert";
 import PasswordField from "./PasswordField";
 import FormTextField from "../shared/form/FormTextField";
-import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
-import loginSchema from "@/lib/forms/loginFormSchema";
+import type { LoginFormInputs } from "@/lib/schema/loginSchema";
+import loginSchema from "@/lib/schema/loginSchema";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { loginUser, setAuthMode } from "@/store/auth/authSlice";
 

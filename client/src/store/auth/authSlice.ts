@@ -1,6 +1,6 @@
 import supabase from "@/lib/config/supabaseClient";
-import type { LoginFormInputs } from "@/lib/forms/loginFormSchema";
-import type { SignupFormInputs } from "@/lib/forms/signUpFormSchema";
+import type { LoginFormInputs } from "@/lib/schema/loginSchema";
+import type { SignupFormInputs } from "@/lib/schema/signupSchema";
 import {
   createAsyncThunk,
   createSlice,

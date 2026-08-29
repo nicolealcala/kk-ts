@@ -1,4 +1,4 @@
-import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
+import type { ScheduleFormInputs } from "@/lib/schema/scheduleSchema";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
