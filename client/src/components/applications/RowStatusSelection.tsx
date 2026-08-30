@@ -2,7 +2,7 @@ import { cn } from "@/utils/tailwind";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { statusOptions } from "@/lib/data/applicationComponentValues";
-import type { ApplicationStatusData } from "@/lib/schema/application.validation.ts";
+import type { ApplicationStatusData } from "@/lib/schema/applicationSchema.ts";
 
 const statusColors = {
   applied: "bg-blue-50! text-blue-500!",
