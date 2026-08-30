@@ -17,11 +17,11 @@ export default function RowActions({
   onDeleteRow,
 }: ApplicationRowProps) {
   return (
-    <Stack direction="row" spacing={1} maxWidth="fit-content">
+    <Stack direction="row" spacing={0.5} maxWidth="fit-content">
       <IconButton
         size="small"
         onClick={() => row.toggleExpanded()}
-        disabled={!row.original.description || row.getIsSelected()}
+        disabled={!row.original.jobDescription || row.getIsSelected()}
         sx={{
           transform: row.getIsExpanded() ? "rotate(180deg)" : "rotate(0deg)",
           transition: "0.2s",

@@ -1,21 +1,24 @@
 import { formatCurrency } from "@/utils/currency";
 import Typography from "@mui/material/Typography";
+import Span from "../shared/typography/Span";
 
 type RowSalaryRangeProps = {
   compensationMin?: number | null;
   compensationMax?: number | null;
   currency?: string;
+  payFrequency?: string;
 };
 
 export default function RowSalaryRange({
   compensationMin,
   compensationMax,
   currency,
+  payFrequency,
 }: RowSalaryRangeProps) {
   if (!compensationMin && !compensationMax)
     return (
-      <Typography variant="body1" color="text.secondary" fontStyle="italic">
-        Not Disclosed
+      <Typography variant="body2" color="text.secondary" fontStyle="italic">
+        Not Provided
       </Typography>
     );
 
@@ -27,9 +30,13 @@ export default function RowSalaryRange({
     ? formatCurrency(compensationMax, currency)
     : false;
 
+  const due = payFrequency ? `(${payFrequency})` : "";
   return (
     <Typography variant="body1">
-      {min} {min && "-"} {max}
+      {min} {min && "-"} {max}{" "}
+      <Span variant="caption" fontWeight={400} color="textDisabled">
+        {due}
+      </Span>
     </Typography>
   );
 }
