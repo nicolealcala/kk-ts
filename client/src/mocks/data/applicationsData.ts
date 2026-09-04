@@ -1,90 +1,109 @@
-import type { Application } from "@/lib/types/applications"; // Assuming types are in a separate file
+import type { ApplicationFormData } from "@/lib/schema/applicationSchema.ts";
 
-export const applicationsData: Application[] = [
+export const applicationsData: (ApplicationFormData & { id: string })[] = [
   {
     id: "1",
-    organization: "Company A",
+    company: "Company A",
     position: "Software Engineer",
-    description:
-      "Full-stack development using React and Node.js. Responsible for maintaining core banking modules.",
+    employmentType: "full_time",
+    workArrangement: "remote",
     location: {
       city: "Makati",
-      country: "Philippines",
+      countryCode: "Philippines",
     },
-    workArrangement: "remote",
-    source: { platform: "linkedin", link: "#" },
-    statusHistory: [{ status: "applied", createdAt: "2025-05-10T08:00:00Z" }],
-    salary: {
-      currency: "PHP",
-      minAmount: 80000,
-      maxAmount: 120000,
-    },
-    type: "fulltime",
-    createdAt: "2025-05-10T08:00:00Z",
-    updatedAt: "2025-05-10T08:00:00Z",
+    compensationMin: 80000,
+    compensationMax: 120000,
+    currency: "PHP",
+    appliedAt: "2025-05-10T08:00:00Z",
+    status: "applied",
+    jobDescription:
+      "Full-stack development using React and Node.js. Responsible for maintaining core banking modules.",
+    source: { platform: "linkedin" },
+    statusHistory: [
+      {
+        applicationId: "1",
+        status: "applied",
+        createdAt: "2025-05-10T08:00:00Z",
+      },
+    ],
   },
   {
     id: "2",
-    organization: "Company B",
+    company: "Company B",
     position: "Data Scientist",
-    description:
-      "Building predictive models for customer churn using Python and SQL.",
-    location: {
-      country: "USA",
-    },
+    employmentType: "contract",
     workArrangement: "remote",
-    source: { platform: "indeed", link: "#" },
-    statusHistory: [
-      { status: "applied", createdAt: "2024-04-20T10:30:00Z" },
-      { status: "interviewing", createdAt: "2024-04-22T14:00:00Z" },
-    ],
-    salary: {
-      currency: "USD",
-      minAmount: 4000,
-      maxAmount: 6000,
+    location: {
+      countryCode: "USA",
     },
-    type: "contract",
-    createdAt: "2024-04-20T10:30:00Z",
-    updatedAt: "2024-04-22T14:00:00Z",
+    compensationMin: 4000,
+    compensationMax: 6000,
+    currency: "USD",
+    appliedAt: "2024-04-20T10:30:00Z",
+    status: "initial_interview",
+    jobDescription:
+      "Building predictive models for customer churn using Python and SQL.",
+
+    source: { platform: "indeed" },
+    statusHistory: [
+      {
+        applicationId: "2",
+        status: "applied",
+        createdAt: "2024-04-20T10:30:00Z",
+      },
+      {
+        applicationId: "2",
+        status: "initial_interview",
+        createdAt: "2024-04-22T14:00:00Z",
+      },
+    ],
   },
   {
     id: "3",
-    organization: "Company C",
+    company: "Company C",
     position: "Product Manager",
-    description:
-      "Leading the roadmap for the mobile app squad and coordinating with stakeholders.",
+    employmentType: "full_time",
+    workArrangement: "hybrid",
     location: {
       city: "Makati",
-      country: "Philippines",
+      countryCode: "Philippines",
     },
-    workArrangement: "hybrid",
-    source: { platform: "jobstreet", link: "#" },
-    statusHistory: [{ status: "offered", createdAt: "2024-03-15T09:15:00Z" }],
-    salary: {
-      currency: "PHP",
-      maxAmount: 150000,
-    },
-    type: "fulltime",
-    createdAt: "2024-03-01T11:00:00Z",
-    updatedAt: "2024-03-15T09:15:00Z",
+    compensationMax: 150000,
+    currency: "PHP",
+    appliedAt: "2024-03-01T11:00:00Z",
+    status: "offer_received",
+
+    jobDescription:
+      "Leading the roadmap for the mobile app squad and coordinating with stakeholders.",
+    source: { platform: "jobstreet" },
+    statusHistory: [
+      {
+        applicationId: "3",
+        status: "offer_received",
+        createdAt: "2024-03-15T09:15:00Z",
+      },
+    ],
   },
   {
     id: "4",
-    organization: "Company D",
+    company: "Company D",
     position: "UX Designer",
-    // description is omitted here to test optionality
+    employmentType: "part_time",
+    workArrangement: "remote",
     location: {
       city: "Makati",
-      country: "Philippines",
+      countryCode: "PH",
     },
-    workArrangement: "remote",
-    source: { platform: "jobstreet", link: "#" },
+    appliedAt: "2024-02-15T13:20:00Z",
+    status: "rejected",
+    source: { platform: "jobstreet" },
     statusHistory: [
-      { status: "not-selected", createdAt: "2024-02-28T16:45:00Z" },
+      {
+        applicationId: "4",
+        status: "rejected",
+        createdAt: "2024-02-28T16:45:00Z",
+      },
     ],
-    type: "gig",
-    createdAt: "2024-02-15T13:20:00Z",
-    updatedAt: "2024-02-28T16:45:00Z",
   },
 ];
 
