@@ -6,35 +6,42 @@ import {
 } from "@/lib/schema/applicationSchema";
 import { useParams } from "react-router";
 import { useApplications } from "@/utils/hooks/useApplications";
-import { useFetchApplication } from "@/utils/hooks/useFetchApplication";
 import UpdateApplicationWrapper from "@/components/applications/UpdateApplicationWrapper";
 import Loader from "@/components/shared/Loader";
 import { deepEqual } from "@/utils/comparison";
 import { showToast } from "@/lib/config/toast";
+import { useQuery } from "@tanstack/react-query";
+import { applicationKeys } from "@/lib/data/applicationKeys";
+import { getApplicationById } from "@/lib/services/applicationService";
 
 export default function UpdateApplication() {
   const { id } = useParams();
-  const {
-    data: application,
-    isLoading,
-    isError,
-    error,
-  } = useFetchApplication(id);
+  const query = useQuery({
+    queryKey: id ? applicationKeys.detail(id) : applicationKeys.details(),
+    queryFn: () => {
+      if (!id) {
+        throw new Error("Fetch failed: Missing application ID");
+      }
+
+      return getApplicationById(id);
+    },
+    enabled: !!id,
+  });
 
   const { updateApplication } = useApplications();
 
-  if (isLoading) {
+  if (query.isLoading) {
     return <Loader />;
   }
-  if (isError || !id) {
-    console.log(error);
+  if (query.isError || !id) {
+    console.log(query.error);
     return <p>Error</p>;
   }
 
   const onSubmit = async (data: ApplicationFormOutput) => {
     if (!id) return;
 
-    const isEqual = deepEqual(application, data, applicationFormSchema);
+    const isEqual = deepEqual(query.data, data, applicationFormSchema);
 
     if (isEqual) {
       showToast("info", "No changes to save");
@@ -51,7 +58,7 @@ export default function UpdateApplication() {
 
   return (
     <UpdateApplicationWrapper
-      data={application}
+      data={query.data}
       onSubmit={onSubmit}
       onError={onError}
     />
