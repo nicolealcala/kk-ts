@@ -62,11 +62,11 @@ export function convertDateToIso(date: Date | string) {
 
 /**
  * Function to convert UTC date string to locale date string (shortened without year)
- * @param dateString
+ * @param date
  * @returns string
  */
 
-export function convertUtcToShortenedLocaleDate(dateString: string) {
+export function formatShortenedLocaleDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
