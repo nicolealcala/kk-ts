@@ -45,24 +45,24 @@ export default function applicationRoutes(userId: string) {
     },
   );
 
+  // applicationRouter.post(
+  //   "/",
+  //   validateRequest("body", createApplicationSchema),
+  //   async (req, res) => {
+  //     const data = createApplicationSchema.parse(req.body);
+
+  //     const application = await applicationService.createOne(userId, data);
+
+  //     return res.status(201).json(application);
+  //   },
+  // );
+
   applicationRouter.post(
     "/",
-    validateRequest("body", createApplicationSchema),
-    async (req, res) => {
-      const data = createApplicationSchema.parse(req.body);
-
-      const application = await applicationService.createOne(userId, data);
-
-      return res.status(201).json(application);
-    },
-  );
-
-  applicationRouter.post(
-    "/bulk-create",
     validateRequest("body", createManyApplicationsSchema),
     async (req, res) => {
       const data = createManyApplicationsSchema.parse(req.body);
-
+      console.log("[SERVER DATA]: ", JSON.stringify(data, null, 2));
       const applications = await applicationService.createMany(userId, data);
 
       return res.status(201).json(applications);
