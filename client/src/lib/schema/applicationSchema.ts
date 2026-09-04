@@ -39,37 +39,76 @@ const statusSchema = z
   ])
   .nonoptional("Plase add application status");
 
-const workArrangementSchema = z.enum(["onsite", "remote", "hybrid"]).nullish();
+const workArrangementSchema = z.enum(["onsite", "remote", "hybrid"]);
 
 const jobSourceSchema = z.object({
   platform: requiredTextSchema("Please add application source"),
   url: nullableUrlSchema,
 });
+
+const jobLocationSchema = z.object({
+  countryCode: z
+    .string()
+    .length(2)
+    .transform((value) => value.toUpperCase())
+    .nullish(),
+  state: nullableTextSchema,
+  city: nullableTextSchema,
+});
 export const applicationFormSchema = z.object({
   company: requiredTextSchema("Please provide a company"),
   position: requiredTextSchema("Please indicate position"),
   employmentType: employmentTypeSchema,
-  workArrangement: workArrangementSchema,
-  location: z
-    .object({
-      countryCode: z
-        .string()
-        .length(2)
-        .transform((value) => value.toUpperCase())
-        .nullish(),
-      state: nullableTextSchema,
-      city: nullableTextSchema,
-    })
-    .nullish()
-    .transform((value) => {
-      if (
-        !value ||
-        Object.values(value).every((field) => field == null || field === "")
-      )
-        return null;
+  workArrangement: workArrangementSchema.nullish(),
+  location: jobLocationSchema.nullish().transform((value) => {
+    if (
+      !value ||
+      Object.values(value).every((field) => field == null || field === "")
+    )
+      return null;
 
-      return value;
-    }),
+    return value;
+  }),
+  compensationMin: z.coerce.number().nonnegative().nullish(),
+  compensationMax: z.coerce.number().nonnegative().nullish(),
+  currency: z
+    .string()
+    .trim()
+    .length(3)
+    .transform((v) => v.toUpperCase())
+    .nullish(),
+  payFrequency: payFrequencySchema,
+  appliedAt: z.string(),
+  status: statusSchema,
+  jobDescription: nullableTextSchema,
+  notes: nullableTextSchema,
+  source: jobSourceSchema,
+  statusHistory: z
+    .array(
+      z.object({
+        applicationId: z.string().trim().min(1),
+        status: statusSchema,
+        notes: nullableTextSchema,
+        createdAt: z.string(),
+      }),
+    )
+    .nullish(),
+});
+
+export const appplicationListSchema = z.object({
+  company: requiredTextSchema("Please provide a company"),
+  position: requiredTextSchema("Please indicate position"),
+  employmentType: employmentTypeSchema,
+  workArrangement: workArrangementSchema,
+  location: jobLocationSchema.nullish().transform((value) => {
+    if (
+      !value ||
+      Object.values(value).every((field) => field == null || field === "")
+    )
+      return null;
+
+    return value;
+  }),
   compensationMin: z.coerce.number().nonnegative().nullish(),
   compensationMax: z.coerce.number().nonnegative().nullish(),
   currency: z
@@ -111,7 +150,7 @@ export type ApplicationsFormOutput = z.output<typeof applicationsFormSchema>;
 export type WorkArrangementData = z.infer<typeof workArrangementSchema>;
 export type ApplicationStatusData = z.infer<typeof statusSchema>;
 export type JobSourceData = z.infer<typeof jobSourceSchema>;
-
+export type JobLocationData = z.infer<typeof jobLocationSchema>;
 export const initialValues: ApplicationFormData = {
   company: "",
   position: "",
