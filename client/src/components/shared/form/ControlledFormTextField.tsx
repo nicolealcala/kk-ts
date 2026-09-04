@@ -26,21 +26,18 @@ const ControlledFormTextField = <
     <Controller
       name={name}
       control={control}
-      render={({
-        field: { onChange, value, ...field },
-        fieldState: { error },
-      }) => (
+      render={({ field, fieldState: { error } }) => (
         <TextField
           {...field}
           {...props}
-          value={value ?? ""}
+          value={field.value ?? ""}
           onChange={(e) => {
             const val = e.target.value;
 
             const formattedValue =
               props.type === "number" && val !== "" ? Number(val) : val;
 
-            onChange(formattedValue);
+            field.onChange(formattedValue);
           }}
           fullWidth
           error={!!error}
