@@ -1,53 +1,49 @@
 import ApplicationsTable from "../components/applications/ApplicationsTable";
-import ApplicationTableHeader from "@/components/applications/ApplicationTableHeader";
 import Stack from "@mui/material/Stack";
-import ApplicationsForm from "@/components/applications/ApplicationForm";
-import React from "react";
-import { type OpenDrawerValues } from "@/lib/types/forms";
-import type { CustomApplication } from "@/components/applications/Columns";
-import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
-import Loader from "@/components/shared/Loader";
 import EmptyApplications from "@/components/applications/EmptyApplications";
+import { useApplications } from "@/utils/hooks/useApplications";
+import { useApplicationTable } from "@/store/application/applicationStore";
+import { useEffect } from "react";
+import { getApplicationTableStateFromUrl } from "@/utils/url";
 
 export default function ApplicationsPage() {
-  const [openDrawer, setOpenDrawer] = React.useState<OpenDrawerValues>(null);
-  const [selectedApplication, setSelectedApplication] =
-    React.useState<CustomApplication | null>(null);
+  useEffect(() => {
+    const urlState = getApplicationTableStateFromUrl(location.search);
 
-  const currentLocalDate = new Date().toISOString().split("T")[0];
-  const { applications, totalCount, isLoading } =
-    useApplicationsData(currentLocalDate);
+    useApplicationTable.setState((state) => ({
+      ...state,
+      ...urlState,
+      pagination: {
+        ...state.pagination,
+        ...(urlState.pagination ?? {}),
+      },
+    }));
+  }, []);
 
-  if (isLoading) {
-    return <Loader />;
-  }
+  const { applicationsList } = useApplications();
+  const { data, error } = applicationsList;
+
+  const totalCount = useApplicationTable(
+    (state) => state.pagination.totalCount,
+  );
+
+  if (error) <p>Error: {error.message}</p>;
+
   return (
     <Stack
       component="article"
       spacing={3.5}
+      p={3}
+      pt={4}
       sx={{
         height: "100%",
         minHeight: 0,
         width: "100%",
       }}
+      className="thin-scrollbar"
     >
-      {applications && applications.length > 0 ? (
-        <>
-          <ApplicationTableHeader
-            totalCount={totalCount}
-            setOpenDrawer={setOpenDrawer}
-          />
-          <ApplicationsTable
-            data={applications}
-            setSelectedApplication={setSelectedApplication}
-          />
-          <ApplicationsForm
-            openDrawer={openDrawer}
-            setOpenDrawer={setOpenDrawer}
-            selectedApplication={selectedApplication}
-            setSelectedApplication={setSelectedApplication}
-          />
-        </>
+      {data && totalCount && totalCount > 0 ? (
+        <ApplicationsTable data={data ?? []} />
       ) : (
         <EmptyApplications />
       )}
