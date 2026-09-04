@@ -145,7 +145,7 @@ export default function Sidebar({ open }: SidebarProps) {
 
       {open && (
         <footer className="px-5 py-3 text-sm transition-all delay-200 text-gray-500 border-t">
-          from{" "}
+          made by&nbsp;
           <a
             href="https://clinoae.is-a.dev"
             target="_blank"
