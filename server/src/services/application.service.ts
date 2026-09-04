@@ -182,8 +182,8 @@ class ApplicationService {
 
     //Filters
     if (workArrangement)
-      conditions.push(eq(applications.workArrangement, workArrangement));
-    if (status) conditions.push(eq(applications.status, status));
+      conditions.push(inArray(applications.workArrangement, workArrangement));
+    if (status) conditions.push(inArray(applications.status, status));
     if (appliedAtFrom)
       conditions.push(gte(applications.appliedAt, appliedAtFrom));
     if (appliedAtTo) conditions.push(lte(applications.appliedAt, appliedAtTo));
