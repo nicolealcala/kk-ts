@@ -1,1 +1,0 @@
-export type OpenDrawerValues = "create" | "update" | null;
