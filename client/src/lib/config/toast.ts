@@ -1,4 +1,3 @@
-import Toast from "@/components/shared/Toast";
 import { toast, type ToastOptions } from "react-toastify";
 
 export type ToastData = {
