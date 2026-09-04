@@ -9,7 +9,7 @@ import { useApplicationTable } from "@/store/application/applicationStore";
 import type {
   ApplicationStatusData,
   WorkArrangementData,
-} from "@/lib/schema/application.validation.ts";
+} from "@/lib/schema/applicationSchema.ts";
 import {
   statusOptions,
   workArrangementOptions,
