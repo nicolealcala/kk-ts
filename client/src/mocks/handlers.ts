@@ -1,10 +1,10 @@
 import { contextData, dashboardData } from "@/mocks/data/dashboardData";
 import schedulesData from "@/mocks/data/schedulesData";
 import type { Schedule } from "@/lib/types/schedules";
-import { http, HttpResponse } from "msw";
+import { http, HttpResponse, passthrough } from "msw";
 import { v4 as uuidv4 } from "uuid";
 import applicationsData from "./data/applicationsData";
-import type { Application } from "@/lib/types/applications";
+import type { ApplicationFormData } from "@/lib/schema/applicationSchema.ts";
 
 export const handlers = [
   //Dashboard
@@ -22,72 +22,94 @@ export const handlers = [
 
   //Applications
   http.get("/api/applications", () => {
-    const transformedData = applicationsData.map((app) => {
-      const currentStatus = app.statusHistory.at(-1);
-      return {
-        ...app,
-        currentStatus: currentStatus?.status || "applied",
-      };
-    });
+    // applicationsData.sort(
+    //   (a, b) =>
+    //     new Date(b.appliedAt).getTime() - new Date(a.appliedAt).getTime(),
+    // );
+    // return HttpResponse.json({
+    //   data: applicationsData,
+    //   pagination: {
+    //     totalCount: applicationsData.length,
+    //     filteredCount: applicationsData.length,
+    //   },
+    // });
+    return passthrough();
+  }),
 
-    transformedData.sort((a, b) => b.createDate.localeCompare(a.createDate));
-    return HttpResponse.json({
-      applications: transformedData,
-      totalCount: transformedData.length,
-    });
+  http.get("/api/applications/:id", () => {
+    return passthrough();
   }),
 
   http.post("/api/applications", async ({ request }) => {
-    const newApplication = (await request.json()) as Omit<
-      Application,
-      "statusHistory"
-    > & {
-      status: string;
-    };
+    // const newApplication = (await request.json()) as Omit<
+    //   ApplicationFormData,
+    //   "statusHistory"
+    // > & {
+    //   status: string;
+    // };
 
-    const savedApplication = {
-      ...newApplication,
-      id: uuidv4(),
-      statusHistory: [
-        { status: newApplication.status, date: new Date().toISOString() },
-      ],
-      createDate: new Date().toISOString(),
-      updateDate: new Date().toISOString(),
-    };
+    // const id = uuidv4();
+    // const savedApplication = {
+    //   ...newApplication,
+    //   id,
+    //   statusHistory: [
+    //     {
+    //       applicationId: id,
+    //       status: newApplication.status,
+    //       createdAt: new Date().toISOString(),
+    //     },
+    //   ],
+    //   appliedAt: new Date().toISOString(),
+    //   createdAt: new Date().toISOString(),
+    //   updatedAt: new Date().toISOString(),
+    // };
 
-    applicationsData.push(savedApplication);
+    // applicationsData.push(savedApplication);
 
-    console.log("Mock DB Updated:", applicationsData);
+    // console.log("Mock DB Updated:", applicationsData);
 
-    return HttpResponse.json(savedApplication, { status: 201 });
+    // return HttpResponse.json(savedApplication, { status: 201 });
+    return passthrough();
   }),
 
-  http.patch("/api/applications/:id", async ({ request, params }) => {
-    const { id } = params;
-    const updatedData = (await request.json()) as Omit<
-      Application,
-      "statusHistory"
-    > & {
-      status: string;
-    };
+  http.patch("/api/applications/:id/edit", async ({ request, params }) => {
+    // const { id } = params;
 
-    const savedData = {
-      ...updatedData,
-      statusHistory: [
-        { status: updatedData.status, date: new Date().toISOString() },
-      ],
-      createDate: new Date().toISOString(),
-      updateDate: new Date().toISOString(),
-    };
+    // if (typeof id !== "string") {
+    //   return new HttpResponse(null, { status: 400 });
+    // }
 
-    const index = applicationsData.findIndex((item) => item.id === id);
+    // const updatedData = (await request.json()) as Omit<
+    //   ApplicationFormData,
+    //   "statusHistory"
+    // > & {
+    //   status: string;
+    // };
+    // const savedData = {
+    //   ...updatedData,
+    //   id,
+    //   statusHistory: [
+    //     {
+    //       applicationId: id as string,
+    //       status: updatedData.status,
+    //       createdAt: new Date().toISOString(),
+    //     },
+    //   ],
+    //   appliedAt: new Date().toISOString(),
+    // };
 
-    if (index !== -1) {
-      applicationsData[index] = { ...applicationsData[index], ...savedData };
-      return HttpResponse.json(applicationsData[index]);
-    }
+    // const index = applicationsData.findIndex((item) => item.id === id);
 
-    return new HttpResponse(null, { status: 404 });
+    // if (index !== -1) {
+    //   applicationsData[index] = {
+    //     ...applicationsData[index],
+    //     ...savedData,
+    //   };
+    //   return HttpResponse.json(applicationsData[index]);
+    // }
+
+    // return new HttpResponse(null, { status: 404 });
+    return passthrough();
   }),
 
   http.delete("/api/applications", async ({ request }) => {
