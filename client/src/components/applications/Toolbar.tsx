@@ -7,17 +7,22 @@ import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import Divider from "@mui/material/Divider";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { useEffect, useEffectEvent, useState } from "react";
-import { useApplicationTable } from "@/store/application/applicationStore";
+import {
+  DEFAULT_PAGE,
+  useApplicationTable,
+} from "@/store/application/applicationStore";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import useShallowStore from "@/store/useShallowStore";
 import Filters from "./Filters";
 import type { ApplicationTableData } from "./Columns";
 import { useDialogStore } from "@/store/dialog/dialogStore";
-import { useApplicationsData } from "@/utils/hooks/useApplicationsData";
+import { useApplications } from "@/utils/hooks/useApplications";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Span from "../shared/typography/Span";
 import useDebounced from "@/utils/hooks/useDebounced";
+import { useNavigate } from "react-router";
+import { updateUrl } from "@/utils/url";
 
 const filterStyles = {
   open: {
@@ -29,6 +34,7 @@ const filterStyles = {
   },
 };
 export default function Toolbar() {
+  const navigate = useNavigate();
   const {
     searchTerm,
     workArrangement,
@@ -59,17 +65,24 @@ export default function Toolbar() {
     (state) => state.openConfirmation,
   );
 
-  const { invalidateQueries } = useApplicationsData();
+  const { invalidateQueries, deleteApplication } = useApplications();
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const debouncedValue = useDebounced(searchTerm);
 
-  const invalidateQueriesEffect = useEffectEvent(() =>
+  const onDebounced = useEffectEvent(() =>
     invalidateQueries(["applicationsData"]),
   );
+
   useEffect(() => {
-    if (searchTerm === debouncedValue) invalidateQueriesEffect();
+    if (searchTerm === debouncedValue) {
+      onDebounced();
+      updateUrl({
+        searchTerm: debouncedValue,
+        page: DEFAULT_PAGE,
+      });
+    }
   }, [searchTerm, debouncedValue]);
 
   const startIndex = page && pageSize ? (page - 1) * pageSize + 1 : null;
@@ -79,8 +92,6 @@ export default function Toolbar() {
         ? page * pageSize
         : filteredCount
       : null;
-
-  const { deleteApplication } = useApplicationsData();
 
   const handleDeleteMany = () => {
     openConfirmationDialog({
@@ -92,7 +103,7 @@ export default function Toolbar() {
     });
   };
   return (
-    <Stack direction="column" spacing={0}>
+    <Stack direction="column" spacing={1.5}>
       <Stack direction="row" justifyContent="space-between" mb={2}>
         <Typography
           variant="h5"
@@ -105,12 +116,12 @@ export default function Toolbar() {
         <Button
           variant="contained"
           startIcon={<AddRoundedIcon />}
-          //onClick={() => setOpenDrawer("create")}
+          onClick={() => navigate("/applications/create")}
         >
           Add new
         </Button>
       </Stack>
-      <Stack direction="row" mb={1.5}>
+      <Stack direction="row">
         {page && pageSize && (
           <Typography
             variant="body1"
@@ -123,68 +134,70 @@ export default function Toolbar() {
           </Typography>
         )}
         <Stack direction="row" spacing={2} justifyContent="end" flexGrow={1}>
-          <FormTextField
-            value={searchTerm ?? ""}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search all columns..."
-            size="small"
-            sx={{
-              minWidth: "200px",
-              maxWidth: "280px",
-              height: 0,
-            }}
-            slotProps={{
-              input: {
-                sx: {
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
+          {selectedApplications.length === 0 && (
+            <>
+              <FormTextField
+                value={searchTerm ?? ""}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search"
+                size="small"
+                sx={{
+                  minWidth: "200px",
+                  maxWidth: "280px",
+                  height: 0,
+                }}
+                slotProps={{
+                  input: {
+                    sx: {
+                      bgcolor: "white",
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "divider",
+                      },
+                    },
                   },
-                },
-              },
-            }}
-          />
+                }}
+              />
 
-          <Button
-            variant="contained"
-            startIcon={
-              isFilterOpen ? (
-                <FilterAltIcon fontSize="small" />
-              ) : (
-                <FilterAltOutlinedIcon fontSize="small" />
-              )
-            }
-            sx={{
-              maxWidth: "fit-content",
-              ...(isFilterOpen ? filterStyles.open : filterStyles.closed),
-              "&:hover": {
-                bgcolor: isFilterOpen ? "primary.dark" : "grey.200",
-              },
-            }}
-            onClick={() => {
-              setIsFilterOpen((prev) => !prev);
-              resetFilters();
-            }}
-          >
-            Filter
-            {workArrangement ||
-              (status && (
-                <Typography
-                  variant="body2"
-                  component="span"
-                  bgcolor="background.paper"
-                  color="primary.main"
-                  px={0.75}
-                  borderRadius={1.5}
-                  fontWeight="bold"
-                  width="20px"
-                  ml={1}
-                >
-                  {Number(Boolean(workArrangement)) + Number(Boolean(status))}
-                </Typography>
-              ))}
-          </Button>
-
-          {selectedApplications.length > 1 && (
+              <Button
+                variant="contained"
+                startIcon={
+                  isFilterOpen ? (
+                    <FilterAltIcon fontSize="small" />
+                  ) : (
+                    <FilterAltOutlinedIcon fontSize="small" />
+                  )
+                }
+                sx={{
+                  maxWidth: "fit-content",
+                  ...(isFilterOpen ? filterStyles.open : filterStyles.closed),
+                  "&:hover": {
+                    bgcolor: isFilterOpen ? "primary.dark" : "grey.200",
+                  },
+                }}
+                onClick={() => {
+                  setIsFilterOpen((prev) => !prev);
+                }}
+              >
+                Filter
+                {(workArrangement || status) && (
+                  <Typography
+                    variant="body2"
+                    component="span"
+                    bgcolor="background.paper"
+                    color="primary.main"
+                    px={0.75}
+                    borderRadius={1.5}
+                    fontWeight="bold"
+                    width="20px"
+                    ml={1}
+                  >
+                    {Number(Boolean(workArrangement)) + Number(Boolean(status))}
+                  </Typography>
+                )}
+              </Button>
+            </>
+          )}
+          {selectedApplications.length > 0 && (
             <Button color="error" variant="outlined" onClick={handleDeleteMany}>
               <TrashIcon className="size-4.5 mr-2" />
               Delete {selectedApplications.length} selected
