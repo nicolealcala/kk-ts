@@ -5,10 +5,10 @@ import { useNavigate } from "react-router";
 import BatchCreate from "@/components/shared/form/batch-create/BatchCreate";
 import ApplicationForm from "@/components/applications/ApplicationForm";
 import {
-  applicationsFormSchema,
+  applicationBatchCreateSchema,
   initialValues,
-  type ApplicationsFormInput,
-  type ApplicationsFormOutput,
+  type ApplicationsBatchCreateFormInput,
+  type ApplicationsBatchCreateFormOutput,
 } from "@/lib/schema/applicationSchema.ts";
 import { useApplications } from "@/utils/hooks/useApplications";
 import { showToast } from "@/lib/config/toast";
@@ -17,8 +17,12 @@ export default function CreateApplication() {
   const navigate = useNavigate();
   const { createApplication } = useApplications();
 
-  const form = useForm<ApplicationsFormInput, unknown, ApplicationsFormOutput>({
-    resolver: zodResolver(applicationsFormSchema),
+  const form = useForm<
+    ApplicationsBatchCreateFormInput,
+    unknown,
+    ApplicationsBatchCreateFormOutput
+  >({
+    resolver: zodResolver(applicationBatchCreateSchema),
     mode: "onChange",
     reValidateMode: "onChange",
     defaultValues: {
@@ -35,11 +39,11 @@ export default function CreateApplication() {
     control,
     formState: { errors },
   } = form;
-  const onSubmit = async (data: ApplicationsFormOutput) => {
+  const onSubmit = async (data: ApplicationsBatchCreateFormOutput) => {
     await createApplication(data);
   };
 
-  const onError = (errors: FieldErrors<ApplicationsFormInput>) => {
+  const onError = (errors: FieldErrors<ApplicationsBatchCreateFormInput>) => {
     showToast("error", "Please fix errors before saving");
     console.error("ERRORS:", errors);
   };
@@ -63,7 +67,7 @@ export default function CreateApplication() {
         return `Application ${index + 1}`;
       }}
       renderForm={(index) => (
-        <ApplicationForm<ApplicationsFormInput>
+        <ApplicationForm<ApplicationsBatchCreateFormInput>
           control={control}
           errors={errors.applications?.[index]}
           fieldPrefix={`applications.${index}.`}

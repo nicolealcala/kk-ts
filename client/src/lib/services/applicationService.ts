@@ -1,6 +1,6 @@
 import type {
   ApplicationFormInput,
-  ApplicationsFormOutput,
+  ApplicationsBatchCreateFormOutput,
 } from "../schema/applicationSchema";
 
 const URL = `${import.meta.env.VITE_BASE_URL}/api/applications`;
@@ -25,7 +25,9 @@ export async function getApplicationById(id: string) {
   return response.json();
 }
 
-export async function createApplications(formsData: ApplicationsFormOutput) {
+export async function createApplications(
+  formsData: ApplicationsBatchCreateFormOutput,
+) {
   const response = await fetch(URL, {
     method: "POST",
     headers: {

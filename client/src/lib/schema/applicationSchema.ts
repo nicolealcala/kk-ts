@@ -5,25 +5,26 @@ import {
   requiredTextSchema,
 } from "./commonSchema";
 
-const employmentTypeSchema = z
-  .enum([
-    "full_time",
-    "part_time",
-    "contract",
-    "fixed_term",
-    "temporary",
-    "internship",
-    "freelance",
-    "self_employed",
-    "volunteer",
-    "apprenticeship",
-  ])
-  .nullish();
-
-const payFrequencySchema = z
-  .enum(["hourly", "daily", "weekly", "bi_weekly", "monthly", "annually"])
-  .nullish();
-
+const employmentTypeSchema = z.enum([
+  "full_time",
+  "part_time",
+  "contract",
+  "fixed_term",
+  "temporary",
+  "internship",
+  "freelance",
+  "self_employed",
+  "volunteer",
+  "apprenticeship",
+]);
+const payFrequencySchema = z.enum([
+  "hourly",
+  "daily",
+  "weekly",
+  "bi_weekly",
+  "monthly",
+  "annually",
+]);
 const statusSchema = z
   .enum([
     "applied",
@@ -55,11 +56,12 @@ const jobLocationSchema = z.object({
   state: nullableTextSchema,
   city: nullableTextSchema,
 });
+
 export const applicationFormSchema = z.object({
   company: requiredTextSchema("Please provide a company"),
   position: requiredTextSchema("Please indicate position"),
-  employmentType: employmentTypeSchema,
-  workArrangement: workArrangementSchema.nullish(),
+  employmentType: employmentTypeSchema.optional(),
+  workArrangement: workArrangementSchema.optional(),
   location: jobLocationSchema.nullish().transform((value) => {
     if (
       !value ||
@@ -69,15 +71,15 @@ export const applicationFormSchema = z.object({
 
     return value;
   }),
-  compensationMin: z.coerce.number().nonnegative().nullish(),
-  compensationMax: z.coerce.number().nonnegative().nullish(),
+  compensationMin: z.coerce.number().nonnegative().optional(),
+  compensationMax: z.coerce.number().nonnegative().optional(),
   currency: z
     .string()
     .trim()
     .length(3)
     .transform((v) => v.toUpperCase())
     .nullish(),
-  payFrequency: payFrequencySchema,
+  payFrequency: payFrequencySchema.optional(),
   appliedAt: z.string(),
   status: statusSchema,
   jobDescription: nullableTextSchema,
@@ -98,7 +100,7 @@ export const applicationFormSchema = z.object({
 export const appplicationListSchema = z.object({
   company: requiredTextSchema("Please provide a company"),
   position: requiredTextSchema("Please indicate position"),
-  employmentType: employmentTypeSchema,
+  employmentType: employmentTypeSchema.optional(),
   workArrangement: workArrangementSchema,
   location: jobLocationSchema.nullish().transform((value) => {
     if (
@@ -109,15 +111,15 @@ export const appplicationListSchema = z.object({
 
     return value;
   }),
-  compensationMin: z.coerce.number().nonnegative().nullish(),
-  compensationMax: z.coerce.number().nonnegative().nullish(),
+  compensationMin: z.coerce.number().nonnegative().optional(),
+  compensationMax: z.coerce.number().nonnegative().optional(),
   currency: z
     .string()
     .trim()
     .length(3)
     .transform((v) => v.toUpperCase())
     .nullish(),
-  payFrequency: payFrequencySchema,
+  payFrequency: payFrequencySchema.optional(),
   appliedAt: z.string(),
   status: statusSchema,
   jobDescription: nullableTextSchema,
@@ -135,7 +137,7 @@ export const appplicationListSchema = z.object({
     .nullish(),
 });
 
-export const applicationsFormSchema = z.object({
+export const applicationBatchCreateSchema = z.object({
   applications: z.array(applicationFormSchema),
 });
 
@@ -143,9 +145,15 @@ export type ApplicationFormData = z.infer<typeof applicationFormSchema>;
 export type ApplicationFormInput = z.input<typeof applicationFormSchema>;
 export type ApplicationFormOutput = z.output<typeof applicationFormSchema>;
 
-export type ApplicationsFormData = z.infer<typeof applicationsFormSchema>;
-export type ApplicationsFormInput = z.input<typeof applicationsFormSchema>;
-export type ApplicationsFormOutput = z.output<typeof applicationsFormSchema>;
+export type ApplicationsBatchCreateFormData = z.infer<
+  typeof applicationBatchCreateSchema
+>;
+export type ApplicationsBatchCreateFormInput = z.input<
+  typeof applicationBatchCreateSchema
+>;
+export type ApplicationsBatchCreateFormOutput = z.output<
+  typeof applicationBatchCreateSchema
+>;
 
 export type WorkArrangementData = z.infer<typeof workArrangementSchema>;
 export type ApplicationStatusData = z.infer<typeof statusSchema>;
@@ -154,11 +162,11 @@ export type JobLocationData = z.infer<typeof jobLocationSchema>;
 export const initialValues: ApplicationFormData = {
   company: "",
   position: "",
-  employmentType: null,
-  workArrangement: null,
+  employmentType: undefined,
+  workArrangement: undefined,
   location: null,
-  compensationMin: null,
-  compensationMax: null,
+  compensationMin: undefined,
+  compensationMax: undefined,
   currency: null,
   payFrequency: "monthly",
   appliedAt: new Date().toISOString(),
@@ -167,3 +175,4 @@ export const initialValues: ApplicationFormData = {
   notes: null,
   source: { platform: "", url: null },
 };
+

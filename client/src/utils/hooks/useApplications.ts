@@ -11,7 +11,7 @@ import {
 import { applicationKeys } from "@/lib/data/applicationKeys";
 
 import {
-  type ApplicationsFormOutput,
+  type ApplicationsBatchCreateFormOutput,
   type ApplicationFormInput,
 } from "@/lib/schema/applicationSchema";
 import useShallowStore from "@/store/useShallowStore";
@@ -69,7 +69,8 @@ export function useApplications(keys?: string[]) {
 
   // --- CREATE ---
   const createMutation = useMutation({
-    mutationFn: (data: ApplicationsFormOutput) => createApplications(data),
+    mutationFn: (data: ApplicationsBatchCreateFormOutput) =>
+      createApplications(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
