@@ -4,8 +4,8 @@ import {
   getSchedules,
   updateSchedule,
 } from "@/lib/services/schedulesService";
-import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
-import { toast } from "react-toastify";
+import type { ScheduleFormInputs } from "@/lib/schema/scheduleSchema";
+import { showToast } from "@/lib/config/toast";
 
 export function useSchedulesData(currentLocalDate: string) {
   const key = "schedules";
@@ -25,11 +25,11 @@ export function useSchedulesData(currentLocalDate: string) {
       queryClient.invalidateQueries({
         queryKey: [key, currentLocalDate],
       });
-      toast.success("Event saved successfully");
+      showToast("success", "Event saved successfully");
     },
     onError: (error) => {
       console.error("Failed to save schedule: ", error);
-      toast.error("Failed to save event");
+      showToast("error", "Failed to save event");
     },
   });
 
@@ -40,11 +40,11 @@ export function useSchedulesData(currentLocalDate: string) {
       queryClient.invalidateQueries({
         queryKey: [key, currentLocalDate],
       });
-      toast.success("Event deleted successfully");
+      showToast("success", "Event deleted successfully");
     },
     onError: (error) => {
       console.error("Failed to delet schedule: ", error);
-      toast.error("Failed to delete event");
+      showToast("error", "Failed to delete event");
     },
   });
 
