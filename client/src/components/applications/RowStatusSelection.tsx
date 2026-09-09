@@ -3,14 +3,20 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { statusOptions } from "@/lib/data/applicationComponentValues";
 import type { ApplicationStatusData } from "@/lib/schema/applicationSchema.ts";
+import { useState } from "react";
+import { useApplications } from "@/utils/hooks/useApplications";
 
 const statusColors = {
   applied: "bg-blue-50! text-blue-500!",
-  initial_interview: "bg-yellow-50! text-yellow-500!",
+  assessment: "bg-orange-50! text-orange-500!",
+  final_interview: "bg-purple-50! text-purple-500!",
+  initial_interview: "bg-yellow-50! text-yellow-600!",
+  offer_accepted: "bg-emerald-600! text-emerald-50!",
+  offer_declined: "bg-gray-100! text-gray-500!",
   offer_received: "bg-green-50! text-green-500!",
-  rejected: "bg-red-50! text-red-500!",
-  offer_declined: "bg-gray-50! text-gray-500!",
-  withdrawn: "bg-purple-50! text-purple-500!",
+  rejected: "bg-red-50! text-red-600!",
+  viewed: "bg-sky-50! text-sky-500!",
+  withdrawn: "bg-gray-50! text-gray-500!",
 };
 
 type ApplicationStatusSelectionProps = {
@@ -19,9 +25,18 @@ type ApplicationStatusSelectionProps = {
 };
 
 export default function RowStatusSelection({
-  value,
+  value: defaultValue,
   row,
 }: ApplicationStatusSelectionProps) {
+  const { updateApplicationStatus } = useApplications();
+
+  const [value, setValue] = useState<ApplicationStatusData>(defaultValue);
+
+  const handleStatusChange = (newStatus: ApplicationStatusData) => {
+    setValue(newStatus);
+    updateApplicationStatus({ id: row.original.id, status: newStatus });
+  };
+
   return (
     <Select
       value={value}
@@ -45,10 +60,8 @@ export default function RowStatusSelection({
         },
       }}
       onChange={(e) =>
-        //TO DO: Make a PATCH request when this is updated
-        console.log("Update ID:", row.original.id, "to", e.target.value)
+        handleStatusChange(e.target.value as ApplicationStatusData)
       }
-      // Custom rendering of the selected value
       renderValue={(selected) => {
         const option = statusOptions.find((opt) => opt.value === selected);
         return <span>{option?.label}</span>;

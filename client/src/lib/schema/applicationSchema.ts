@@ -60,8 +60,8 @@ const jobLocationSchema = z.object({
 export const applicationFormSchema = z.object({
   company: requiredTextSchema("Please provide a company"),
   position: requiredTextSchema("Please indicate position"),
-  employmentType: employmentTypeSchema.optional(),
-  workArrangement: workArrangementSchema.optional(),
+  employmentType: employmentTypeSchema.nullish(),
+  workArrangement: workArrangementSchema.nullish(),
   location: jobLocationSchema.nullish().transform((value) => {
     if (
       !value ||
@@ -175,4 +175,3 @@ export const initialValues: ApplicationFormData = {
   notes: null,
   source: { platform: "", url: null },
 };
-

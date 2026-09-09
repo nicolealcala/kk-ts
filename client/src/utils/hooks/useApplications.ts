@@ -6,6 +6,7 @@ import {
   createApplications,
   deleteApplication,
   updateApplication,
+  updateApplicationStatus,
 } from "@/lib/services/applicationService";
 
 import { applicationKeys } from "@/lib/data/applicationKeys";
@@ -13,6 +14,7 @@ import { applicationKeys } from "@/lib/data/applicationKeys";
 import {
   type ApplicationsBatchCreateFormOutput,
   type ApplicationFormInput,
+  type ApplicationStatusData,
 } from "@/lib/schema/applicationSchema";
 import useShallowStore from "@/store/useShallowStore";
 import { useApplicationTable } from "@/store/application/applicationStore";
@@ -24,16 +26,25 @@ export function useApplications(keys?: string[]) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { page, pageSize, sortBy, sortOrder, workArrangement, status, search } =
-    useShallowStore(useApplicationTable, (state) => ({
-      page: state.pagination.page,
-      pageSize: state.pagination.pageSize,
-      sortBy: state.sortBy,
-      sortOrder: state.sortOrder,
-      workArrangement: state.workArrangementFilters,
-      status: state.statusFilters,
-      search: state.searchTerm,
-    }));
+  const {
+    page,
+    pageSize,
+    sortBy,
+    sortOrder,
+    workArrangement,
+    status,
+    search,
+    setSelectedApplications,
+  } = useShallowStore(useApplicationTable, (state) => ({
+    page: state.pagination.page,
+    pageSize: state.pagination.pageSize,
+    sortBy: state.sortBy,
+    sortOrder: state.sortOrder,
+    workArrangement: state.workArrangementFilters,
+    status: state.statusFilters,
+    search: state.searchTerm,
+    setSelectedApplications: state.setSelectedApplications,
+  }));
 
   const { setPagination } = useShallowStore(useApplicationTable, (state) => ({
     setPagination: state.setPagination,
@@ -111,9 +122,29 @@ export function useApplications(keys?: string[]) {
     },
   });
 
+  const updateStatus = useMutation({
+    mutationFn: ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: ApplicationStatusData;
+    }) => updateApplicationStatus(id, status),
+
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          ...applicationKeys.list(urlQuery, keys),
+          ...applicationKeys.detail(id),
+        ],
+      });
+    },
+  });
+
   // --- DELETE ---
   const deleteMutation = useMutation({
-    mutationFn: (idOrIds: string | string[]) => deleteApplication(idOrIds),
+    mutationFn: (ids: string | string[]) =>
+      deleteApplication(Array.isArray(ids) ? ids : [ids]),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -134,6 +165,7 @@ export function useApplications(keys?: string[]) {
 
       const isBulkDelete = Array.isArray(variables) && variables.length > 1;
 
+      setSelectedApplications([]);
       showToast(
         "success",
         isBulkDelete
@@ -172,6 +204,8 @@ export function useApplications(keys?: string[]) {
 
     updateApplication: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
+
+    updateApplicationStatus: updateStatus.mutateAsync,
 
     deleteApplication: deleteMutation.mutateAsync,
     isDeleting: deleteMutation.isPending,
