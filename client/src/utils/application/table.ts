@@ -2,6 +2,7 @@ import {
   DEFAULT_PAGE,
   useApplicationTable,
   type SortColumn,
+  type PaginationData,
 } from "@/store/application/applicationStore";
 import type {
   RowSelectionState,
@@ -43,6 +44,7 @@ export function handleRowSelectionChange(
   data: ApplicationTableData[],
   setRowSelection: React.Dispatch<React.SetStateAction<RowSelectionState>>,
   setSelectedApplications: (applications: ApplicationTableData[]) => void,
+  setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>,
 ) {
   const next = typeof updater === "function" ? updater(rowSelection) : updater;
 
@@ -50,4 +52,13 @@ export function handleRowSelectionChange(
 
   setSelectedApplications(selected);
   setRowSelection(next);
+  setIsFilterOpen(false);
 }
+
+export const handlePageChange = (
+  newPage: number,
+  setPagination: (pagination: Partial<PaginationData>) => void,
+) => {
+  setPagination({ page: newPage });
+  updateUrl({ page: newPage });
+};
