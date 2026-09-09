@@ -15,6 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router";
 import ApplicationForm from "@/components/applications/ApplicationForm";
+import { useDialogStore } from "@/store/dialog/dialogStore";
 
 type UpdateApplicationWrapperProps = {
   data: ApplicationFormInput;
@@ -27,11 +28,11 @@ export default function UpdateApplicationWrapper({
   onError,
 }: UpdateApplicationWrapperProps) {
   const navigate = useNavigate();
-
+  const openConfirmation = useDialogStore((state) => state.openConfirmation);
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<ApplicationFormInput, unknown, ApplicationFormOutput>({
     resolver: zodResolver(applicationFormSchema),
     mode: "onChange",
@@ -41,6 +42,18 @@ export default function UpdateApplicationWrapper({
 
   const hasErrors = Object.keys(errors).length > 0;
 
+  const handleBack = () => {
+    if (isDirty)
+      openConfirmation({
+        title: "Discard changes?",
+        message:
+          "All progress will be discarded. This action cannot be undone.",
+        type: "warning",
+        onConfirm: () => navigate("/applications"),
+        icon: "warning",
+      });
+    else navigate("/applications");
+  };
   return (
     <Stack
       height="100%"
@@ -53,7 +66,7 @@ export default function UpdateApplicationWrapper({
         isSubmitting={isSubmitting}
         isMultiple={false}
         title="Applications"
-        onBack={() => navigate("/applications")}
+        onBack={handleBack}
       />
 
       {/* Content */}

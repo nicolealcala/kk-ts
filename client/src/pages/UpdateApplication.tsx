@@ -38,7 +38,7 @@ export default function UpdateApplication() {
     return <p>Error</p>;
   }
 
-  const onSubmit = async (data: ApplicationFormOutput) => {
+  const handleSubmit = async (data: ApplicationFormOutput) => {
     if (!id) return;
 
     const isEqual = deepEqual(query.data, data, applicationFormSchema);
@@ -51,7 +51,7 @@ export default function UpdateApplication() {
     await updateApplication({ data, id: id });
   };
 
-  const onError = (errors: FieldErrors<ApplicationFormInput>) => {
+  const handleError = (errors: FieldErrors<ApplicationFormInput>) => {
     showToast("error", "Please fix errors before saving");
     console.error("ERRORS:", errors);
   };
@@ -59,8 +59,8 @@ export default function UpdateApplication() {
   return (
     <UpdateApplicationWrapper
       data={query.data}
-      onSubmit={onSubmit}
-      onError={onError}
+      onSubmit={handleSubmit}
+      onError={handleError}
     />
   );
 }
