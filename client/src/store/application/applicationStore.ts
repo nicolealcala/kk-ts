@@ -3,7 +3,6 @@ import type {
   ApplicationStatusData,
   WorkArrangementData,
 } from "@/lib/schema/applicationSchema.ts";
-import { updateUrl } from "@/utils/url";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -16,7 +15,7 @@ export type SortColumn =
   | "status"
   | "workArrangment";
 type SortOrder = "asc" | "desc";
-type PaginationData = {
+export type PaginationData = {
   page?: number;
   pageSize?: number;
   totalCount?: number;
@@ -73,20 +72,14 @@ const getInitialTableParams = (): ApplicationTableState => {
 };
 export const useApplicationTable = create(
   combine(getInitialTableParams(), (set) => ({
-    setSortBy: (column: SortColumn) => {
+    setSortBy: (column: SortColumn) =>
       set((state) => ({
         sortBy: column,
         pagination: {
           ...state.pagination,
           page: DEFAULT_PAGE,
         },
-      }));
-
-      updateUrl({
-        sortBy: column,
-        page: DEFAULT_PAGE,
-      });
-    },
+      })),
     setSortOrder: (order: SortOrder) =>
       set((state) => ({
         sortOrder: order,
@@ -117,11 +110,14 @@ export const useApplicationTable = create(
     setFilters: ({ filter, type }: FiltersArg) =>
       set((state) => {
         if (type === "workArrangement") {
+          const filters = state.workArrangementFilters ?? [];
+
+          const workArrangementFilters = filters.includes(filter)
+            ? filters.filter((value) => value !== filter)
+            : [...filters, filter];
+
           return {
-            workArrangementFilters: [
-              ...(state.workArrangementFilters ?? []),
-              filter,
-            ],
+            workArrangementFilters,
             pagination: {
               ...state.pagination,
               page: DEFAULT_PAGE,
@@ -129,8 +125,14 @@ export const useApplicationTable = create(
           };
         }
 
+        const filters = state.statusFilters ?? [];
+
+        const statusFilters = filters.includes(filter)
+          ? filters.filter((value) => value !== filter)
+          : [...filters, filter];
+
         return {
-          statusFilters: [...(state.statusFilters ?? []), filter],
+          statusFilters,
           pagination: {
             ...state.pagination,
             page: DEFAULT_PAGE,
