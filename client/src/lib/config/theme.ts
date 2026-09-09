@@ -94,11 +94,13 @@ const theme = createTheme({
           };
         },
         sizeLarge: {
-          height: "48px",
-          fontSize: "16px",
+          height: 48,
+          fontSize: 16,
+          borderRadius: 12,
         },
         sizeMedium: {
-          fontSize: "16px",
+          fontSize: 16,
+          borderRadius: 8,
         },
       },
     },
