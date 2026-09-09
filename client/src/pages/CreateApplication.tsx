@@ -12,11 +12,12 @@ import {
 } from "@/lib/schema/applicationSchema.ts";
 import { useApplications } from "@/utils/hooks/useApplications";
 import { showToast } from "@/lib/config/toast";
+import { useDialogStore } from "@/store/dialog/dialogStore";
 
 export default function CreateApplication() {
   const navigate = useNavigate();
   const { createApplication } = useApplications();
-
+  const openConfirmation = useDialogStore((state) => state.openConfirmation);
   const form = useForm<
     ApplicationsBatchCreateFormInput,
     unknown,
@@ -37,15 +38,30 @@ export default function CreateApplication() {
 
   const {
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = form;
   const onSubmit = async (data: ApplicationsBatchCreateFormOutput) => {
     await createApplication(data);
   };
 
-  const onError = (errors: FieldErrors<ApplicationsBatchCreateFormInput>) => {
+  const handleError = (
+    errors: FieldErrors<ApplicationsBatchCreateFormInput>,
+  ) => {
     showToast("error", "Please fix errors before saving");
     console.error("ERRORS:", errors);
+  };
+
+  const handleBack = () => {
+    if (isDirty)
+      openConfirmation({
+        title: "Discard changes?",
+        message:
+          "All progress will be discarded. This action cannot be undone.",
+        type: "warning",
+        onConfirm: () => navigate("/applications"),
+        icon: "warning",
+      });
+    else navigate("/applications");
   };
 
   return (
@@ -55,8 +71,8 @@ export default function CreateApplication() {
       defaultItem={{ ...initialValues }}
       title="Applications"
       onSubmit={onSubmit}
-      onError={onError}
-      onBack={() => navigate("/applications")}
+      onError={handleError}
+      onBack={handleBack}
       getItemTitle={(index) => {
         const position = applications[index]?.position.trim();
         const company = applications[index]?.company.trim();
