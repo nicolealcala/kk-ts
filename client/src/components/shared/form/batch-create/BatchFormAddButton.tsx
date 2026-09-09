@@ -1,20 +1,14 @@
-import Button from "@mui/material/Button";
+import Button, { type ButtonProps } from "@mui/material/Button";
 
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 
-type BatchFormAddButtonProps = {
-  onClick: () => void;
-};
-
-export default function BatchFormAddButton({
-  onClick,
-}: BatchFormAddButtonProps) {
+export default function BatchFormAddButton(props: ButtonProps) {
   return (
     <Button
+      {...props}
       type="button"
       variant="contained"
       startIcon={<AddRoundedIcon />}
-      onClick={onClick}
     >
       Add another
     </Button>
