@@ -17,7 +17,7 @@ export default function RowSalaryRange({
 }: RowSalaryRangeProps) {
   if (!compensationMin && !compensationMax)
     return (
-      <Typography variant="body2" color="text.disabled" fontStyle="italic">
+      <Typography variant="body2" color="text.disabled">
         N/A
       </Typography>
     );

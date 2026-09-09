@@ -15,7 +15,6 @@ export default function JobLocation({ location }: JobLocationProps) {
     <Typography
       variant={renderedLocation === "N/A" ? "body2" : "body1"}
       color={renderedLocation === "N/A" ? "text.disabled" : "initial"}
-      fontStyle={renderedLocation === "N/A" ? "italic" : "normal"}
     >
       {renderedLocation}
     </Typography>
