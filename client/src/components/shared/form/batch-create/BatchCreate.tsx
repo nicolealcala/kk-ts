@@ -62,7 +62,7 @@ export default function BatchCreate<
 }: BatchCreateProps<TFieldValues, TContext, TTransformedValues, TName>) {
   const { control, handleSubmit, reset } = form;
 
-  const { errors, isSubmitting, isDirty } = useFormState({
+  const { errors, isSubmitting, isDirty, isValid } = useFormState({
     control,
   });
   const { fields, append, remove } = useFieldArray({
@@ -168,7 +168,7 @@ export default function BatchCreate<
             </Stack>
 
             {/* Forms */}
-            <Stack spacing={3}>
+            <Stack spacing={3} position="relative">
               {fields.map((field, index) => {
                 const fieldErrors = errors[fieldArrayName];
 
@@ -206,7 +206,10 @@ export default function BatchCreate<
             </Stack>
 
             {/* Add */}
-            <BatchFormAddButton onClick={() => append(defaultItem)} />
+            <BatchFormAddButton
+              onClick={() => append(defaultItem)}
+              disabled={!isValid}
+            />
           </Box>
         </Box>
       </Stack>

@@ -50,6 +50,8 @@ export default function BatchFormItem({
       sx={{
         scrollMarginTop: "24px",
         mt: 3,
+        borderTop: "4px solid",
+        borderColor: hasErrors ? "error.main" : "primary.main",
       }}
       className="subtle-shadow"
       onClick={onClick}
