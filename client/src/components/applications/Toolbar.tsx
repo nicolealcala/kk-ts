@@ -6,7 +6,7 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import Divider from "@mui/material/Divider";
 import { TrashIcon } from "@heroicons/react/24/solid";
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useEffectEvent } from "react";
 import {
   DEFAULT_PAGE,
   useApplicationTable,
@@ -23,6 +23,7 @@ import Span from "../shared/typography/Span";
 import useDebounced from "@/utils/hooks/useDebounced";
 import { useNavigate } from "react-router";
 import { updateUrl } from "@/utils/url";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 const filterStyles = {
   open: {
@@ -33,7 +34,16 @@ const filterStyles = {
     color: "text.primary",
   },
 };
-export default function Toolbar() {
+
+type ToolbarProps = {
+  isFilterOpen: boolean;
+  setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function Toolbar({
+  isFilterOpen,
+  setIsFilterOpen,
+}: ToolbarProps) {
   const navigate = useNavigate();
   const {
     searchTerm,
@@ -41,14 +51,12 @@ export default function Toolbar() {
     status,
     selectedApplications,
     setSearchTerm,
-    resetFilters,
   } = useShallowStore(useApplicationTable, (state) => ({
     searchTerm: state.searchTerm,
     workArrangement: state.workArrangementFilters,
     status: state.statusFilters,
     selectedApplications: state.selectedApplications,
     setSearchTerm: state.setSearchTerm,
-    resetFilters: state.resetFilters,
   }));
 
   const { page, pageSize, filteredCount, totalCount } = useShallowStore(
@@ -66,8 +74,6 @@ export default function Toolbar() {
   );
 
   const { invalidateQueries, deleteApplication } = useApplications();
-
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const debouncedValue = useDebounced(searchTerm);
 
@@ -148,6 +154,15 @@ export default function Toolbar() {
                 }}
                 slotProps={{
                   input: {
+                    endAdornment: searchTerm ? (
+                      <CancelRoundedIcon
+                        type="button"
+                        role="button"
+                        onClick={() => setSearchTerm("")}
+                        className="cursor-pointer size-5! text-gray-400 hover:text-gray-600 transition-colors! duration-200 ease-in"
+                      />
+                    ) : null,
+
                     sx: {
                       bgcolor: "white",
                       "& .MuiOutlinedInput-notchedOutline": {
@@ -179,7 +194,8 @@ export default function Toolbar() {
                 }}
               >
                 Filter
-                {(workArrangement || status) && (
+                {((workArrangement && workArrangement?.length > 0) ||
+                  (status && status?.length > 0)) && (
                   <Typography
                     variant="body2"
                     component="span"
@@ -191,7 +207,8 @@ export default function Toolbar() {
                     width="20px"
                     ml={1}
                   >
-                    {Number(Boolean(workArrangement)) + Number(Boolean(status))}
+                    {Number(Boolean(workArrangement?.length)) +
+                      Number(Boolean(status?.length))}
                   </Typography>
                 )}
               </Button>
@@ -226,7 +243,7 @@ function DeleteManyMessages({
       <Typography variant="body1" color="textSecondary" component="p">
         This will permanently delete the following applications:
       </Typography>
-      <List sx={{ listStyleType: "disc", pl: 4 }}>
+      <List sx={{ listStyleType: "disc", pl: 4, py: 2 }}>
         {applicationsToDelete.map((app) => (
           <ListItem key={app.id} sx={{ display: "list-item", py: 0, pl: 0 }}>
             <Span>{app.position}</Span>

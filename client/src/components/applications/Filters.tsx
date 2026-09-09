@@ -30,7 +30,7 @@ export default function Filters() {
     (statusFilters && statusFilters.length > 0);
 
   return (
-    <Stack direction="row" justifyContent="space-between" pb={2.5}>
+    <Stack direction="row" justifyContent="space-between" pb={2}>
       <Stack direction="row" spacing={4} justifyContent="start">
         {/* Work Arrangement Selection */}
         <FilterGroup
@@ -66,8 +66,6 @@ export default function Filters() {
     </Stack>
   );
 }
-
-// Small helper component for the groups
 
 function FilterGroup<T extends WorkArrangementData | ApplicationStatusData>({
   groupLabel,

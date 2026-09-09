@@ -1,5 +1,6 @@
 import { useApplicationTable } from "@/store/application/applicationStore";
 import useShallowStore from "@/store/useShallowStore";
+import { handlePageChange } from "@/utils/application/table";
 import Pagination from "@mui/material/Pagination";
 export default function TablePagination() {
   const { page, totalPages, setPagination } = useShallowStore(
@@ -16,8 +17,9 @@ export default function TablePagination() {
       page={page}
       color="primary"
       size="large"
-      sx={{ mx: "auto", mt: 1 }}
-      onChange={() => setPagination({ page: page })}
+      sx={{ mx: "auto", mt: 2.5 }}
+      shape="rounded"
+      onChange={(_, newPage) => handlePageChange(newPage, setPagination)}
     />
   );
 }

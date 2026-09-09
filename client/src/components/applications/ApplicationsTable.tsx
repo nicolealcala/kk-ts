@@ -31,7 +31,6 @@ import useShallowStore from "@/store/useShallowStore";
 import { useDialogStore } from "@/store/dialog/dialogStore";
 import Span from "../shared/typography/Span";
 import { useApplications } from "@/utils/hooks/useApplications";
-import DeleteHeaderIcon from "../shared/header-icons/DeleteIcon";
 import { useNavigate } from "react-router";
 import ExpandedRow from "./ExpandedRow";
 import Stack from "@mui/material/Stack";
@@ -52,6 +51,7 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
     sortBy,
     sortOrder,
     pageSize,
+    filteredCount,
     setSortBy,
     setSortOrder,
     setSelectedApplications,
@@ -59,21 +59,19 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
     sortBy: state.sortBy,
     sortOrder: state.sortOrder,
     pageSize: state.pagination.pageSize,
+    filteredCount: state.pagination.filteredCount,
     setSortBy: state.setSortBy,
     setSortOrder: state.setSortOrder,
     setSelectedApplications: state.setSelectedApplications,
   }));
 
-  const { openConfirmation } = useShallowStore(useDialogStore, (state) => ({
-    openConfirmation: state.openConfirmation,
-  }));
+  const openConfirmation = useDialogStore((state) => state.openConfirmation);
 
   const { deleteApplication, invalidateQueries } = useApplications();
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({}); // State to track selection
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  console.log("Data: ", data);
   const columns = useMemo(() => getColumns(), []);
-
   const table = useReactTable({
     data,
     columns: columns,
@@ -91,7 +89,7 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
           title: "Are you sure?",
           message: <DeleteOneMessage applicationToDelete={row} />,
           type: "error",
-          headerIcon: <DeleteHeaderIcon />,
+          icon: "delete",
           onConfirm: () => deleteApplication(row.id),
         });
       },
@@ -104,6 +102,7 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
         data,
         setRowSelection,
         setSelectedApplications,
+        setIsFilterOpen,
       ),
     onSortingChange: (updater) =>
       handleSort(updater, setSortBy, setSortOrder, invalidateQueries),
@@ -116,7 +115,7 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
 
   return (
     <Stack gap={1.5} useFlexGap>
-      <Toolbar />
+      <Toolbar isFilterOpen={isFilterOpen} setIsFilterOpen={setIsFilterOpen} />
       <TableContainer
         component={Paper}
         elevation={0}
@@ -281,7 +280,7 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      {data.length > pageSize! && <TablePagination />}
+      {filteredCount! > pageSize! && <TablePagination />}
     </Stack>
   );
 }
