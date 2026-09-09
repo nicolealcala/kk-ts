@@ -1,7 +1,6 @@
 import { useDialogStore } from "@/store/dialog/dialogStore";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import IconButton from "@mui/material/IconButton";
-import WarningIcon from "../../header-icons/WarningIcon";
 
 type DeleteItemButtonProps = {
   onRemove: () => void;
@@ -19,7 +18,7 @@ export default function DeleteItem({ onRemove }: DeleteItemButtonProps) {
           title: "Remove this application?",
           message:
             "All data associated with this application will not be saved. This action cannot be undone.",
-          headerIcon: <WarningIcon />,
+          icon: "warning",
           onConfirm: onRemove,
         });
       }}

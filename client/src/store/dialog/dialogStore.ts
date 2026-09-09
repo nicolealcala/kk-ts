@@ -18,7 +18,7 @@ type DialogState = {
   type?: DialogType;
   mode?: DialogMode;
   onConfirm?: ConfirmCallback;
-  headerIcon?: React.ReactNode;
+  icon?: "delete" | "warning" | "info";
 };
 
 const getInitialDialogState = (): DialogState => ({

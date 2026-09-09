@@ -1,6 +1,5 @@
 import { useDialogStore } from "@/store/dialog/dialogStore";
 import Button from "@mui/material/Button";
-import WarningIcon from "../../header-icons/WarningIcon";
 
 type ResetButtonProps = {
   label: string;
@@ -25,7 +24,7 @@ export default function ResetButton({
               title: `${label}?`,
               message:
                 "All progress will be discarded. This action cannot be undone.",
-              headerIcon: <WarningIcon />,
+              icon: "warning",
               onConfirm: handleReset,
             })
           : handleReset()

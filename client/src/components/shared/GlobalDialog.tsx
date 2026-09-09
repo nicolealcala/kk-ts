@@ -7,6 +7,9 @@ import Box from "@mui/material/Box";
 import { useDialogStore } from "@/store/dialog/dialogStore";
 import useShallowStore from "@/store/useShallowStore";
 import { useState } from "react";
+import WarningIcon from "./header-icons/WarningIcon";
+import DeleteIcon from "./header-icons/DeleteIcon";
+import { Info } from "@mui/icons-material";
 
 const buttonStyles = {
   default: {
@@ -30,14 +33,20 @@ const buttonStyles = {
   },
 };
 
+const headerIcons = {
+  warning: <WarningIcon />,
+  delete: <DeleteIcon />,
+  info: <Info />,
+};
+
 export default function GlobalDialog() {
-  const { isOpen, title, message, type, headerIcon, onConfirm, closeDialog } =
+  const { isOpen, title, message, type, icon, onConfirm, closeDialog } =
     useShallowStore(useDialogStore, (state) => ({
       isOpen: state.isOpen,
       title: state.title,
       message: state.message,
       type: state.type,
-      headerIcon: state.headerIcon,
+      icon: state.icon,
       onConfirm: state.onConfirm,
       closeDialog: state.closeDialog,
     }));
@@ -71,9 +80,9 @@ export default function GlobalDialog() {
         },
       }}
     >
-      {headerIcon && (
+      {icon && (
         <Box p={3} pb={0}>
-          {headerIcon}
+          {headerIcons[icon]}
         </Box>
       )}
       <DialogTitle
