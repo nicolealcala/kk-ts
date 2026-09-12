@@ -17,7 +17,13 @@ export default function TablePagination() {
       page={page}
       color="primary"
       size="large"
-      sx={{ mx: "auto", mt: 2.5 }}
+      sx={{
+        mx: "auto",
+        mt: 2.5,
+        "& .MuiPaginationItem-root": {
+          borderRadius: 3,
+        },
+      }}
       shape="rounded"
       onChange={(_, newPage) => handlePageChange(newPage, setPagination)}
     />

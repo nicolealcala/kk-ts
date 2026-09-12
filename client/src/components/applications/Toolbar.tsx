@@ -162,12 +162,12 @@ export default function Toolbar({
                         className="cursor-pointer size-5! text-gray-400 hover:text-gray-600 transition-colors! duration-200 ease-in"
                       />
                     ) : null,
-
                     sx: {
                       bgcolor: "white",
                       "& .MuiOutlinedInput-notchedOutline": {
                         borderColor: "divider",
                       },
+                      borderRadius: 2,
                     },
                   },
                 }}
