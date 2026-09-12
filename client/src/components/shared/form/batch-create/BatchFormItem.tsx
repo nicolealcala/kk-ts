@@ -102,8 +102,6 @@ export default function BatchFormItem({
           {children}
         </Box>
       </Collapse>
-
-      {showIndex && <DeleteItemButton onRemove={onRemove} />}
     </Box>
   );
 }
