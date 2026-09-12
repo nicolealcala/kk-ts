@@ -5,6 +5,7 @@ import {
   type DefaultValues,
   FieldArray,
   type FieldArrayPath,
+  type FieldPath,
   type FieldValues,
   FormProvider,
   type SubmitErrorHandler,
@@ -65,11 +66,11 @@ export default function BatchCreate<
 }: BatchCreateProps<TFieldValues, TContext, TTransformedValues, TName>) {
   const { control, handleSubmit, reset } = form;
 
-  const { errors, isSubmitting, isDirty, isValid } = useFormState({
+  const { errors, isSubmitting, isDirty } = useFormState({
     control,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, remove, insert } = useFieldArray({
     control,
     name: fieldArrayName,
   });
@@ -94,9 +95,9 @@ export default function BatchCreate<
   const headerRef = useRef<HTMLDivElement | null>(null);
   const floatingMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const previousFieldsLength = useRef(fields.length);
-
-  const toggleForm = (id: string) => {
+  const previousFieldIds = useRef<string[]>(fields.map((field) => field.id));
+  const toggleForm = (id?: string) => {
+    if (!id) return;
     setExpandedForms((prev) => ({
       ...prev,
       [id]: !(prev[id] ?? true),
@@ -166,21 +167,15 @@ export default function BatchCreate<
     }
 
     const formRect = activeFormElement.getBoundingClientRect();
-
     const headerBottom = headerRef.current?.getBoundingClientRect().bottom ?? 0;
 
     const menuRect = floatingMenuRef.current?.getBoundingClientRect();
-
     const menuHeight = menuRect?.height ?? 0;
     const menuWidth = menuRect?.width ?? 0;
 
     const viewportTop = headerBottom;
     const viewportBottom = window.innerHeight;
 
-    /*
-     * Hide the menu only when the entire active form
-     * is outside the usable viewport.
-     */
     const isFormVisible =
       formRect.bottom > viewportTop && formRect.top < viewportBottom;
 
@@ -189,24 +184,16 @@ export default function BatchCreate<
       return;
     }
 
-    /*
-     * Normally, the menu follows the top of the form.
-     */
     const preferredTop = formRect.top;
 
-    /*
-     * Don't let the menu overlap the fixed header.
-     */
-    const minimumTop = viewportTop + FLOATING_MENU_GAP;
+    const minimumViewportTop = viewportTop + FLOATING_MENU_GAP;
 
-    /*
-     * Keep the menu within the active form.
-     */
+    const minimumFormTop = formRect.top;
+
+    const minimumTop = Math.max(minimumViewportTop, minimumFormTop);
+
     const maximumFormTop = formRect.bottom - menuHeight - FLOATING_MENU_GAP;
 
-    /*
-     * Don't let the menu extend outside the viewport.
-     */
     const maximumViewportTop = viewportBottom - menuHeight - FLOATING_MENU_GAP;
 
     const maximumTop = Math.min(maximumFormTop, maximumViewportTop);
@@ -216,22 +203,13 @@ export default function BatchCreate<
         ? Math.min(Math.max(preferredTop, minimumTop), maximumTop)
         : minimumTop;
 
-    /*
-     * Place the menu to the right of the active form.
-     */
     let left = formRect.right + FLOATING_MENU_GAP;
 
-    /*
-     * Keep the menu inside the viewport horizontally.
-     */
     if (left + menuWidth > window.innerWidth - FLOATING_MENU_GAP) {
       left = window.innerWidth - menuWidth - FLOATING_MENU_GAP;
     }
 
-    setFloatingMenuPosition({
-      top,
-      left,
-    });
+    setFloatingMenuPosition({ top, left });
   }, [activeFormElement]);
 
   /*
@@ -290,27 +268,29 @@ export default function BatchCreate<
    * Handle added/removed forms.
    */
   useEffect(() => {
-    const previousLength = previousFieldsLength.current;
-    const currentLength = fields.length;
+    const previousIds = previousFieldIds.current;
 
-    if (currentLength > previousLength) {
-      const newField = fields[currentLength - 1];
+    if (fields.length > previousIds.length) {
+      const newField = fields.find((field) => !previousIds.includes(field.id));
 
-      setActiveFormId(newField.id);
-      setExpandedForms((prev) => ({
-        ...prev,
-        [newField.id]: true,
-      }));
+      if (newField) {
+        setActiveFormId(newField.id);
 
-      requestAnimationFrame(() => {
-        formRefs.current[newField.id]?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
+        setExpandedForms((prev) => ({
+          ...prev,
+          [newField.id]: true,
+        }));
+
+        requestAnimationFrame(() => {
+          formRefs.current[newField.id]?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         });
-      });
+      }
     }
 
-    previousFieldsLength.current = currentLength;
+    previousFieldIds.current = fields.map((field) => field.id);
   }, [fields]);
 
   const handleRemoveForm = (id: string) => {
@@ -412,14 +392,11 @@ export default function BatchCreate<
                 return (
                   <BatchFormItem
                     key={field.id}
-                    index={index}
                     title={
                       getItemTitle ? getItemTitle(index) : `Item ${index + 1}`
                     }
                     isOpen={isOpen}
-                    isActive={activeFormId === field.id}
                     hasErrors={hasErrors}
-                    showIndex={fields.length > 1}
                     formRef={(element) => {
                       formRefs.current[field.id] = element;
 
@@ -438,8 +415,6 @@ export default function BatchCreate<
                         [field.id]: true,
                       }));
                     }}
-                    onToggle={() => toggleForm(field.id)}
-                    onRemove={() => handleRemoveForm(field.id)}
                   >
                     {renderForm(index)}
                   </BatchFormItem>
@@ -453,7 +428,14 @@ export default function BatchCreate<
         <FloatingMenu
           ref={floatingMenuRef}
           position={floatingMenuPosition}
-          handleAdd={() => append(defaultItem)}
+          handleAdd={() => {
+            const activeIndex = fields.findIndex((f) => f.id === activeFormId);
+
+            if (activeIndex === -1) return;
+
+            insert(activeIndex + 1, defaultItem);
+            setActiveForm(fields[activeIndex + 1].id);
+          }}
           handleDelete={() => {
             if (!activeFormId) {
               return;
@@ -464,13 +446,17 @@ export default function BatchCreate<
           isExpanded={
             activeFormId ? (expandedForms[activeFormId] ?? true) : false
           }
-          handleToggle={() => {
-            if (!activeFormId) return;
+          handleToggle={() => toggleForm(activeFormId)}
+          handleDuplicate={() => {
+            const activeIndex = fields.findIndex((f) => f.id === activeFormId);
 
-            setExpandedForms((prev) => ({
-              ...prev,
-              [activeFormId]: !(prev[activeFormId] ?? true),
-            }));
+            if (activeIndex === -1) return;
+
+            const currentValues = form.getValues(
+              `${fieldArrayName}.${activeIndex}` as FieldPath<TFieldValues>,
+            );
+
+            insert(activeIndex + 1, currentValues);
           }}
           fieldsLength={fields.length}
         />
