@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { CurrencyOption } from "@/utils/hooks/useRestCountriesData";
 import {
   Autocomplete,
   TextField,
@@ -16,30 +14,49 @@ import {
 type ControlledFormAutocompleteProps<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
-  T = string | CurrencyOption,
+  TOption,
+  TValue = TOption,
 > = Omit<TextFieldProps, "name" | "onChange" | "value"> & {
   name: TName;
   control: Control<TFieldValues>;
-  options: T[];
+  options: TOption[];
   loading?: boolean;
+  getOptionLabel: (option: TOption) => string;
+  getOptionValue: (option: TOption) => TValue;
+  getOptionKey: (option: TOption) => string;
+  getValueKey: (value: TValue) => string;
+  onInputChange?: (value: string) => void;
+  onListboxScroll?: (event: React.UIEvent<HTMLUListElement>) => void;
+  renderOption?: (
+    props: React.HTMLAttributes<HTMLLIElement> & {
+      key?: React.Key;
+    },
+    option: TOption,
+  ) => React.ReactNode;
+  renderInputValue?: (option: TOption) => React.ReactNode;
 };
 
 export const ControlledFormAutocomplete = <
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>,
-  T = string | CurrencyOption,
+  TOption,
+  TValue = TOption,
 >({
   name,
   control,
   options,
   loading,
   label,
+  getOptionLabel,
+  getOptionValue,
+  getOptionKey,
+  getValueKey,
+  onInputChange,
+  onListboxScroll,
+  renderOption,
+  renderInputValue,
   ...props
-}: ControlledFormAutocompleteProps<TFieldValues, TName, T>) => {
-  const isCurrencyOption = (option: any): option is CurrencyOption => {
-    return option && typeof option === "object" && "code" in option;
-  };
-
+}: ControlledFormAutocompleteProps<TFieldValues, TName, TOption, TValue>) => {
   return (
     <Controller
       name={name}
@@ -47,64 +64,72 @@ export const ControlledFormAutocomplete = <
       render={({
         field: { onChange, value, ...fieldProps },
         fieldState: { error },
-      }) => (
-        <Autocomplete
-          {...fieldProps}
-          fullWidth
-          options={options}
-          loading={loading}
-          value={
-            options.find((opt) => {
-              if (typeof opt === "string") return opt === value;
-              if (isCurrencyOption(opt)) return opt.code === value;
-              return false;
-            }) || null
-          }
-          onChange={(_, newValue) => {
-            if (typeof newValue === "string") onChange(newValue);
-            else if (isCurrencyOption(newValue)) onChange(newValue.code);
-            else onChange(null);
-          }}
-          getOptionLabel={(option) => {
-            if (typeof option === "string") return option;
-            if (isCurrencyOption(option)) {
-              return `${option.code} (${option.symbol || ""})`;
-            }
-            return "";
-          }}
-          isOptionEqualToValue={(option, val) => {
-            if (typeof option === "string") return option === val;
+      }) => {
+        const selectedOption =
+          value == null
+            ? null
+            : (options.find(
+                (option) => getOptionKey(option) === getValueKey(value),
+              ) ?? null);
 
-            if (isCurrencyOption(option) && isCurrencyOption(val)) {
-              return option.code === val.code;
+        return (
+          <Autocomplete
+            {...fieldProps}
+            fullWidth
+            options={options}
+            loading={loading}
+            value={selectedOption}
+            onChange={(_, newValue) => {
+              onChange(newValue ? getOptionValue(newValue) : null);
+            }}
+            onInputChange={(_, newInputValue, reason) => {
+              if (reason === "input" || reason === "clear") {
+                onInputChange?.(newInputValue);
+              }
+            }}
+            getOptionLabel={getOptionLabel}
+            isOptionEqualToValue={(option, val) =>
+              getOptionKey(option) === getOptionKey(val)
             }
-
-            return false;
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              {...props}
-              label={label}
-              error={!!error}
-              helperText={error?.message}
-              slotProps={{
-                input: {
-                  ...params.InputProps,
-                  endAdornment: (
-                    <>
-                      {loading ? (
-                        <CircularProgress color="inherit" size={20} />
-                      ) : null}
-                      {params.InputProps.endAdornment}
-                    </>
-                  ),
-                },
-              }}
-            />
-          )}
-        />
-      )}
+            renderOption={renderOption}
+            slotProps={{
+              listbox: {
+                onScroll: onListboxScroll,
+              },
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                {...props}
+                label={label}
+                error={!!error}
+                helperText={error?.message}
+                slotProps={{
+                  input: {
+                    ...params.InputProps,
+                    startAdornment: selectedOption ? (
+                      <>
+                        {renderInputValue?.(selectedOption)}
+                        {params.InputProps.startAdornment}
+                      </>
+                    ) : (
+                      params.InputProps.startAdornment
+                    ),
+                    endAdornment: (
+                      <>
+                        {loading ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  },
+                }}
+              />
+            )}
+          />
+        );
+      }}
     />
   );
 };

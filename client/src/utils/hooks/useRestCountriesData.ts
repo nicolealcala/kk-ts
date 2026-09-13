@@ -1,71 +1,189 @@
 import React from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
-type RawCountry = {
-  name: { common: string };
-  currencies?: Record<string, { name: string; symbol: string }>;
+const PAGE_SIZE = 25;
+
+export type CountryOption = {
+  countryCode: string;
+  country: string;
+  state: string;
 };
 
 export type CurrencyOption = {
-  code: string; 
-  symbol: string; 
+  code: string;
+  symbol: string;
+};
+
+type RawCountry = {
+  names?: {
+    common?: string;
+  };
+  codes?: {
+    alpha_2?: string;
+  };
+  currencies?: {
+    code: string;
+    name: string;
+    symbol?: string;
+  }[];
+  flag?: {
+    url_svg?: string;
+  };
+};
+
+type RestCountriesResponse = {
+  data: {
+    objects: RawCountry[];
+    meta: {
+      count: number;
+      offset: number;
+      more: boolean;
+    };
+  };
+};
+
+const fetchCountries = async (
+  query: string,
+  offset: number,
+): Promise<RestCountriesResponse["data"]> => {
+  const params = new URLSearchParams({
+    limit: PAGE_SIZE.toString(),
+    offset: offset.toString(),
+    response_fields: "names.common,codes.alpha_2,flag.url_svg",
+  });
+
+  if (query) {
+    params.set("q", query);
+  }
+
+  const response = await fetch(
+    `https://api.restcountries.com/countries/v5?${params}`,
+    {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_REST_COUNTRIES_API_KEY}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch countries");
+  }
+
+  const { data }: RestCountriesResponse = await response.json();
+
+  return data;
+};
+
+const fetchCurrencies = async (
+  query: string,
+  offset: number,
+): Promise<RestCountriesResponse["data"]> => {
+  const params = new URLSearchParams({
+    limit: PAGE_SIZE.toString(),
+    offset: offset.toString(),
+    response_fields: "currencies",
+  });
+
+  if (query) {
+    params.set("q", query);
+  }
+
+  const response = await fetch(
+    `https://api.restcountries.com/countries/v5?${params}`,
+    {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_REST_COUNTRIES_API_KEY}`,
+      },
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch currencies");
+  }
+
+  const { data }: RestCountriesResponse = await response.json();
+
+  return data;
+};
+
+const getNextPageParam = (lastPage: RestCountriesResponse["data"]) => {
+  if (!lastPage.meta.more) {
+    return undefined;
+  }
+
+  return lastPage.meta.offset + lastPage.meta.count;
 };
 
 export default function useRestCountriesData(
-  queries: string[] = ["name", "currencies"],
+  locationQuery: string = "",
+  currencyQuery: string = "",
 ) {
-  const [countries, setCountries] = React.useState<string[]>([]);
-  const [currencies, setCurrencies] = React.useState<CurrencyOption[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const normalizedLocationQuery = locationQuery.trim();
+  const normalizedCurrencyQuery = currencyQuery.trim();
 
-  const queryString = queries.join(",");
+  const countriesQuery = useInfiniteQuery({
+    queryKey: ["rest-countries", "countries", normalizedLocationQuery],
+    queryFn: ({ pageParam }) =>
+      fetchCountries(normalizedLocationQuery, pageParam),
+    initialPageParam: 0,
+    getNextPageParam,
+    staleTime: 1000 * 60 * 60,
+  });
 
-  React.useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const response = await fetch(
-          `https://restcountries.com/v3.1/all?fields=${queryString}`,
-        );
-        if (!response.ok) throw new Error("Network response was not okay");
+  const currenciesQuery = useInfiniteQuery({
+    queryKey: ["rest-countries", "currencies", normalizedCurrencyQuery],
+    queryFn: ({ pageParam }) =>
+      fetchCurrencies(normalizedCurrencyQuery, pageParam),
+    initialPageParam: 0,
+    getNextPageParam,
+    staleTime: 1000 * 60 * 60,
+  });
 
-        const data: RawCountry[] = await response.json();
+  const countries = React.useMemo(
+    () =>
+      countriesQuery.data?.pages
+        .flatMap((page) => page.objects)
+        .filter((country) => country.codes?.alpha_2 && country.names?.common)
+        .map((country) => ({
+          countryCode: country.codes!.alpha_2!,
+          country: country.names!.common!,
+          url_svg: country.flag?.url_svg ?? "",
+        }))
+        .sort((a, b) => a.country.localeCompare(b.country)) ?? [],
+    [countriesQuery.data],
+  );
 
-        // Use Object.entries to get the ISO code [key, value]
-        const allCurrencies = data.flatMap((c) =>
-          c.currencies ? Object.entries(c.currencies) : [],
-        );
+  const currencies = React.useMemo(
+    () =>
+      currenciesQuery.data?.pages
+        .flatMap((page) => page.objects)
+        .flatMap((country) => country.currencies ?? [])
+        .reduce<CurrencyOption[]>((acc, currency) => {
+          if (!acc.some((item) => item.code === currency.code)) {
+            acc.push({
+              code: currency.code,
+              symbol: currency.symbol ?? "",
+            });
+          }
 
-        const currencyList: CurrencyOption[] = allCurrencies
-          .reduce((acc: CurrencyOption[], [code, details]) => {
-            // Check for duplicate based on the ISO code now
-            const isDuplicate = acc.find((item) => item.code === code);
+          return acc;
+        }, [])
+        .sort((a, b) => a.code.localeCompare(b.code)) ?? [],
+    [currenciesQuery.data],
+  );
 
-            if (!isDuplicate) {
-              acc.push({
-                code: code, // This is the key (e.g., "PHP")
-                symbol: details.symbol || "",
-              });
-            }
-            return acc;
-          }, [])
-          .sort((a, b) => a.code.localeCompare(b.code)); // Sort by ISO code
+  return {
+    countries,
+    currencies,
 
-        setCurrencies(currencyList);
+    isCountriesLoading: countriesQuery.isPending,
+    isFetchingCountriesNextPage: countriesQuery.isFetchingNextPage,
+    hasNextCountriesPage: countriesQuery.hasNextPage,
+    fetchNextCountriesPage: countriesQuery.fetchNextPage,
 
-        // Extract common names and sort alphabetically
-        const names = data
-          .map((c: RawCountry) => c.name.common)
-          .sort((a: string, b: string) => a.localeCompare(b));
-
-        setCountries(names);
-      } catch (error) {
-        console.error("Failed to fetch countries:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCountries();
-  }, [queryString]);
-
-  return { countries, currencies, isLoading };
+    isCurrenciesLoading: currenciesQuery.isPending,
+    isFetchingCurrenciesNextPage: currenciesQuery.isFetchingNextPage,
+    hasNextCurrenciesPage: currenciesQuery.hasNextPage,
+    fetchNextCurrenciesPage: currenciesQuery.fetchNextPage,
+  };
 }

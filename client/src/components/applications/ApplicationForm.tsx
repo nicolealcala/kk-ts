@@ -23,6 +23,8 @@ import {
 import useRestCountriesData from "@/utils/hooks/useRestCountriesData";
 import Button from "@mui/material/Button";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import { useState } from "react";
+import useDebounced from "@/utils/hooks/useDebounced";
 
 type ApplicationFormProps<TFieldValues extends FieldValues> = {
   control: Control<TFieldValues>;
@@ -36,8 +38,23 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
   fieldPrefix = "",
 }: ApplicationFormProps<TFieldValues>) {
   const field = (name: string) => `${fieldPrefix}${name}` as Path<TFieldValues>;
+  const [locationQuery, setLocationQuery] = useState("");
+  const [currencyQuery, setCurrencyQuery] = useState("");
 
-  const { countries, currencies, isLoading } = useRestCountriesData();
+  const debouncedLocation = useDebounced(locationQuery);
+  const debouncedCurrency = useDebounced(currencyQuery);
+  const {
+    countries,
+    currencies,
+    isCountriesLoading,
+    isFetchingCountriesNextPage,
+    hasNextCountriesPage,
+    fetchNextCountriesPage,
+    isCurrenciesLoading,
+    isFetchingCurrenciesNextPage,
+    hasNextCurrenciesPage,
+    fetchNextCurrenciesPage,
+  } = useRestCountriesData(debouncedLocation, debouncedCurrency);
   return (
     <Box
       sx={{
@@ -79,14 +96,54 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
 
           {/* Location Field */}
           <ControlledFormAutocomplete
-            name={field("location.countryCode")}
+            name={field("location")}
             control={control}
             options={countries}
-            loading={isLoading}
+            loading={isCountriesLoading || isFetchingCountriesNextPage}
             label="Location"
-            placeholder={
-              isLoading ? "Loading countries..." : "Search for a country"
-            }
+            placeholder="Search for a country"
+            getOptionLabel={(option) => option.country}
+            getOptionValue={(option) => ({
+              countryCode: option.countryCode,
+              state: null,
+              city: null,
+            })}
+            getOptionKey={(option) => option.countryCode}
+            getValueKey={(value) => value.countryCode}
+            onInputChange={setLocationQuery}
+            onListboxScroll={(event) => {
+              const listbox = event.currentTarget;
+
+              const isNearBottom =
+                listbox.scrollTop + listbox.clientHeight >=
+                listbox.scrollHeight - 100;
+
+              if (
+                isNearBottom &&
+                hasNextCountriesPage &&
+                !isFetchingCountriesNextPage
+              ) {
+                fetchNextCountriesPage();
+              }
+            }}
+            renderOption={(props, option) => (
+              <li {...props} key={option.countryCode}>
+                <img
+                  src={option.url_svg}
+                  alt={`${option.country} Flag`}
+                  className="w-6 h-4 mr-2 rounded-xs"
+                />
+
+                {option.country}
+              </li>
+            )}
+            renderInputValue={(option) => (
+              <img
+                src={option.url_svg}
+                alt={`${option.country} Flag`}
+                className="w-6 h-4 mr-2 rounded-xs"
+              />
+            )}
           />
         </Stack>
 
@@ -176,8 +233,47 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
           <ControlledFormAutocomplete
             name={field("currency")}
             control={control}
-            label={"Currency"}
             options={currencies}
+            loading={isCurrenciesLoading || isFetchingCurrenciesNextPage}
+            label="Currency"
+            placeholder="Search for a currency"
+            getOptionLabel={(option) =>
+              `${option.code}${option.symbol ? ` (${option.symbol})` : ""}`
+            }
+            getOptionValue={(option) => option.code}
+            getOptionKey={(option) => option.code}
+            getValueKey={(value) => value}
+            onInputChange={setCurrencyQuery}
+            onListboxScroll={(event) => {
+              const listbox = event.currentTarget;
+
+              const isNearBottom =
+                listbox.scrollTop + listbox.clientHeight >=
+                listbox.scrollHeight - 100;
+
+              if (
+                isNearBottom &&
+                hasNextCurrenciesPage &&
+                !isFetchingCurrenciesNextPage
+              ) {
+                fetchNextCurrenciesPage();
+              }
+            }}
+            renderOption={(props, option) => (
+              <li {...props} key={option.code}>
+                <Typography variant="body1" color="initial" component="span">
+                  {option.code}
+                </Typography>
+                &nbsp;
+                <Typography
+                  variant="button"
+                  color="textSecondary"
+                  component="span"
+                >
+                  ({option.symbol})
+                </Typography>
+              </li>
+            )}
           />
 
           <ControlledFormTextField
