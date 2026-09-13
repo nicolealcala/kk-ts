@@ -5,6 +5,7 @@ import {
   type DefaultValues,
   FieldArray,
   type FieldArrayPath,
+  type FieldPath,
   type FieldValues,
   FormProvider,
   type SubmitErrorHandler,
@@ -13,11 +14,14 @@ import {
   type UseFormReturn,
   useFormState,
 } from "react-hook-form";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import BatchFormItem from "./BatchFormItem";
 import FormHeader from "../FormHeader";
-import BatchFormAddButton from "./BatchFormAddButton";
 import ResetButton from "./ResetButton";
+import FloatingMenu from "./FloatingMenu";
+
+const FLOATING_MENU_GAP = 16;
+const ACTIVE_FORM_THRESHOLD = 0.4;
 
 type BatchCreateProps<
   TFieldValues extends FieldValues,
@@ -62,24 +66,39 @@ export default function BatchCreate<
 }: BatchCreateProps<TFieldValues, TContext, TTransformedValues, TName>) {
   const { control, handleSubmit, reset } = form;
 
-  const { errors, isSubmitting, isDirty, isValid } = useFormState({
+  const { errors, isSubmitting, isDirty } = useFormState({
     control,
   });
-  const { fields, append, remove } = useFieldArray({
+
+  const { fields, remove, insert } = useFieldArray({
     control,
     name: fieldArrayName,
   });
 
-  const [isActiveForm, setIsActiveForm] = useState<string>();
-  useEffect(() => console.log("Fields: ", fields), [fields]);
-  const [openForms, setOpenForms] = useState<Record<string, boolean>>({});
-  const [deletedFormIndex, setDeletedFormIndex] = useState(0);
+  const [activeFormId, setActiveFormId] = useState<string | undefined>(
+    fields[0]?.id,
+  );
+  const [activeFormElement, setActiveFormElement] =
+    useState<HTMLDivElement | null>(null);
+
+  const [expandedForms, setExpandedForms] = useState<Record<string, boolean>>(
+    {},
+  );
+
+  const [floatingMenuPosition, setFloatingMenuPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+
   const formRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const floatingMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const previousFieldsLength = useRef(fields.length);
-
-  const toggleForm = (id: string) => {
-    setOpenForms((prev) => ({
+  const previousFieldIds = useRef<string[]>(fields.map((field) => field.id));
+  const toggleForm = (id?: string) => {
+    if (!id) return;
+    setExpandedForms((prev) => ({
       ...prev,
       [id]: !(prev[id] ?? true),
     }));
@@ -91,46 +110,235 @@ export default function BatchCreate<
     } as DefaultValues<TFieldValues>);
   };
 
-  useEffect(() => {
-    const previousLength = previousFieldsLength.current;
-    const currentLength = fields.length;
+  const setActiveForm = useCallback((id: string) => {
+    setActiveFormId(id);
+  }, []);
 
-    // A form was added
-    if (currentLength > previousLength) {
-      const newField = fields[currentLength - 1];
+  const updateActiveFormFromViewport = useCallback(() => {
+    const headerBottom = headerRef.current?.getBoundingClientRect().bottom ?? 0;
 
-      setIsActiveForm(newField.id);
+    const viewportTop = headerBottom;
+    const viewportBottom = window.innerHeight;
 
-      setOpenForms((prev) => ({
-        ...prev,
-        [newField.id]: true,
-      }));
+    let bestFormId: string | undefined;
+    let bestVisibleRatio = 0;
 
-      requestAnimationFrame(() => {
-        formRefs.current[newField.id]?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      });
+    fields.forEach((field) => {
+      if (!(expandedForms[field.id] ?? true)) {
+        return;
+      }
+
+      const element = formRefs.current[field.id];
+
+      if (!element) return;
+
+      const rect = element.getBoundingClientRect();
+
+      const visibleTop = Math.max(rect.top, viewportTop);
+      const visibleBottom = Math.min(rect.bottom, viewportBottom);
+
+      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+
+      const formHeight = rect.height;
+
+      if (formHeight <= 0) return;
+
+      const visibleRatio = visibleHeight / formHeight;
+
+      if (visibleRatio > bestVisibleRatio) {
+        bestVisibleRatio = visibleRatio;
+        bestFormId = field.id;
+      }
+    });
+
+    if (
+      bestFormId &&
+      bestVisibleRatio >= ACTIVE_FORM_THRESHOLD &&
+      bestFormId !== activeFormId
+    ) {
+      setActiveFormId(bestFormId);
+    }
+  }, [fields, activeFormId, expandedForms]);
+
+  const updateFloatingMenuPosition = useCallback(() => {
+    if (!activeFormElement) {
+      setFloatingMenuPosition(null);
+      return;
     }
 
-    // A form was removed
-    if (currentLength < previousLength && currentLength > 0) {
-      const preceedingForm =
-        fields[deletedFormIndex] ?? fields[deletedFormIndex - 1];
+    const formRect = activeFormElement.getBoundingClientRect();
+    const headerBottom = headerRef.current?.getBoundingClientRect().bottom ?? 0;
 
-      setIsActiveForm(preceedingForm.id);
+    const menuRect = floatingMenuRef.current?.getBoundingClientRect();
+    const menuHeight = menuRect?.height ?? 0;
+    const menuWidth = menuRect?.width ?? 0;
 
-      requestAnimationFrame(() => {
-        formRefs.current[preceedingForm.id]?.scrollIntoView({
+    const viewportTop = headerBottom;
+    const viewportBottom = window.innerHeight;
+
+    const isFormVisible =
+      formRect.bottom > viewportTop && formRect.top < viewportBottom;
+
+    if (!isFormVisible) {
+      setFloatingMenuPosition(null);
+      return;
+    }
+
+    const preferredTop = formRect.top;
+
+    const minimumViewportTop = viewportTop + FLOATING_MENU_GAP;
+
+    const minimumFormTop = formRect.top;
+
+    const minimumTop = Math.max(minimumViewportTop, minimumFormTop);
+
+    const maximumFormTop = formRect.bottom - menuHeight - FLOATING_MENU_GAP;
+
+    const maximumViewportTop = viewportBottom - menuHeight - FLOATING_MENU_GAP;
+
+    const maximumTop = Math.min(maximumFormTop, maximumViewportTop);
+
+    const top =
+      maximumTop >= minimumTop
+        ? Math.min(Math.max(preferredTop, minimumTop), maximumTop)
+        : minimumTop;
+
+    let left = formRect.right + FLOATING_MENU_GAP;
+
+    if (left + menuWidth > window.innerWidth - FLOATING_MENU_GAP) {
+      left = window.innerWidth - menuWidth - FLOATING_MENU_GAP;
+    }
+
+    setFloatingMenuPosition({ top, left });
+  }, [activeFormElement]);
+
+  /*
+   * Track scrolling of the actual content container.
+   */
+  useEffect(() => {
+    if (!activeFormElement) {
+      return;
+    }
+
+    const scrollContainer = scrollContainerRef.current;
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    let frameId: number | null = null;
+
+    const handleScroll = () => {
+      if (frameId !== null) {
+        return;
+      }
+
+      frameId = requestAnimationFrame(() => {
+        updateActiveFormFromViewport();
+        updateFloatingMenuPosition();
+        frameId = null;
+      });
+    };
+
+    updateFloatingMenuPosition();
+
+    scrollContainer.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      scrollContainer.removeEventListener("scroll", handleScroll);
+
+      window.removeEventListener("resize", handleScroll);
+
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
+    };
+  }, [
+    activeFormElement,
+    updateFloatingMenuPosition,
+    updateActiveFormFromViewport,
+    expandedForms,
+  ]);
+
+  /*
+   * Handle added/removed forms.
+   */
+  useEffect(() => {
+    const previousIds = previousFieldIds.current;
+
+    if (fields.length > previousIds.length) {
+      const newField = fields.find((field) => !previousIds.includes(field.id));
+
+      if (newField) {
+        setActiveFormId(newField.id);
+
+        setExpandedForms((prev) => ({
+          ...prev,
+          [newField.id]: true,
+        }));
+
+        requestAnimationFrame(() => {
+          formRefs.current[newField.id]?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        });
+      }
+    }
+
+    previousFieldIds.current = fields.map((field) => field.id);
+  }, [fields]);
+
+  const handleRemoveForm = (id: string) => {
+    const index = fields.findIndex((field) => field.id === id);
+
+    if (index === -1) return;
+
+    const isLastItem = index === fields.length - 1;
+
+    const nextActiveForm = isLastItem ? fields[index - 1] : fields[index + 1];
+
+    if (!nextActiveForm) {
+      remove(index);
+      setActiveFormId(undefined);
+      return;
+    }
+
+    setActiveFormId(nextActiveForm.id);
+    remove(index);
+
+    requestAnimationFrame(() => {
+      const element = formRefs.current[nextActiveForm.id];
+      const container = scrollContainerRef.current;
+
+      if (!element || !container) return;
+
+      if (isLastItem) {
+        const elementRect = element.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const headerBottom =
+          headerRef.current?.getBoundingClientRect().bottom ?? 0;
+
+        const targetTop = Math.max(headerBottom, containerRect.top);
+
+        const scrollOffset = elementRect.top - targetTop - 24;
+
+        container.scrollBy({
+          top: scrollOffset,
+          behavior: "smooth",
+        });
+      } else {
+        element.scrollIntoView({
           behavior: "smooth",
           block: "nearest",
         });
-      });
-    }
-
-    previousFieldsLength.current = currentLength;
-  }, [fields, deletedFormIndex]);
+      }
+    });
+  };
 
   return (
     <FormProvider {...form}>
@@ -141,15 +349,17 @@ export default function BatchCreate<
         onSubmit={handleSubmit(onSubmit, onError)}
       >
         {/* Header */}
-        <FormHeader
-          isSubmitting={isSubmitting}
-          isMultiple={fields.length > 1}
-          title={title}
-          onBack={() => onBack()}
-        />
+        <Box ref={headerRef}>
+          <FormHeader
+            isSubmitting={isSubmitting}
+            isMultiple={fields.length > 1}
+            title={title}
+            onBack={onBack}
+          />
+        </Box>
 
         {/* Content */}
-        <Box p={6} className="thin-scrollbar">
+        <Box ref={scrollContainerRef} p={6} className="thin-scrollbar">
           <Box className="mx-auto w-full max-w-4xl space-y-6!">
             <Stack
               direction="row"
@@ -160,6 +370,7 @@ export default function BatchCreate<
               <Typography variant="h5" color="initial" fontWeight="semiBold">
                 Add {title}
               </Typography>
+
               <ResetButton
                 label={fields.length > 1 ? "Clear forms" : "Clear form"}
                 isDirty={isDirty}
@@ -176,27 +387,33 @@ export default function BatchCreate<
                   Array.isArray(fieldErrors) && fieldErrors[index],
                 );
 
-                const isOpen = openForms[field.id] ?? true;
+                const isOpen = expandedForms[field.id] ?? true;
 
                 return (
                   <BatchFormItem
                     key={field.id}
-                    index={index}
                     title={
                       getItemTitle ? getItemTitle(index) : `Item ${index + 1}`
                     }
                     isOpen={isOpen}
-                    isActive={isActiveForm === field.id}
                     hasErrors={hasErrors}
-                    showIndex={fields.length > 1}
                     formRef={(element) => {
                       formRefs.current[field.id] = element;
+
+                      /*
+                       * Callback refs can run after the
+                       * active ID has already changed.
+                       */
+                      if (field.id === activeFormId) {
+                        setActiveFormElement(element);
+                      }
                     }}
-                    onClick={() => setIsActiveForm(field.id)}
-                    onToggle={() => toggleForm(field.id)}
-                    onRemove={() => {
-                      setDeletedFormIndex(index);
-                      remove(index);
+                    onClick={() => {
+                      setActiveForm(field.id);
+                      setExpandedForms((prev) => ({
+                        ...prev,
+                        [field.id]: true,
+                      }));
                     }}
                   >
                     {renderForm(index)}
@@ -204,14 +421,45 @@ export default function BatchCreate<
                 );
               })}
             </Stack>
-
-            {/* Add */}
-            <BatchFormAddButton
-              onClick={() => append(defaultItem)}
-              disabled={!isValid}
-            />
           </Box>
         </Box>
+
+        {/* Floating menu */}
+        <FloatingMenu
+          ref={floatingMenuRef}
+          position={floatingMenuPosition}
+          handleAdd={() => {
+            const activeIndex = fields.findIndex((f) => f.id === activeFormId);
+
+            if (activeIndex === -1) return;
+
+            insert(activeIndex + 1, defaultItem);
+            setActiveForm(fields[activeIndex + 1].id);
+          }}
+          handleDelete={() => {
+            if (!activeFormId) {
+              return;
+            }
+
+            handleRemoveForm(activeFormId);
+          }}
+          isExpanded={
+            activeFormId ? (expandedForms[activeFormId] ?? true) : false
+          }
+          handleToggle={() => toggleForm(activeFormId)}
+          handleDuplicate={() => {
+            const activeIndex = fields.findIndex((f) => f.id === activeFormId);
+
+            if (activeIndex === -1) return;
+
+            const currentValues = form.getValues(
+              `${fieldArrayName}.${activeIndex}` as FieldPath<TFieldValues>,
+            );
+
+            insert(activeIndex + 1, currentValues);
+          }}
+          fieldsLength={fields.length}
+        />
       </Stack>
     </FormProvider>
   );
