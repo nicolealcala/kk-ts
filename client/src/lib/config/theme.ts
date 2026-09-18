@@ -7,13 +7,11 @@ import { createTheme } from "@mui/material/styles";
 import "@mui/material/styles";
 
 declare module "@mui/material/styles" {
-  //Add additional palette options (merged with base)
   interface PaletteOptions {
     slate: PaletteColor;
     violet: PaletteColor;
   }
 
-  //Add additional palette option properties
   interface PaletteColor {
     extraLight?: string;
   }
@@ -45,23 +43,64 @@ const theme = createTheme({
         disableRipple: true,
       },
       styleOverrides: {
-        root: ({ ownerState }) => ({
-          ...(ownerState.loading && {
-            opacity: 0.75,
-          }),
-          textTransform: "none",
-          boxShadow: "none",
-          "&:hover": {
+        root: ({ ownerState, theme }) => {
+          const colorProp = ownerState.color || "primary";
+
+          const paletteColor =
+            colorProp in theme.palette
+              ? theme.palette[colorProp as keyof typeof theme.palette]
+              : theme.palette.primary;
+
+          const isColorObject =
+            paletteColor &&
+            typeof paletteColor === "object" &&
+            "main" in paletteColor;
+
+          const activeBg = isColorObject
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (paletteColor as any).main
+            : theme.palette.primary.main;
+          const activeText = isColorObject
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (paletteColor as any).contrastText
+            : "#fff";
+
+          return {
+            ...(ownerState.loading && {
+              opacity: 0.75,
+            }),
+
+            textTransform: "none",
             boxShadow: "none",
-          },
-          fontWeight: "semiBold",
-        }),
+            "&:hover": {
+              boxShadow: "none",
+            },
+            fontWeight: "semiBold",
+
+            "&.MuiButton-contained.Mui-disabled": {
+              backgroundColor: activeBg,
+              color: activeText,
+              opacity: 0.6,
+            },
+            "&.MuiButton-outlined.Mui-disabled": {
+              borderColor: activeBg,
+              color: activeBg,
+              opacity: 0.6,
+            },
+            "&.MuiButton-text.Mui-disabled": {
+              color: activeBg,
+              opacity: 0.6,
+            },
+          };
+        },
         sizeLarge: {
-          height: "48px",
-          fontSize: "16px",
+          height: 48,
+          fontSize: 16,
+          borderRadius: 12,
         },
         sizeMedium: {
-          fontSize: "16px",
+          fontSize: 16,
+          borderRadius: 8,
         },
       },
     },
@@ -113,7 +152,9 @@ const theme = createTheme({
     warning: {
       main: "#fd9a00",
       light: "#ffba00",
+      extraLight: "#fff3e0",
       dark: "#bb4d00",
+      contrastText: "#000000",
     },
     slate: {
       main: "#62748e",
@@ -128,6 +169,9 @@ const theme = createTheme({
       extraLight: "#ddd6ff",
       dark: "#8e51ff",
       contrastText: "rgba(255,255,255,0.95)",
+    },
+    text: {
+      primary: "#232023",
     },
   },
 });

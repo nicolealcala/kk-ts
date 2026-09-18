@@ -6,7 +6,7 @@ import {
 } from "@mui/x-date-pickers/DatePicker";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
 import { DateTime } from "luxon";
-import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
+import type { ScheduleFormInputs } from "@/lib/schema/scheduleSchema";
 
 type ScheduleFormDatePickerProps<TName extends FieldPath<ScheduleFormInputs>> =
   Omit<DatePickerProps, "name"> & {

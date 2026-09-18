@@ -7,6 +7,7 @@ import {
 } from "../db/schema/enums.js";
 import {
   applicationSourceSchema,
+  arrayQueryParam,
   jobLocationSchema,
   nullableTextSchema,
   requiredTextSchema,
@@ -93,12 +94,22 @@ export const applicationListQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   pageSize: z.coerce.number().int().positive().default(10),
   sortBy: z
-    .enum(["appliedAt", "position", "company", "location", "source", "status"])
+    .enum([
+      "appliedAt",
+      "position",
+      "company",
+      "location",
+      "source",
+      "workArrangement",
+      "status",
+    ])
     .default("appliedAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
   search: z.string().trim().optional(),
-  workArrangement: z.enum(workArrangement.enumValues).optional(),
-  status: z.enum(applicationStatus.enumValues).optional(),
+  workArrangement: arrayQueryParam(
+    z.enum(workArrangement.enumValues),
+  ).optional(),
+  status: arrayQueryParam(z.enum(applicationStatus.enumValues)).optional(),
   appliedAtFrom: z.coerce.date().optional(),
   appliedAtTo: z.coerce.date().optional(),
 });

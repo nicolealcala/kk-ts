@@ -5,7 +5,7 @@ import {
   type TimePickerProps,
 } from "@mui/x-date-pickers/TimePicker";
 import type { ControllerRenderProps, FieldPath } from "react-hook-form";
-import type { ScheduleFormInputs } from "@/lib/forms/scheduleFormSchema";
+import type { ScheduleFormInputs } from "@/lib/schema/scheduleSchema";
 import { DateTime } from "luxon";
 import { type Control, useWatch } from "react-hook-form";
 import type { TimeView } from "@mui/x-date-pickers/models";

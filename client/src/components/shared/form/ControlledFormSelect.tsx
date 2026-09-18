@@ -27,6 +27,7 @@ export default function ControlledFormSelect<
   control,
   items,
   label,
+  required,
   ...props
 }: ControlledFormSelectProps<TFieldValues, TName>) {
   return (
@@ -34,9 +35,15 @@ export default function ControlledFormSelect<
       name={name}
       control={control}
       render={({ field, fieldState: { error } }) => (
-        <FormControl error={!!error} fullWidth>
+        <FormControl error={!!error} fullWidth required={required}>
           {label && <InputLabel id={`label-${name}`}>{label}</InputLabel>}
-          <Select {...field} {...props} label={label} labelId={`label-${name}`}>
+          <Select
+            {...field}
+            {...props}
+            label={label}
+            labelId={`label-${name}`}
+            value={field.value || ""}
+          >
             {items.map((t) => (
               <MenuItem key={t.value} value={t.value}>
                 {t.label}

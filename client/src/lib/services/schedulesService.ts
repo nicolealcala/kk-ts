@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import type { ScheduleFormInputs } from "../forms/scheduleFormSchema";
+import type { ScheduleFormInputs } from "../schema/scheduleSchema";
 
 const URL = `${import.meta.env.VITE_BASE_URL}/api/schedules`;
 

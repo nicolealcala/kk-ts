@@ -21,13 +21,13 @@ import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
 import scheduleFormSchema, {
   initialValues,
   type ScheduleFormInputs,
-} from "@/lib/forms/scheduleFormSchema";
+} from "@/lib/schema/scheduleSchema";
 import type { CalendarEvent } from "@/lib/types/schedules";
 import type { OpenDrawerValues } from "@/lib/types/forms";
 import FormButtons from "../shared/form/FormButtons";
 import Button from "@mui/material/Button";
 import ConfirmationModal from "../shared/ConfirmationModal";
-import DeleteHeader from "../shared/header-icons/DeleteHeader";
+import DeleteHeader from "../shared/header-icons/DeleteIcon";
 import Span from "../shared/typography/Span";
 
 type ScheduleFormProps = {

@@ -1,9 +1,14 @@
 import Typography, { type TypographyProps } from "@mui/material/Typography";
 
-export default function Span({ children, fontWeight, color }: TypographyProps) {
+export default function Span({
+  children,
+  fontWeight,
+  color,
+  variant = "body1",
+}: TypographyProps) {
   return (
     <Typography
-      variant="body1"
+      variant={variant}
       component="span"
       color={color || "initial"}
       fontWeight={fontWeight || "medium"}

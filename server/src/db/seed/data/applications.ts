@@ -20,6 +20,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     location: {
       city: "Taguig",
       state: "Metro Manila",
+      country: "Philippines",
       countryCode: "PH",
     },
     compensationMin: 50000,
@@ -32,7 +33,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
       "Develop and maintain React applications for enterprise clients.",
     notes: "Applied through company careers page.",
     source: {
-      platform: "Company Careers",
+      platform: "company-website",
       url: "https://www.accenture.com/ph-en/careers",
     },
   },
@@ -44,6 +45,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     location: {
       city: "Quezon City",
       state: "Metro Manila",
+      country: "Philippines",
       countryCode: "PH",
     },
     compensationMin: 70000,
@@ -55,7 +57,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     jobDescription: "Build AI-powered internal tools and backend services.",
     notes: "Recruiter reached out via LinkedIn.",
     source: {
-      platform: "LinkedIn",
+      platform: "linkedin",
       url: "https://www.linkedin.com/jobs/",
     },
   },
@@ -66,6 +68,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     workArrangement: "remote",
     location: {
       city: "Florida",
+      country: "United States",
       countryCode: "US",
     },
     compensationMin: 85000,
@@ -77,7 +80,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     jobDescription: null,
     notes: null,
     source: {
-      platform: "Wellfound",
+      platform: "wellfound",
       url: "https://wellfound.com",
     },
   },
@@ -89,6 +92,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     location: {
       city: "Makati",
       state: "Metro Manila",
+      country: "Philippines",
       countryCode: "PH",
     },
     compensationMin: null,
@@ -100,7 +104,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     jobDescription: null,
     notes: "Received rejection after technical assessment.",
     source: {
-      platform: "Company Careers",
+      platform: "company-website",
       url: "https://www.canva.com/careers/",
     },
   },
@@ -120,7 +124,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
       "Work on developer-facing features across the Vercel platform.",
     notes: null,
     source: {
-      platform: "Company Careers",
+      platform: "company-website",
       url: "https://vercel.com/careers",
     },
   },

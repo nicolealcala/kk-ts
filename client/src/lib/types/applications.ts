@@ -1,11 +1,5 @@
 export type WorkArrangement = "remote" | "hybrid" | "onsite";
 
-type JobLocation = {
-  country?: string;
-  city?: string;
-  postalCode?: number;
-};
-
 export type JobSource = {
   platform?: string;
   link?: string;
@@ -19,24 +13,14 @@ export type ApplicationStatusHistory = {
   createdAt: string;
 };
 
-export type SalaryRange = {
-  currency: string;
-  minAmount?: number;
-  maxAmount?: number;
-};
-
-export type JobType = "gig" | "parttime" | "fulltime" | "contract" | "other";
-export interface Application {
-  id: string;
-  organization: string;
-  position: string;
-  location: JobLocation;
-  workArrangement: WorkArrangement;
-  source: JobSource;
-  statusHistory: ApplicationStatusHistory[];
-  type: JobType;
-  salary?: SalaryRange;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export type JobType =
+  | "applied"
+  | "viewed"
+  | "initial_interview"
+  | "assessment"
+  | "final_interview"
+  | "offer_received"
+  | "offer_declined"
+  | "offer_accepted"
+  | "rejected"
+  | "withdrawn";

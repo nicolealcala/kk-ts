@@ -23,6 +23,26 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/applications/create",
+        lazy: async () => {
+          const CreateApplications = (
+            await import("@/pages/CreateApplication.tsx")
+          ).default;
+
+          return { Component: CreateApplications };
+        },
+      },
+      {
+        path: "/applications/:id/edit",
+        lazy: async () => {
+          const UpdateApplications = (
+            await import("@/pages/UpdateApplication.tsx")
+          ).default;
+
+          return { Component: UpdateApplications };
+        },
+      },
+      {
         path: "/schedules",
         lazy: async () => {
           const Schedules = (await import("@/pages/Schedules.tsx")).default;

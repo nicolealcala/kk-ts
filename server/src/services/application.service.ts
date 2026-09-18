@@ -81,9 +81,8 @@ class ApplicationService {
         .where(and(...conditions))
         .orderBy(
           sortOrder === "asc" ? asc(sortColumn) : desc(sortColumn),
-          sortOrder === "asc"
-            ? asc(applications.createdAt)
-            : desc(applications.createdAt),
+          desc(applications.position),
+          desc(applications.createdAt),
         )
         .limit(pageSize)
         .offset(offset),
@@ -141,19 +140,19 @@ class ApplicationService {
     });
   }
 
-  deleteById(userId: RequiredTextData, applicationId: RequiredTextData) {
-    return db
-      .delete(applications)
-      .where(
-        and(
-          eq(applications.id, applicationId),
-          eq(applications.userId, userId),
-        ),
-      )
-      .returning();
-  }
+  // deleteById(userId: RequiredTextData, applicationId: RequiredTextData) {
+  //   return db
+  //     .delete(applications)
+  //     .where(
+  //       and(
+  //         eq(applications.id, applicationId),
+  //         eq(applications.userId, userId),
+  //       ),
+  //     )
+  //     .returning();
+  // }
 
-  deleteManyById(userId: RequiredTextData, applicationIds: RequiredTextData[]) {
+  delete(userId: RequiredTextData, applicationIds: RequiredTextData[]) {
     return db
       .delete(applications)
       .where(
@@ -180,17 +179,35 @@ class ApplicationService {
       appliedAtTo,
     } = params;
 
-    //Filters
-    if (workArrangement)
-      conditions.push(eq(applications.workArrangement, workArrangement));
-    if (status) conditions.push(eq(applications.status, status));
-    if (appliedAtFrom)
-      conditions.push(gte(applications.appliedAt, appliedAtFrom));
-    if (appliedAtTo) conditions.push(lte(applications.appliedAt, appliedAtTo));
+    // Filters
+    const filterConditions: SQL<unknown>[] = [];
 
-    //Search
+    if (workArrangement?.length) {
+      filterConditions.push(
+        inArray(applications.workArrangement, workArrangement),
+      );
+    }
+
+    if (status?.length) {
+      filterConditions.push(inArray(applications.status, status));
+    }
+
+    if (appliedAtFrom) {
+      filterConditions.push(gte(applications.appliedAt, appliedAtFrom));
+    }
+
+    if (appliedAtTo) {
+      filterConditions.push(lte(applications.appliedAt, appliedAtTo));
+    }
+
+    if (filterConditions.length) {
+      conditions.push(and(...filterConditions)!);
+    }
+
+    // Search
     if (search) {
       const searchPattern = `%${search}%`;
+
       conditions.push(
         or(
           ilike(applications.position, searchPattern),

@@ -18,6 +18,7 @@ export const nullableUrlSchema = z
   .nullish();
 
 export const jobLocationSchema = z.object({
+  country: nullableTextSchema,
   countryCode: z
     .string()
     .length(2)
@@ -64,6 +65,16 @@ export const userSettingsSchema = z.object({
 });
 
 export const resourceParamSchema = z.object({ id: requiredTextSchema });
+
+export const arrayQueryParam = <T extends z.ZodTypeAny>(schema: T) =>
+  z
+    .union([schema, z.array(schema)])
+    .optional()
+    .transform((value) => {
+      if (value === undefined) return undefined;
+
+      return Array.isArray(value) ? value : [value];
+    });
 
 export type RequiredTextData = z.infer<typeof requiredTextSchema>;
 export type ResourceParam = z.infer<typeof resourceParamSchema>;
