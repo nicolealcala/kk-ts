@@ -19,8 +19,9 @@ import BatchFormItem from "./BatchFormItem";
 import FormHeader from "../FormHeader";
 import ResetButton from "./ResetButton";
 import FloatingMenu from "./FloatingMenu";
+import { showToast } from "@/lib/config/toast";
 
-const FLOATING_MENU_GAP = 16;
+const FLOATING_MENU_GAP = 24;
 const ACTIVE_FORM_THRESHOLD = 0.4;
 
 type BatchCreateProps<
@@ -64,7 +65,7 @@ export default function BatchCreate<
   onError,
   onBack,
 }: BatchCreateProps<TFieldValues, TContext, TTransformedValues, TName>) {
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit, reset, trigger } = form;
 
   const { errors, isSubmitting, isDirty } = useFormState({
     control,
@@ -228,7 +229,7 @@ export default function BatchCreate<
 
     let frameId: number | null = null;
 
-    const handleScroll = () => {
+    const scheduleUpdate = () => {
       if (frameId !== null) {
         return;
       }
@@ -242,16 +243,22 @@ export default function BatchCreate<
 
     updateFloatingMenuPosition();
 
-    scrollContainer.addEventListener("scroll", handleScroll, {
+    scrollContainer.addEventListener("scroll", scheduleUpdate, {
       passive: true,
     });
 
-    window.addEventListener("resize", handleScroll);
+    window.addEventListener("resize", scheduleUpdate);
+
+    const resizeObserver = new ResizeObserver(() => {
+      scheduleUpdate();
+    });
+
+    resizeObserver.observe(scrollContainer);
 
     return () => {
-      scrollContainer.removeEventListener("scroll", handleScroll);
+      scrollContainer.removeEventListener("scroll", scheduleUpdate);
 
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("resize", scheduleUpdate);
 
       if (frameId !== null) {
         cancelAnimationFrame(frameId);
@@ -282,9 +289,24 @@ export default function BatchCreate<
         }));
 
         requestAnimationFrame(() => {
-          formRefs.current[newField.id]?.scrollIntoView({
+          const element = formRefs.current[newField.id];
+          const container = scrollContainerRef.current;
+
+          if (!element || !container) return;
+
+          const elementRect = element.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+
+          const headerBottom =
+            headerRef.current?.getBoundingClientRect().bottom ?? 0;
+
+          const targetTop = Math.max(headerBottom, containerRect.top);
+
+          const scrollOffset = elementRect.top - targetTop - FLOATING_MENU_GAP;
+
+          container.scrollBy({
+            top: scrollOffset,
             behavior: "smooth",
-            block: "start",
           });
         });
       }
@@ -325,7 +347,7 @@ export default function BatchCreate<
 
         const targetTop = Math.max(headerBottom, containerRect.top);
 
-        const scrollOffset = elementRect.top - targetTop - 24;
+        const scrollOffset = elementRect.top - targetTop - FLOATING_MENU_GAP;
 
         container.scrollBy({
           top: scrollOffset,
@@ -338,6 +360,42 @@ export default function BatchCreate<
         });
       }
     });
+  };
+
+  const handleInsertForm = async (type: "add" | "duplicate") => {
+    const activeIndex = fields.findIndex((f) => f.id === activeFormId);
+
+    if (activeIndex === -1) return;
+
+    const isValid = await trigger(
+      `${fieldArrayName}.${activeIndex}` as FieldPath<TFieldValues>,
+    );
+
+    switch (type) {
+      case "add":
+        if (!isValid) {
+          showToast(
+            "error",
+            "Please fix errors before adding a new application",
+          );
+          return;
+        } else insert(activeIndex + 1, defaultItem);
+        break;
+      case "duplicate":
+        if (!isValid) {
+          showToast(
+            "error",
+            "Please fix errors before adding a new application",
+          );
+          return;
+        } else {
+          const currentValues = form.getValues(
+            `${fieldArrayName}.${activeIndex}` as FieldPath<TFieldValues>,
+          );
+
+          insert(activeIndex + 1, currentValues);
+        }
+    }
   };
 
   return (
@@ -360,7 +418,7 @@ export default function BatchCreate<
 
         {/* Content */}
         <Box ref={scrollContainerRef} p={6} className="thin-scrollbar">
-          <Box className="mx-auto w-full max-w-4xl space-y-6!">
+          <Box className="mx-auto transform -translate-x-8 w-full max-w-4xl space-y-6!">
             <Stack
               direction="row"
               justifyContent="space-between"
@@ -379,7 +437,7 @@ export default function BatchCreate<
             </Stack>
 
             {/* Forms */}
-            <Stack spacing={3} position="relative">
+            <Stack spacing={6} position="relative">
               {fields.map((field, index) => {
                 const fieldErrors = errors[fieldArrayName];
 
@@ -428,14 +486,15 @@ export default function BatchCreate<
         <FloatingMenu
           ref={floatingMenuRef}
           position={floatingMenuPosition}
-          handleAdd={() => {
+          handleAdd={() => handleInsertForm("add")}
+          hasErrors={(() => {
             const activeIndex = fields.findIndex((f) => f.id === activeFormId);
 
-            if (activeIndex === -1) return;
+            if (activeIndex !== -1 && Array.isArray(errors[fieldArrayName]))
+              return Boolean(errors[fieldArrayName][activeIndex]);
 
-            insert(activeIndex + 1, defaultItem);
-            setActiveForm(fields[activeIndex + 1].id);
-          }}
+            return false;
+          })()}
           handleDelete={() => {
             if (!activeFormId) {
               return;
@@ -447,17 +506,7 @@ export default function BatchCreate<
             activeFormId ? (expandedForms[activeFormId] ?? true) : false
           }
           handleToggle={() => toggleForm(activeFormId)}
-          handleDuplicate={() => {
-            const activeIndex = fields.findIndex((f) => f.id === activeFormId);
-
-            if (activeIndex === -1) return;
-
-            const currentValues = form.getValues(
-              `${fieldArrayName}.${activeIndex}` as FieldPath<TFieldValues>,
-            );
-
-            insert(activeIndex + 1, currentValues);
-          }}
+          handleDuplicate={() => handleInsertForm("duplicate")}
           fieldsLength={fields.length}
         />
       </Stack>
