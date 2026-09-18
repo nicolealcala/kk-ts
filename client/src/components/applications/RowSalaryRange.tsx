@@ -32,7 +32,7 @@ export default function RowSalaryRange({
 
   const due = payFrequency ? `(${payFrequency})` : "";
   return (
-    <Typography variant="body1">
+    <Typography variant="body2" fontFamily="Inter">
       {min} {min && "-"} {max}{" "}
       <Span variant="caption" fontWeight={400} color="textDisabled">
         {due}

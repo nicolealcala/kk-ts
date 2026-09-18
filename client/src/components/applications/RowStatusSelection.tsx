@@ -5,6 +5,7 @@ import { statusOptions } from "@/lib/data/applicationComponentValues";
 import type { ApplicationStatusData } from "@/lib/schema/applicationSchema.ts";
 import { useState } from "react";
 import { useApplications } from "@/utils/hooks/useApplications";
+import Typography from "@mui/material/Typography";
 
 const statusColors = {
   applied: "bg-blue-50! text-blue-500!",
@@ -64,7 +65,11 @@ export default function RowStatusSelection({
       }
       renderValue={(selected) => {
         const option = statusOptions.find((opt) => opt.value === selected);
-        return <span>{option?.label}</span>;
+        return (
+          <Typography fontFamily="Inter" variant="body2">
+            {option?.label}
+          </Typography>
+        );
       }}
     >
       {statusOptions.map((opt) => (

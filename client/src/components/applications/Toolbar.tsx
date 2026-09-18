@@ -24,6 +24,7 @@ import useDebounced from "@/utils/hooks/useDebounced";
 import { useNavigate } from "react-router";
 import { updateUrl } from "@/utils/url";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
+import type { RowSelectionState } from "@tanstack/react-table";
 
 const filterStyles = {
   open: {
@@ -38,11 +39,13 @@ const filterStyles = {
 type ToolbarProps = {
   isFilterOpen: boolean;
   setIsFilterOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  rowSelection: RowSelectionState;
 };
 
 export default function Toolbar({
   isFilterOpen,
   setIsFilterOpen,
+  rowSelection,
 }: ToolbarProps) {
   const navigate = useNavigate();
   const {
@@ -59,6 +62,10 @@ export default function Toolbar({
     setSearchTerm: state.setSearchTerm,
   }));
 
+  const selectedRows =
+    Object.keys(rowSelection).length > 0
+      ? Object.values(rowSelection).filter((s) => s).length
+      : 0;
   const { page, pageSize, filteredCount, totalCount } = useShallowStore(
     useApplicationTable,
     (state) => ({
@@ -140,7 +147,7 @@ export default function Toolbar({
           </Typography>
         )}
         <Stack direction="row" spacing={2} justifyContent="end" flexGrow={1}>
-          {selectedApplications.length === 0 && (
+          {selectedRows === 0 && (
             <>
               <FormTextField
                 value={searchTerm ?? ""}
@@ -214,10 +221,10 @@ export default function Toolbar({
               </Button>
             </>
           )}
-          {selectedApplications.length > 0 && (
+          {selectedRows > 0 && (
             <Button color="error" variant="outlined" onClick={handleDeleteMany}>
               <TrashIcon className="size-4.5 mr-2" />
-              Delete {selectedApplications.length} selected
+              Delete {selectedRows} selected
             </Button>
           )}
         </Stack>
@@ -243,7 +250,7 @@ function DeleteManyMessages({
       <Typography variant="body1" color="textSecondary" component="p">
         This will permanently delete the following applications:
       </Typography>
-      <List sx={{ listStyleType: "disc", pl: 4, py: 2 }}>
+      <List sx={{ listStyleType: "disc", pl: 4, py: 2, pb: 2.5 }}>
         {applicationsToDelete.map((app) => (
           <ListItem key={app.id} sx={{ display: "list-item", py: 0, pl: 0 }}>
             <Span>{app.position}</Span>

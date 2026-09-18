@@ -115,7 +115,11 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
 
   return (
     <Stack gap={1.5} useFlexGap>
-      <Toolbar isFilterOpen={isFilterOpen} setIsFilterOpen={setIsFilterOpen} />
+      <Toolbar
+        isFilterOpen={isFilterOpen}
+        setIsFilterOpen={setIsFilterOpen}
+        rowSelection={rowSelection}
+      />
       <TableContainer
         component={Paper}
         elevation={0}
@@ -126,7 +130,7 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
           sx={{
             "& .MuiTableCell-root": {
               py: 1,
-              fontSize: "1rem",
+              fontFamily: "Inter",
             },
             "& .MuiTableCell-head": {
               position: "relative",

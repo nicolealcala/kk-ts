@@ -3,18 +3,18 @@ import Typography from "@mui/material/Typography";
 
 type JobLocationProps = { location: JobLocationData | null };
 export default function JobLocation({ location }: JobLocationProps) {
-  const renderedLocation = location
-    ? Object.values(location)
-        .filter(
-          (val: string | null | undefined) =>
-            val && val !== undefined && val !== null,
-        )
-        .join(", ")
-    : "N/A";
+  const { city, state, country, countryCode } = location ?? {};
+
+  let renderedLocation = "N/A";
+
+  if (city && state && countryCode)
+    renderedLocation = `${city}, ${state}, ${countryCode}`;
+  else if (country) renderedLocation = country;
   return (
     <Typography
-      variant={renderedLocation === "N/A" ? "body2" : "body1"}
-      color={renderedLocation === "N/A" ? "text.disabled" : "initial"}
+      variant="body2"
+      color={renderedLocation === "N/A" ? "text.disabled" : "inherit"}
+      fontFamily="Inter"
     >
       {renderedLocation}
     </Typography>

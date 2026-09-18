@@ -4,6 +4,7 @@ import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import type { ApplicationRow } from "./Columns";
 import { TrashIcon } from "@heroicons/react/24/solid";
+import OpenInNewRoundedIcon from "@mui/icons-material/OpenInNewRounded";
 
 type ApplicationRowProps = {
   row: ApplicationRow;
@@ -16,6 +17,19 @@ export default function RowActions({
   onEditRow,
   onDeleteRow,
 }: ApplicationRowProps) {
+  const actionButtonStyle = {
+    width: 30,
+    height: 30,
+    transition: "0.2s",
+    "&:hover": {
+      color: "primary.main",
+    },
+  };
+
+  const actionIconStyle = {
+    width: 20,
+    height: 20,
+  };
   return (
     <Stack direction="row" spacing={0.5} maxWidth="fit-content">
       <IconButton
@@ -24,14 +38,12 @@ export default function RowActions({
         disabled={!row.original.jobDescription || row.getIsSelected()}
         sx={{
           transform: row.getIsExpanded() ? "rotate(180deg)" : "rotate(0deg)",
-          transition: "0.2s",
-          "&:hover": {
-            color: "black",
-          },
+          ...actionButtonStyle,
         }}
       >
         <ExpandMoreRoundedIcon />
       </IconButton>
+
       <IconButton
         size="small"
         disabled={row.getIsSelected()}
@@ -39,14 +51,19 @@ export default function RowActions({
           e.stopPropagation();
           onEditRow();
         }}
-        sx={{
-          transition: "0.2s",
-          "&:hover": {
-            color: "black",
-          },
-        }}
+        sx={actionButtonStyle}
       >
-        <EditRoundedIcon />
+        <EditRoundedIcon sx={actionIconStyle} />
+      </IconButton>
+
+      <IconButton
+        size="small"
+        href={row.original.source?.url ?? "#"}
+        target="_blank"
+        disabled={!row.original.source?.url}
+        sx={actionButtonStyle}
+      >
+        <OpenInNewRoundedIcon sx={actionIconStyle} />
       </IconButton>
 
       <IconButton
@@ -57,15 +74,14 @@ export default function RowActions({
           onDeleteRow();
         }}
         sx={{
-          width: 34,
-          height: 34,
-          transition: "0.2s",
+          ...actionButtonStyle,
+
           "&:hover": {
-            color: "black",
+            color: "error.main",
           },
         }}
       >
-        <TrashIcon style={{ width: 20, height: 20 }} />
+        <TrashIcon style={actionIconStyle} />
       </IconButton>
     </Stack>
   );

@@ -58,7 +58,7 @@ export const getColumns = () => [
     cell: (info) => {
       const appliedDate = info.getValue();
       return (
-        <Typography variant="caption" color="initial">
+        <Typography variant="caption" color="initial" fontFamily="Inter">
           {formatShortenedLocaleDate(appliedDate)}
         </Typography>
       );
@@ -112,9 +112,10 @@ export const getColumns = () => [
           label={val.toUpperCase()}
           size="small"
           className={cn(
-            "text-sm! font-medium",
+            "text-sm!",
             chipClassName[val as keyof typeof chipClassName],
           )}
+          sx={{ fontFamily: "Inter" }}
         />
       ) : (
         <Typography variant="body2" color="text.disabled">
@@ -123,10 +124,10 @@ export const getColumns = () => [
       );
     },
   }),
-  columnHelper.accessor("source", {
-    header: "Source",
-    cell: (info) => <RowSourceLink source={info.getValue()} />,
-  }),
+  // columnHelper.accessor("source", {
+  //   header: "Source",
+  //   cell: (info) => <RowSourceLink source={info.getValue()} />,
+  // }),
   columnHelper.accessor("status", {
     header: "Status",
     cell: ({ getValue, row }) => {
