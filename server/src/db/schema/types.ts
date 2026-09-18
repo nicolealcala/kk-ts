@@ -4,6 +4,7 @@ export type Country = {
 };
 
 export type JobLocation = {
+  country?: string | null | undefined;
   countryCode?: string | null | undefined;
   state?: string | null | undefined;
   city?: string | null | undefined;

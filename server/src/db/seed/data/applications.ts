@@ -20,6 +20,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     location: {
       city: "Taguig",
       state: "Metro Manila",
+      country: "Philippines",
       countryCode: "PH",
     },
     compensationMin: 50000,
@@ -44,6 +45,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     location: {
       city: "Quezon City",
       state: "Metro Manila",
+      country: "Philippines",
       countryCode: "PH",
     },
     compensationMin: 70000,
@@ -66,6 +68,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     workArrangement: "remote",
     location: {
       city: "Florida",
+      country: "United States",
       countryCode: "US",
     },
     compensationMin: 85000,
@@ -89,6 +92,7 @@ export const MOCK_APPLICATIONS: MockApplication[] = [
     location: {
       city: "Makati",
       state: "Metro Manila",
+      country: "Philippines",
       countryCode: "PH",
     },
     compensationMin: null,
