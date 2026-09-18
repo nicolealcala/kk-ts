@@ -48,6 +48,7 @@ const jobSourceSchema = z.object({
 });
 
 const jobLocationSchema = z.object({
+  country: nullableTextSchema,
   countryCode: z
     .string()
     .length(2)
@@ -57,45 +58,56 @@ const jobLocationSchema = z.object({
   city: nullableTextSchema,
 });
 
-export const applicationFormSchema = z.object({
-  company: requiredTextSchema("Please provide a company"),
-  position: requiredTextSchema("Please indicate position"),
-  employmentType: employmentTypeSchema.nullish(),
-  workArrangement: workArrangementSchema.nullish(),
-  location: jobLocationSchema.nullish().transform((value) => {
-    if (
-      !value ||
-      Object.values(value).every((field) => field == null || field === "")
-    )
-      return null;
+export const applicationFormSchema = z
+  .object({
+    company: requiredTextSchema("Please provide a company"),
+    position: requiredTextSchema("Please indicate position"),
+    employmentType: employmentTypeSchema.nullish(),
+    workArrangement: workArrangementSchema.nullish(),
+    location: jobLocationSchema.nullish().transform((value) => {
+      if (
+        !value ||
+        Object.values(value).every((field) => field == null || field === "")
+      )
+        return null;
 
-    return value;
-  }),
-  compensationMin: z.coerce.number().nonnegative().optional(),
-  compensationMax: z.coerce.number().nonnegative().optional(),
-  currency: z
-    .string()
-    .trim()
-    .length(3)
-    .transform((v) => v.toUpperCase())
-    .nullish(),
-  payFrequency: payFrequencySchema.optional(),
-  appliedAt: z.string(),
-  status: statusSchema,
-  jobDescription: nullableTextSchema,
-  notes: nullableTextSchema,
-  source: jobSourceSchema,
-  statusHistory: z
-    .array(
-      z.object({
-        applicationId: z.string().trim().min(1),
-        status: statusSchema,
-        notes: nullableTextSchema,
-        createdAt: z.string(),
-      }),
-    )
-    .nullish(),
-});
+      return value;
+    }),
+    compensationMin: z.coerce.number().nonnegative().optional(),
+    compensationMax: z.coerce.number().nonnegative().optional(),
+    currency: z
+      .string()
+      .trim()
+      .length(3)
+      .transform((v) => v.toUpperCase())
+      .nullish(),
+    payFrequency: payFrequencySchema.optional(),
+    appliedAt: z.string(),
+    status: statusSchema,
+    jobDescription: nullableTextSchema,
+    notes: nullableTextSchema,
+    source: jobSourceSchema,
+    statusHistory: z
+      .array(
+        z.object({
+          applicationId: z.string().trim().min(1),
+          status: statusSchema,
+          notes: nullableTextSchema,
+          createdAt: z.string(),
+        }),
+      )
+      .nullish(),
+  })
+  .refine(
+    (data) =>
+      data.compensationMin == null ||
+      data.compensationMax == null ||
+      data.compensationMin <= data.compensationMax,
+    {
+      error: "Should be lower than maximum",
+      path: ["compensationMin"],
+    },
+  );
 
 export const appplicationListSchema = z.object({
   company: requiredTextSchema("Please provide a company"),
