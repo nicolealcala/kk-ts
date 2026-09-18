@@ -170,6 +170,9 @@ const theme = createTheme({
       dark: "#8e51ff",
       contrastText: "rgba(255,255,255,0.95)",
     },
+    text: {
+      primary: "#232023",
+    },
   },
 });
 
