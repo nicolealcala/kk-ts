@@ -17,6 +17,7 @@ type FloatingMenuProps = {
   } | null;
   fieldsLength: number;
   isExpanded: boolean;
+  hasErrors: boolean;
 
   handleAdd: () => void;
   handleDelete: () => void;
@@ -41,6 +42,7 @@ const FloatingMenu = forwardRef<HTMLDivElement, FloatingMenuProps>(
       handleDuplicate,
       isExpanded,
       fieldsLength,
+      hasErrors,
     },
     ref,
   ) {
@@ -77,43 +79,52 @@ const FloatingMenu = forwardRef<HTMLDivElement, FloatingMenuProps>(
 
     return (
       <Fade in={position !== null} timeout={500}>
-        <Box
-          ref={ref}
-          sx={{
-            bgcolor: "white",
-            position: "fixed",
-            top: position?.top ?? 0,
-            left: position?.left ?? 0,
-            zIndex: 30,
-            borderRadius: 5,
-            border: "1px solid",
-            borderColor: "action.hover",
-            p: 1,
-            transition: "top 0.3s ease-in-out, left 0.3s ease-in-out",
-          }}
-          className="subtle-shadow"
-        >
-          <Stack spacing={1}>
-            {menuItems.map((item) => {
-              const isDisabled =
-                (item.key === "delete" || item.key === "toggle") &&
-                fieldsLength <= 1;
-              return (
-                <Tooltip key={item.key} title={item.label} placement="right">
-                  <IconButton
-                    aria-label={item.label}
-                    onClick={item.onClick}
-                    sx={{
-                      color: "black",
-                    }}
-                    disabled={isDisabled}
-                  >
-                    {item.icon}
-                  </IconButton>
-                </Tooltip>
-              );
-            })}
-          </Stack>
+        <Box>
+          <Box
+            ref={ref}
+            sx={{
+              bgcolor: "white",
+              position: "fixed",
+              top: position?.top,
+              left: position?.left,
+              zIndex: 30,
+              borderRadius: 5,
+              border: "1px solid",
+              borderColor: "action.hover",
+              p: 1,
+              transition: "top 0.2s ease, left 0.2s ease",
+            }}
+            className="subtle-shadow"
+          >
+            <Stack spacing={1}>
+              {menuItems.map((item) => {
+                let isDisabled = false;
+
+                if (
+                  ["delete", "toggle"].includes(item.key) &&
+                  fieldsLength <= 1
+                )
+                  isDisabled = true;
+
+                if (hasErrors) isDisabled = true;
+
+                return (
+                  <Tooltip key={item.key} title={item.label} placement="right">
+                    <IconButton
+                      aria-label={item.label}
+                      onClick={item.onClick}
+                      sx={{
+                        color: "black",
+                      }}
+                      disabled={isDisabled}
+                    >
+                      {item.icon}
+                    </IconButton>
+                  </Tooltip>
+                );
+              })}
+            </Stack>
+          </Box>
         </Box>
       </Fade>
     );
