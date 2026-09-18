@@ -51,7 +51,7 @@ export const platformOptions = [
   { value: "indeed", label: "Indeed" },
   { value: "jobstreet", label: "JobStreet" },
   { value: "linkedin", label: "LinkedIn" },
-  { value: "welfound", label: "Wellfound" },
+  { value: "wellfound", label: "Wellfound" },
   { value: "other", label: "Other" },
 ];
 
