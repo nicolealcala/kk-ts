@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import {
   Controller,
+  useWatch,
   type Control,
   type FieldErrors,
   type FieldValues,
@@ -43,6 +44,17 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
 
   const debouncedLocation = useDebounced(locationQuery);
   const debouncedCurrency = useDebounced(currencyQuery);
+
+  const location = useWatch({
+    control,
+    name: field("location"),
+  });
+
+  const currency = useWatch({
+    control,
+    name: field("currency"),
+  });
+
   const {
     countries,
     currencies,
@@ -54,7 +66,12 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
     isFetchingCurrenciesNextPage,
     hasNextCurrenciesPage,
     fetchNextCurrenciesPage,
-  } = useRestCountriesData(debouncedLocation, debouncedCurrency);
+  } = useRestCountriesData(
+    debouncedLocation,
+    debouncedCurrency,
+    location?.countryCode,
+    currency,
+  );
   return (
     <Box
       sx={{
@@ -104,12 +121,13 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
             placeholder="Search for a country"
             getOptionLabel={(option) => option.country}
             getOptionValue={(option) => ({
+              country: option.country,
               countryCode: option.countryCode,
               state: null,
               city: null,
             })}
-            getOptionKey={(option) => option.countryCode}
-            getValueKey={(value) => value.countryCode}
+            getOptionKey={(option) => option.country}
+            getValueKey={(value) => value.country}
             onInputChange={setLocationQuery}
             onListboxScroll={(event) => {
               const listbox = event.currentTarget;
@@ -261,16 +279,16 @@ export default function ApplicationForm<TFieldValues extends FieldValues>({
             }}
             renderOption={(props, option) => (
               <li {...props} key={option.code}>
-                <Typography variant="body1" color="initial" component="span">
-                  {option.code}
-                </Typography>
-                &nbsp;
                 <Typography
                   variant="button"
                   color="textSecondary"
                   component="span"
+                  sx={{ minWidth: 48 }}
                 >
                   ({option.symbol})
+                </Typography>
+                <Typography variant="body1" color="initial" component="span">
+                  {option.code}
                 </Typography>
               </li>
             )}
