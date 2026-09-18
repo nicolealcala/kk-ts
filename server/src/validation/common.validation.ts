@@ -18,6 +18,7 @@ export const nullableUrlSchema = z
   .nullish();
 
 export const jobLocationSchema = z.object({
+  country: nullableTextSchema,
   countryCode: z
     .string()
     .length(2)
