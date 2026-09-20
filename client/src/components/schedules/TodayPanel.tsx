@@ -13,14 +13,18 @@ import Tooltip from "@mui/material/Tooltip";
 import ScheduleChip from "../shared/ScheduleChip";
 import type { Schedule } from "@/lib/types/schedules";
 import NoEventsIllustration from "../illustrations/NoEventsIllustration";
+import { toCalendarEvent } from "@/utils/date";
+import { useScheduleStore } from "@/store/schedules/scheduleStore";
 
 function TodayPanel({ events }: { events: Schedule[] }) {
-  //Localize event time because this component does not make use of localizer
-  const todaysEvents = events.filter((event) => {
-    const localStart = DateTime.fromISO(event.start);
+  const openUpdateDrawer = useScheduleStore((state) => state.openUpdateDrawer);
 
-    return localStart.hasSame(DateTime.local(), "day");
-  });
+  const todaysEvents = events
+    .filter((event) => DateTime.fromISO(event.start).hasSame(DateTime.local(), "day"))
+    .sort(
+      (a, b) =>
+        DateTime.fromISO(a.start).toMillis() - DateTime.fromISO(b.start).toMillis(),
+    );
 
   return (
     <Stack
@@ -31,8 +35,10 @@ function TodayPanel({ events }: { events: Schedule[] }) {
         borderRadius: 2,
         position: "relative",
         minHeight: 0,
-        height: "fit-content",
+        minWidth: 0,
+       // height: "100%",
         maxHeight: "100%",
+        overflow: "hidden",
       }}
       spacing={0}
     >
@@ -53,19 +59,23 @@ function TodayPanel({ events }: { events: Schedule[] }) {
           sx={{
             pl: 2,
             pr: 0.5,
+            overflowX: "hidden",
           }}
           className="thin-scrollbar"
         >
-          {todaysEvents.map((event, index) => {
+          {todaysEvents.map((event) => {
+            const calendarEvent = toCalendarEvent(event);
             const localStart = DateTime.fromISO(event.start);
             const startHour = localStart.toFormat("hh:mm a");
 
             return (
               <Accordion
-                key={index}
+              defaultExpanded
+                key={event.id ?? `${event.title}-${event.start}`}
                 sx={{
                   boxShadow: "none",
-                  borderTop: "1px solid #ddd",
+                  borderTop: "1px solid",
+                  borderColor: "divider",
                   "&:first-of-type": {
                     borderTop: "none",
                   },
@@ -78,10 +88,10 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                   },
                   "& .MuiAccordionSummary-root.Mui-disabled .MuiAccordionSummary-expandIconWrapper":
                     {
-                      color: "#DCDCDC",
+                      color: "text.disabled",
                     },
                   "& .MuiAccordionSummary-content.Mui-expanded": {
-                    margin: 0, // prevent content shift
+                    margin: 0,
                   },
                 }}
                 disabled={!event.description}
@@ -99,7 +109,7 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                     variant="body2"
                     component="span"
                     color="textSecondary"
-                    minWidth="fit-content"
+                    sx={{ minWidth: 64, flexShrink: 0 }}
                   >
                     {startHour}
                   </Typography>
@@ -111,8 +121,17 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                       variant="body1"
                       component="span"
                       fontWeight="medium"
-                      sx={{ ml: 1 }}
+                      sx={{
+                        ml: 1,
+                        minWidth: 0,
+                        cursor: calendarEvent ? "pointer" : "default",
+                      }}
                       className="line-clamp-1"
+                      onClick={(clickEvent) => {
+                        if (!calendarEvent) return;
+                        clickEvent.stopPropagation();
+                        openUpdateDrawer(calendarEvent);
+                      }}
                     >
                       {event.title}
                     </Typography>
@@ -121,10 +140,12 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                 <AccordionDetails
                   sx={{
                     p: 1.5,
+                    mb:2,
                     bgcolor: "slate.extraLight",
                     borderRadius: 1.5,
                   }}
                 >
+                  <ScheduleChip label={event.type} />
                   <MarkdownPreview
                     source={event.description || ""}
                     style={{
@@ -135,7 +156,7 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                     }}
                   />
 
-                  <ScheduleChip label={event.type} />
+                  
                 </AccordionDetails>
               </Accordion>
             );

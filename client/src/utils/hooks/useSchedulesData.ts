@@ -23,7 +23,7 @@ export function useSchedulesData(currentLocalDate: string) {
       updateSchedule(data, id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [key, currentLocalDate],
+        queryKey: [key],
       });
       showToast("success", "Event saved successfully");
     },
@@ -38,12 +38,12 @@ export function useSchedulesData(currentLocalDate: string) {
     mutationFn: (id: string) => deleteSchedule(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [key, currentLocalDate],
+        queryKey: [key],
       });
       showToast("success", "Event deleted successfully");
     },
     onError: (error) => {
-      console.error("Failed to delet schedule: ", error);
+      console.error("Failed to delete schedule: ", error);
       showToast("error", "Failed to delete event");
     },
   });

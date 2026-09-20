@@ -3,19 +3,12 @@ import TodayPanel from "@/components/schedules/TodayPanel";
 import ScheduleForm from "@/components/schedules/ScheduleForm";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { useState } from "react";
-import type { CalendarEvent } from "@/lib/types/schedules";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
 import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
-import type { OpenDrawerValues } from "@/lib/types/forms";
+import { DateTime } from "luxon";
 
 export default function SchedulesPage() {
-  const [openDrawer, setOpenDrawer] = useState<OpenDrawerValues>(null);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-    null,
-  );
-
-  const currentLocalDate = new Date().toISOString().split("T")[0];
+  const currentLocalDate = DateTime.local().toISODate() ?? "";
   const { schedules, isLoading, error } = useSchedulesData(currentLocalDate);
 
   if (isLoading) return <SchedulesSkeleton />;
@@ -27,6 +20,7 @@ export default function SchedulesPage() {
       component="article"
       direction="row"
       spacing={2}
+      p={2}
       position="relative"
       sx={{
         minHeight: 0,
@@ -36,31 +30,28 @@ export default function SchedulesPage() {
       <Box
         sx={{
           width: "20%",
+          height: "100%",
+          minHeight: 0,
+          minWidth: 0,
         }}
       >
-        <TodayPanel events={schedules || []} />
+        <TodayPanel events={schedules} />
       </Box>
       <Box
+        className="subtle-shadow"
         sx={{
           width: "80%",
+          height: "100%",
+          minHeight: 0,
           p: 2,
           borderRadius: 2,
           bgcolor: "white",
         }}
       >
-        <ScheduleCalendar
-          events={schedules || []}
-          setOpenDrawer={setOpenDrawer}
-          setSelectedEvent={setSelectedEvent}
-        />
+        <ScheduleCalendar events={schedules} />
       </Box>
 
-      <ScheduleForm
-        openDrawer={openDrawer}
-        setOpenDrawer={setOpenDrawer}
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-      />
+      <ScheduleForm />
     </Stack>
   );
 }
