@@ -152,7 +152,7 @@ function TodayPanel({ events }: { events: Schedule[] }) {
                       color: "#505050",
                       fontSize: "14px",
                       backgroundColor: "transparent",
-                      marginBottom: "12px",
+                      marginTop: "12px",
                     }}
                   />
 

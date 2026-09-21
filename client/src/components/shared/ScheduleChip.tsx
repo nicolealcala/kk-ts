@@ -8,24 +8,20 @@ type ScheduleChipProps = {
 
 const styles = {
   interview: {
-    color: "success.main",
-    bgcolor: "success.extraLight",
-    borderColor: "success.main",
+    bgcolor: "success.main",
+    color: "success.extraLight",
   },
   assessment: {
-    color: "primary.main",
-    bgcolor: (theme: Theme) => alpha(theme.palette.primary.light, 0.15),
-    borderColor: "primary.main",
+    bgcolor: "primary.main",
+    color: "primary.contrastText",
   },
   task: {
-    color: "secondary.main",
-    bgcolor: "secondary.extraLight",
-    borderColor: "secondary.main",
+    bgcolor: "secondary.main",
+    color: "secondary.extraLight",
   },
   other: {
-    color: "text.secondary",
-    bgcolor: (theme: Theme) => alpha(theme.palette.text.secondary, 0.05),
-    borderColor: "text.main",
+    bgcolor: "text.disabled",
+    color: "white",
   },
 };
 export default function ScheduleChip({ label }: ScheduleChipProps) {
@@ -34,7 +30,13 @@ export default function ScheduleChip({ label }: ScheduleChipProps) {
       label={label}
       size="small"
       variant="outlined"
-      sx={{ textTransform: "capitalize", ...styles[label] }}
+      sx={{
+        fontSize: 10,
+        textTransform: "uppercase",
+        ...styles[label],
+        border: "none",
+        width: "fit-content",
+      }}
     />
   );
 }
