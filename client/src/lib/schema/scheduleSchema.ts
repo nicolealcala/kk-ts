@@ -1,13 +1,14 @@
 import * as z from "zod";
 import { DateTime } from "luxon";
+import { nullableTextSchema, requiredTextSchema } from "./commonSchema";
 
 const scheduleFormSchema = z
   .object({
-    title: z.string().nonempty("Title is required"),
-    description: z.string().optional(),
-    date: z.string().nonempty("Date is required"),
-    start: z.string().nonempty("Start time is required"),
-    end: z.string().nonempty("End time is required"),
+    title: requiredTextSchema("Please add an event title"),
+    description: nullableTextSchema,
+    date: requiredTextSchema("Please add a date"),
+    start: requiredTextSchema("Please add a start time"),
+    end: requiredTextSchema("Please add an end time"),
     type: z
       .enum(["interview", "assessment", "task", "other"])
       .nonoptional("Type is required"),
