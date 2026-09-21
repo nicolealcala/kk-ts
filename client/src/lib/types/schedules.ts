@@ -28,8 +28,23 @@ export type Schedule = RemoteSchedule | OnsiteSchedule;
  * This type is primarily used in Calendar component, since it only accepts
  * JS Date for start and end props.
  */
-export type CalendarEvent = Omit<Schedule, "id" | "start" | "end"> & {
+
+export type RemoteCalendarEvent = Omit<
+  RemoteSchedule,
+  "id" | "start" | "end"
+> & {
   id: string;
   start: Date;
   end: Date;
 };
+
+export type OnsiteCalendarEvent = Omit<
+  OnsiteSchedule,
+  "id" | "start" | "end"
+> & {
+  id: string;
+  start: Date;
+  end: Date;
+};
+
+export type CalendarEvent = RemoteCalendarEvent | OnsiteCalendarEvent;
