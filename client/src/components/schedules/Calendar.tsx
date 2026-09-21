@@ -1,4 +1,9 @@
-import { Calendar, luxonLocalizer,  type SlotInfo, Views } from "react-big-calendar";
+import {
+  Calendar,
+  luxonLocalizer,
+  type SlotInfo,
+  Views,
+} from "react-big-calendar";
 import { DateTime } from "luxon";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "@/styles/schedules.scss";
@@ -16,17 +21,15 @@ type ScheduleCalendarProps = {
 };
 
 function ScheduleCalendar({ events }: ScheduleCalendarProps) {
-  const { view, date, setView, setDate,  openCreateDrawer, openUpdateDrawer } = useShallowStore(
-    useScheduleStore,
-    (state) => ({
+  const { view, date, setView, setDate, openCreateDrawer, openUpdateDrawer } =
+    useShallowStore(useScheduleStore, (state) => ({
       view: state.view,
       date: state.date,
       setView: state.setView,
       setDate: state.setDate,
       openCreateDrawer: state.openCreateDrawer,
       openUpdateDrawer: state.openUpdateDrawer,
-    }),
-  );
+    }));
 
   const components = useMemo(
     () => ({
@@ -48,16 +51,16 @@ function ScheduleCalendar({ events }: ScheduleCalendarProps) {
 
   const handleSelectSlot = ({ start }: SlotInfo) => {
     const createStart = new Date(start);
-  
+
     createStart.setMinutes(
       Math.floor(createStart.getMinutes() / 15) * 15,
       0,
       0,
     );
-  
+
     const createEnd = new Date(createStart);
     createEnd.setMinutes(createEnd.getMinutes() + 30);
-  
+
     openCreateDrawer(createStart, createEnd);
   };
 
@@ -79,6 +82,7 @@ function ScheduleCalendar({ events }: ScheduleCalendarProps) {
       timeslots={2}
       min={minTime}
       max={maxTime}
+      scrollToTime={new Date()}
       style={{ height: "100%" }}
     />
   );
