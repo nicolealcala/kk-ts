@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import Drawer from "@mui/material/Drawer";
-import { DrawerHeader } from "../layout/Sidebar";
 import Box from "@mui/material/Box";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,12 +21,11 @@ import scheduleFormSchema, {
   type ScheduleFormInputs,
 } from "@/lib/schema/scheduleSchema";
 import FormButtons from "../shared/form/FormButtons";
-import Button from "@mui/material/Button";
 import { useScheduleStore } from "@/store/schedules/scheduleStore";
 import useShallowStore from "@/store/useShallowStore";
-import { useDialogStore } from "@/store/dialog/dialogStore";
-import Span from "../shared/typography/Span";
 import { DateTime } from "luxon";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import Button from "@mui/material/Button";
 
 const modalityOptions = [
   { value: "remote", label: "Remote" },
@@ -41,19 +39,25 @@ const typeValues = [
   { label: "Other", value: "other" },
 ];
 
-export default function ScheduleForm() {
-  const { drawerMode, selectedEvent, date, createStart, createEnd, closeDrawer } = useShallowStore(
-    useScheduleStore,
-    (state) => ({
-      drawerMode: state.drawerMode,
-      selectedEvent: state.selectedEvent,
-      date: state.date,
-      createStart: state.createStart,
-      createEnd: state.createEnd,
-      closeDrawer: state.closeDrawer,
-    }),
-  );
-  const openConfirmation = useDialogStore((state) => state.openConfirmation);
+type ScheduleFormProps = {
+  handleDelete: (onSuccess: () => void) => void;
+};
+export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
+  const {
+    drawerMode,
+    selectedEvent,
+    date,
+    createStart,
+    createEnd,
+    closeDrawer,
+  } = useShallowStore(useScheduleStore, (state) => ({
+    drawerMode: state.drawerMode,
+    selectedEvent: state.selectedEvent,
+    date: state.date,
+    createStart: state.createStart,
+    createEnd: state.createEnd,
+    closeDrawer: state.closeDrawer,
+  }));
 
   const {
     reset,
@@ -94,13 +98,9 @@ export default function ScheduleForm() {
     }
 
     if (drawerMode === "create") {
-      const startIsoString = createStart
-        ? convertDateToIso(createStart)
-        : "";
+      const startIsoString = createStart ? convertDateToIso(createStart) : "";
 
-      const endIsoString = createEnd
-        ? convertDateToIso(createEnd)
-        : "";
+      const endIsoString = createEnd ? convertDateToIso(createEnd) : "";
 
       reset({
         ...initialValues,
@@ -109,16 +109,14 @@ export default function ScheduleForm() {
         end: endIsoString,
       });
     }
-  }, [drawerMode, selectedEvent, date,  createStart, createEnd, reset]);
+  }, [drawerMode, selectedEvent, date, createStart, createEnd, reset]);
 
   useEffect(() => {
     if (modality === "remote") resetField("address");
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  const currentLocalDate = DateTime.local().toISODate() ?? "";
-  const { saveSchedule, deleteSchedule, isDeleting } =
-    useSchedulesData(currentLocalDate);
+  const { saveSchedule, deleteSchedule, isDeleting } = useSchedulesData();
 
   async function onSubmit(formData: ScheduleFormInputs) {
     saveSchedule(
@@ -137,33 +135,6 @@ export default function ScheduleForm() {
     closeDrawer();
   }
 
-  function handleDelete() {
-    if (!selectedEvent) return;
-
-    openConfirmation({
-      title: "Remove this event?",
-      message: (
-        <>
-          This will permanently delete{" "}
-          <Span fontWeight="semiBold">{selectedEvent.title}</Span>.
-        </>
-      ),
-      type: "error",
-      icon: "delete",
-      onConfirm: () =>
-        new Promise<void>((resolve, reject) => {
-          deleteSchedule(selectedEvent.id, {
-            onSuccess: () => {
-              closeDrawer();
-              reset(initialValues);
-              resolve();
-            },
-            onError: reject,
-          });
-        }),
-    });
-  }
-
   return (
     <Drawer
       open={!!drawerMode}
@@ -171,7 +142,7 @@ export default function ScheduleForm() {
       anchor="right"
       slotProps={{
         paper: {
-          sx: { width: { xs: "100%", sm: "30%" } },
+          sx: { width: { xs: "100%", sm: "35%" } },
         },
       }}
     >
@@ -189,7 +160,7 @@ export default function ScheduleForm() {
           width: "100%",
         }}
       >
-        <Stack direction="row" justifyContent="space-between" px={2.5}>
+        <Stack direction="row" justifyContent="space-between" px={2.5} pb={1}>
           <Typography
             variant="h5"
             component="h1"
@@ -201,8 +172,26 @@ export default function ScheduleForm() {
           </Typography>
 
           {drawerMode === "update" && selectedEvent && (
-            <Button onClick={handleDelete} disabled={isDeleting} color="error">
-              Remove event
+            <Button
+              onClick={() =>
+                handleDelete(() => {
+                  reset(initialValues);
+                })
+              }
+              disabled={isDeleting}
+              sx={{
+                borderRadius: 2,
+                minWidth: 0, // Removes default text button width
+                p: 1, // Adds balanced icon padding
+                bgcolor: "action.hover",
+                color: "action.active",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  bgcolor: "action.selected",
+                },
+              }}
+            >
+              <DeleteOutlinedIcon />
             </Button>
           )}
         </Stack>
@@ -210,11 +199,11 @@ export default function ScheduleForm() {
           sx={{
             p: 2.5,
             pr: 1.3,
-            pb: 0,
+            pt: 2,
           }}
           className="thin-scrollbar"
         >
-          <Stack spacing={3}>
+          <Stack spacing={4}>
             <ControlledFormTextField
               name="title"
               control={control}
@@ -267,21 +256,21 @@ export default function ScheduleForm() {
                 )}
               />
             </Stack>
-            
+
             <Stack direction="row" spacing={2}>
               <Controller
-                  name="modality"
-                  control={control}
-                  render={({ field }) => (
-                    <ScheduleFormRadioGroup
-                      field={field}
-                      label="Modality"
-                      error={!!errors.modality}
-                      errorMessage={errors.modality?.message}
-                      radioItems={modalityOptions}
-                    />
-                  )}
-                />
+                name="modality"
+                control={control}
+                render={({ field }) => (
+                  <ScheduleFormRadioGroup
+                    field={field}
+                    label="Modality"
+                    error={!!errors.modality}
+                    errorMessage={errors.modality?.message}
+                    radioItems={modalityOptions}
+                  />
+                )}
+              />
               <ControlledFormSelect
                 name="type"
                 control={control}
@@ -309,7 +298,7 @@ export default function ScheduleForm() {
               control={control}
               render={({ field }) => (
                 <MDEditor
-                  value={field.value}
+                  value={field.value || ""}
                   onChange={field.onChange}
                   preview="edit"
                   previewOptions={{
@@ -324,7 +313,14 @@ export default function ScheduleForm() {
             />
           </Stack>
         </Box>
-        <Stack direction="row" spacing={2} width="100%" px={2.5} mt="auto" pt={2}>
+        <Stack
+          direction="row"
+          spacing={2}
+          width="100%"
+          px={2.5}
+          mt="auto"
+          pt={2}
+        >
           <FormButtons
             type="button"
             variant="outlined"

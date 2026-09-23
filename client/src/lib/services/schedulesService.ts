@@ -3,8 +3,8 @@ import type { ScheduleFormInputs } from "../schema/scheduleSchema";
 
 const URL = `${import.meta.env.VITE_BASE_URL}/api/schedules`;
 
-export const getSchedules = async (currentLocalDate: string) => {
-  const response = await fetch(`${URL}?date=${currentLocalDate}`);
+export const getSchedules = async () => {
+  const response = await fetch(`${URL}`);
 
   if (!response.ok) throw new Error("Failed to fetch schedules");
 
@@ -32,10 +32,11 @@ export const updateSchedule = async (
   return await response.json();
 };
 
-export const deleteSchedule = async (id: string) => {
-  const response = await fetch(`${URL}/${id}`, {
-    method: "DELETE",
+export const deleteSchedule = async (ids: string[]) => {
+  const response = await fetch(`${URL}`, {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(ids),
   });
 
   if (!response.ok) throw new Error("Failed to delete");

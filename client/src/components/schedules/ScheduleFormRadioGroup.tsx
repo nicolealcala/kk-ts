@@ -35,7 +35,9 @@ export default function ScheduleFormRadioGroup<
         "& .MuiFormHelperText-root.Mui-error": { mx: 0, ml: 0.5 },
       }}
     >
-      <FormLabel component="legend">{label}</FormLabel>
+      <FormLabel component="legend" sx={{ fontSize: "0.75rem" }}>
+        {label}
+      </FormLabel>
       <RadioGroup {...field} row aria-label="modality">
         {radioItems.map((r) => (
           <FormControlLabel
