@@ -15,7 +15,7 @@ import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
 import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
 import { convertDateToIso } from "@/utils/date";
-import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
+import { useSchedulesData } from "@/utils/hooks/useSchedules";
 import scheduleFormSchema, {
   initialValues,
   type ScheduleFormInputs,

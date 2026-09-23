@@ -18,7 +18,7 @@ import EventPopover from "./EventPopover";
 import ScheduleForm from "./ScheduleForm";
 import { useDialogStore } from "@/store/dialog/dialogStore";
 import Span from "../shared/typography/Span";
-import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
+import { useSchedulesData } from "@/utils/hooks/useSchedules";
 import Box from "@mui/material/Box";
 import { eventColors } from "@/lib/config/colors";
 

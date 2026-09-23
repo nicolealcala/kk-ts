@@ -1,7 +1,7 @@
 import ScheduleCalendar from "@/components/schedules/Calendar";
 import Box from "@mui/material/Box";
 import SchedulesSkeleton from "@/components/schedules/SchedulesSkeleton";
-import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
+import { useSchedulesData } from "@/utils/hooks/useSchedules";
 
 export default function SchedulesPage() {
   const { schedules, isLoading, error } = useSchedulesData();
