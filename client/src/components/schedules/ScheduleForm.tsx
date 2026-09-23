@@ -26,6 +26,7 @@ import useShallowStore from "@/store/useShallowStore";
 import { DateTime } from "luxon";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import Button from "@mui/material/Button";
+import { secondaryButtonSx } from "@/utils/styles";
 
 const modalityOptions = [
   { value: "remote", label: "Remote" },
@@ -58,7 +59,7 @@ export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
     createEnd: state.createEnd,
     closeDrawer: state.closeDrawer,
   }));
-
+  
   const {
     reset,
     resetField,
@@ -116,7 +117,7 @@ export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  const { saveSchedule, deleteSchedule, isDeleting } = useSchedulesData();
+  const { saveSchedule, isDeleting } = useSchedulesData();
 
   async function onSubmit(formData: ScheduleFormInputs) {
     saveSchedule(
@@ -171,7 +172,7 @@ export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
             {drawerMode === "create" ? "Create a new event" : "Update event"}
           </Typography>
 
-          {drawerMode === "update" && selectedEvent && (
+          {drawerMode === "update" && (
             <Button
               onClick={() =>
                 handleDelete(() => {
@@ -181,13 +182,14 @@ export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
               disabled={isDeleting}
               sx={{
                 borderRadius: 2,
-                minWidth: 0, // Removes default text button width
-                p: 1, // Adds balanced icon padding
+                minWidth: 0,
+                p: 1,
                 bgcolor: "action.hover",
                 color: "action.active",
                 transition: "all 0.2s ease-in-out",
                 "&:hover": {
-                  bgcolor: "action.selected",
+                  color: "error.main",
+                  bgcolor: "error.extraLight",
                 },
               }}
             >
@@ -326,6 +328,7 @@ export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
             variant="outlined"
             disabled={isSubmitting}
             onClick={handleCancel}
+            sx={secondaryButtonSx}
           >
             Cancel
           </FormButtons>

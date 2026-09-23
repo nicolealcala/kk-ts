@@ -15,6 +15,7 @@ import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import InsertLinkRoundedIcon from "@mui/icons-material/InsertLinkRounded";
 import Chip from "@mui/material/Chip";
+import { deleteButtonSx } from "@/utils/styles";
 
 type EventPopoverProps = {
   selectedEvent: CalendarEvent | null;
@@ -200,16 +201,7 @@ export default function EventPopover({
                   handleCloseEventPopover();
                 });
               }}
-              sx={{
-                color: "text.secondary",
-                borderColor: "text.disabled",
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  bgcolor: "error.extraLight",
-                  color: "error.main",
-                  borderColor: "error.main",
-                },
-              }}
+              sx={deleteButtonSx}
             >
               Delete
             </Button>
