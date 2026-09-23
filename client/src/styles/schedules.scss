@@ -10,6 +10,19 @@
   border-color: var(--mui-palette-divider);
 }
 
+.rbc-time-header {
+  margin-right: 0 !important;
+  border: none !important;
+}
+
+.rbc-time-content, .rbc-time-header-content {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+
 .rbc-time-header-content,
 .rbc-timeslot-group,
 .rbc-day-bg + .rbc-day-bg,
@@ -30,19 +43,27 @@
   background-color: #c70300;
 }
 
-.rbc-event,
-.rbc-event.rbc-selected {
-  flex-flow: column;
-  background-color: #a684ff;
-  border-color: #8e51ff;
+
+.rbc-time-content {
+  border-top-width: 1px;
 }
 
+.rbc-event {
+  background-color: var(--event-color) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.rbc-event:hover {
+  background-color: var(--event-hover-bg);
+}
+
+
 .rbc-event:focus {
-  outline-color: #7419ff;
+  outline-color: var(--event-focus-outline);
 }
 
 .rbc-event-label {
-  font-size: 12px !important;
+  display: none;
 }
 
 .rbc-today {
@@ -54,6 +75,6 @@
 }
 
 .rbc-show-more {
-  color: #7419ff;
+  color: var(--mui-palette-primary-main);
   font-weight: 600;
 }
