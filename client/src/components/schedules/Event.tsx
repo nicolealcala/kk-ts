@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 
 type EventProps = {
   event: CalendarEvent | null;
-  setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
+  setSelectedEvent: (event: CalendarEvent | null) => void;
   setEventAnchor: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 

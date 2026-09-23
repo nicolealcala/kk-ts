@@ -29,22 +29,29 @@ type ScheduleCalendarProps = {
 };
 
 function ScheduleCalendar({ events }: ScheduleCalendarProps) {
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-    null,
-  );
   const [eventAnchor, setEventAnchor] = useState<HTMLElement | null>(null);
 
   const openConfirmation = useDialogStore((state) => state.openConfirmation);
-  const { view, date, setView, setDate, openCreateDrawer, closeDrawer } =
-    useShallowStore(useScheduleStore, (state) => ({
-      view: state.view,
-      date: state.date,
-      setView: state.setView,
-      setDate: state.setDate,
-      openCreateDrawer: state.openCreateDrawer,
-      openUpdateDrawer: state.openUpdateDrawer,
-      closeDrawer: state.closeDrawer,
-    }));
+  const {
+    selectedEvent,
+    view,
+    date,
+    setSelectedEvent,
+    setView,
+    setDate,
+    openCreateDrawer,
+    closeDrawer,
+  } = useShallowStore(useScheduleStore, (state) => ({
+    selectedEvent: state.selectedEvent,
+    setSelectedEvent: state.setSelectedEvent,
+    view: state.view,
+    date: state.date,
+    setView: state.setView,
+    setDate: state.setDate,
+    openCreateDrawer: state.openCreateDrawer,
+    openUpdateDrawer: state.openUpdateDrawer,
+    closeDrawer: state.closeDrawer,
+  }));
 
   const { deleteSchedule } = useSchedulesData();
 
@@ -82,7 +89,6 @@ function ScheduleCalendar({ events }: ScheduleCalendarProps) {
   };
 
   const handleCloseEventPopover = () => {
-    setSelectedEvent(null);
     setEventAnchor(null);
   };
 

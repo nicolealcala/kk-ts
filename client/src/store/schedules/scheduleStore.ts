@@ -28,6 +28,8 @@ export const useScheduleStore = create(
     setView: (view: View) => set({ view }),
 
     setDate: (date: Date) => set({ date: new Date(date) }),
+    setSelectedEvent: (event: CalendarEvent | null) =>
+      set({ selectedEvent: event }),
     openViewDrawer: (event: CalendarEvent) => {
       set({
         drawerMode: "view",
