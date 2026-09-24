@@ -6,19 +6,7 @@ import type { ApplicationStatusData } from "@/lib/schema/applicationSchema.ts";
 import { useState } from "react";
 import { useApplications } from "@/utils/hooks/useApplications";
 import Typography from "@mui/material/Typography";
-
-const statusColors = {
-  applied: "bg-blue-50! text-blue-500!",
-  assessment: "bg-orange-50! text-orange-500!",
-  final_interview: "bg-purple-50! text-purple-500!",
-  initial_interview: "bg-yellow-50! text-yellow-600!",
-  offer_accepted: "bg-emerald-600! text-emerald-50!",
-  offer_declined: "bg-gray-100! text-gray-500!",
-  offer_received: "bg-green-50! text-green-500!",
-  rejected: "bg-red-50! text-red-600!",
-  viewed: "bg-sky-50! text-sky-500!",
-  withdrawn: "bg-gray-50! text-gray-500!",
-};
+import { statusColors } from "@/lib/config/colors";
 
 type ApplicationStatusSelectionProps = {
   value: ApplicationStatusData;
@@ -42,12 +30,11 @@ export default function RowStatusSelection({
     <Select
       value={value}
       size="small"
-      className={cn(
-        "w-fit rounded-2xl!",
-        statusColors[value as keyof typeof statusColors],
-      )}
+      className={cn("w-fit rounded-2xl!")}
       sx={{
         borderRadius: "100%",
+        bgcolor: statusColors[value][50],
+        color: statusColors[value][800],
         "& .MuiOutlinedInput-notchedOutline": {
           border: "none",
         },

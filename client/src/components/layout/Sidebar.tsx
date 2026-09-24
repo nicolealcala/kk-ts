@@ -50,6 +50,7 @@ const Drawer = styled(MuiDrawer, {
     justifyContent: "space-between",
     height: "100%",
   },
+  zIndex: 0,
   variants: [
     {
       props: ({ open }) => open,

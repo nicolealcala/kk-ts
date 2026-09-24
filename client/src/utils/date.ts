@@ -1,8 +1,9 @@
+import { DateTime } from "luxon";
+import { type CalendarEvent, type Schedule } from "@/lib/types/schedules";
+
 export function getCurrentYear() {
   return new Date().getFullYear();
 }
-
-import { type Schedule } from "@/lib/types/schedules";
 
 /**
  * Function to convert UTC string start and end dates into locale form
@@ -58,6 +59,17 @@ export function transformWeeklySchedules(data: Schedule[]) {
 
 export function convertDateToIso(date: Date | string) {
   return date instanceof Date ? date.toISOString() : date;
+}
+
+export function toCalendarEvent(event: Schedule): CalendarEvent | null {
+  if (!event.id) return null;
+
+  return {
+    ...event,
+    id: event.id,
+    start: DateTime.fromISO(event.start).toJSDate(),
+    end: DateTime.fromISO(event.end).toJSDate(),
+  };
 }
 
 /**

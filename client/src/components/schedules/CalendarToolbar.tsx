@@ -10,6 +10,7 @@ import type { ButtonGroupProps } from "@mui/material/ButtonGroup";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import React from "react";
 import type { CalendarEvent } from "@/lib/types/schedules";
+import { useScheduleStore } from "@/store/schedules/scheduleStore";
 
 function StyledButtonGroup({ children, sx, ...rest }: ButtonGroupProps) {
   return (
@@ -21,13 +22,6 @@ function StyledButtonGroup({ children, sx, ...rest }: ButtonGroupProps) {
           color: "text.secondary",
           borderColor: "divider",
           textTransform: "none",
-          "&:hover": {
-            borderColor: "divider",
-            backgroundColor: "action.hover",
-          },
-          "&:active": {
-            backgroundColor: "action.selected",
-          },
         },
         ...sx,
       }}
@@ -39,38 +33,66 @@ function StyledButtonGroup({ children, sx, ...rest }: ButtonGroupProps) {
 
 export type CustomToolbarProps = ToolbarProps<CalendarEvent, object>;
 
-function CustomToolbar(toolbar: CustomToolbarProps & { onAdd: () => void }) {
+function CustomToolbar(toolbar: CustomToolbarProps) {
+  const openCreateDrawer = useScheduleStore((state) => state.openCreateDrawer);
+  const handleCreate = () => {
+    const createStart = new Date();
+  
+    createStart.setMinutes(
+      Math.floor(createStart.getMinutes() / 15) * 15,
+      0,
+      0,
+    );
+  
+    const createEnd = new Date(createStart);
+    createEnd.setMinutes(createEnd.getMinutes() + 30);
+  
+    openCreateDrawer(createStart, createEnd);
+  };
+
+
   const viewOptions = [
     { id: Views.MONTH, label: "Month" },
     { id: Views.WEEK, label: "Week" },
     { id: Views.DAY, label: "Day" },
   ];
 
-  const toolbarDate = DateTime.fromJSDate(toolbar.date).startOf("day");
-  const today = DateTime.local().startOf("day");
+  const unit =
+    toolbar.view === Views.MONTH
+      ? "month"
+      : toolbar.view === Views.WEEK
+        ? "week"
+        : "day";
 
-  // Conditions
-  const isToday = toolbarDate.hasSame(today, "day");
-  const isPast = toolbarDate < today;
-  const isFuture = toolbarDate > today;
+  const toolbarDate = DateTime.fromJSDate(toolbar.date);
+  const today = DateTime.local();
+  const isToday = toolbarDate.hasSame(today, unit);
+  const isPast = toolbarDate.startOf(unit) < today.startOf(unit);
+  const isFuture = toolbarDate.startOf(unit) > today.startOf(unit);
 
   const activeStyle = {
     backgroundColor: "action.selected",
     color: "primary.main",
     fontWeight: "bold",
   };
+
   return (
     <Stack
       direction="row"
       mb={2}
       justifyContent="space-between"
       alignItems="center"
+      flexWrap="wrap"
+      useFlexGap
+      spacing={1.5}
+      sx={{ flexShrink: 0 }}
     >
       <Stack direction="row" spacing={2}>
         <StyledButtonGroup>
           <Button
             onClick={() => toolbar.onNavigate("PREV")}
             sx={isPast ? activeStyle : {}}
+            aria-label="Previous"
           >
             <ChevronLeftRoundedIcon />
           </Button>
@@ -83,6 +105,7 @@ function CustomToolbar(toolbar: CustomToolbarProps & { onAdd: () => void }) {
           <Button
             onClick={() => toolbar.onNavigate("NEXT")}
             sx={isFuture ? activeStyle : {}}
+            aria-label="Next"
           >
             <ChevronRightRoundedIcon />
           </Button>
@@ -92,6 +115,7 @@ function CustomToolbar(toolbar: CustomToolbarProps & { onAdd: () => void }) {
           component="h1"
           alignContent="center"
           fontWeight="medium"
+          noWrap
         >
           {toolbar.label}
         </Typography>
@@ -113,7 +137,7 @@ function CustomToolbar(toolbar: CustomToolbarProps & { onAdd: () => void }) {
         <Button
           variant="contained"
           startIcon={<AddRoundedIcon />}
-          onClick={toolbar.onAdd}
+          onClick={handleCreate}
         >
           Create event
         </Button>

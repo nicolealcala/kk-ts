@@ -25,6 +25,7 @@ import { useNavigate } from "react-router";
 import { updateUrl } from "@/utils/url";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import type { RowSelectionState } from "@tanstack/react-table";
+import { useQueryClient } from "@/utils/hooks/useQueryClient";
 
 const filterStyles = {
   open: {
@@ -62,6 +63,7 @@ export default function Toolbar({
     setSearchTerm: state.setSearchTerm,
   }));
 
+  const { invalidateQueries } = useQueryClient();
   const selectedRows =
     Object.keys(rowSelection).length > 0
       ? Object.values(rowSelection).filter((s) => s).length
@@ -80,7 +82,7 @@ export default function Toolbar({
     (state) => state.openConfirmation,
   );
 
-  const { invalidateQueries, deleteApplication } = useApplications();
+  const { deleteApplication } = useApplications();
 
   const debouncedValue = useDebounced(searchTerm);
 

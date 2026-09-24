@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 
 import {
@@ -21,9 +21,10 @@ import { useApplicationTable } from "@/store/application/applicationStore";
 import { createSearchQuery } from "../url";
 import { showToast } from "@/lib/config/toast";
 import useDebounced from "./useDebounced";
+import { useQueryClient } from "./useQueryClient";
 
 export function useApplications(keys?: string[]) {
-  const queryClient = useQueryClient();
+  const { queryClient } = useQueryClient();
   const navigate = useNavigate();
 
   const {
@@ -186,11 +187,6 @@ export function useApplications(keys?: string[]) {
     },
   });
 
-  const invalidateQueries = (queryKey: readonly unknown[]) =>
-    queryClient.invalidateQueries({
-      queryKey,
-    });
-
   return {
     applicationsList: {
       data: getAll.data?.data ?? [],
@@ -209,7 +205,5 @@ export function useApplications(keys?: string[]) {
 
     deleteApplication: deleteMutation.mutateAsync,
     isDeleting: deleteMutation.isPending,
-
-    invalidateQueries,
   };
 }

@@ -1,16 +1,36 @@
-// 🎨 Override core variables first
-$calendar-btn-bg: #4a90e2; // default button background
-$calendar-btn-color: #fff; // default button text color
-$calendar-btn-hover-bg: #357ab8; // hover background
-$calendar-btn-active-bg: #2c3e50; // active button background
-$calendar-btn-border-radius: 6px; // rounded corners
+.rbc-calendar {
+  height: 100%;
+  min-height: 0;
+  flex: 1;
+  font-family: inherit;
+}
 
-$event-bg: #a684ff;
-$event-border: #a684ff;
+.rbc-time-view,
+.rbc-month-view {
+  border-color: var(--mui-palette-divider);
+}
 
-$today-highlight-bg: #f5f3ff !default;
+.rbc-time-header {
+  margin-right: 0 !important;
+  border: none !important;
+}
 
-$current-time-color: #c70300;
+.rbc-time-content, .rbc-time-header-content {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+  -ms-overflow-style: none; 
+}
+
+.rbc-time-header-content,
+.rbc-timeslot-group,
+.rbc-day-bg + .rbc-day-bg,
+.rbc-month-row + .rbc-month-row,
+.rbc-header + .rbc-header,
+.rbc-header {
+  border-color: var(--mui-palette-divider);
+}
 
 .rbc-time-gutter.rbc-time-column {
   font-size: 12px;
@@ -20,15 +40,41 @@ $current-time-color: #c70300;
 
 .rbc-current-time-indicator {
   height: 2px !important;
+  background-color: #c70300;
+}
+
+
+.rbc-time-content {
+  border-top-width: 1px;
 }
 
 .rbc-event {
-  flex-flow: column;
+  background-color: var(--event-color) !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.rbc-event:hover {
+  background-color: var(--event-hover-bg);
+}
+
+
+.rbc-event:focus {
+  outline-color: var(--event-focus-outline);
 }
 
 .rbc-event-label {
-  font-size: 12px !important;
+  display: none;
 }
 
-// Import the base styles AFTER overrides
-@import "react-big-calendar/lib/sass/styles";
+.rbc-today {
+  background-color: #f5f3ff;
+}
+
+.rbc-off-range-bg {
+  background: #f8fafc;
+}
+
+.rbc-show-more {
+  color: var(--mui-palette-primary-main);
+  font-weight: 600;
+}

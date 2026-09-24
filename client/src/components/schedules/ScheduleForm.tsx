@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Drawer from "@mui/material/Drawer";
-import { DrawerHeader } from "../layout/Sidebar";
 import Box from "@mui/material/Box";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,27 +14,19 @@ import ScheduleFormTimePicker, {
 import ScheduleFormDatePicker from "./ScheduleFormDatePicker";
 import Typography from "@mui/material/Typography";
 import ScheduleFormRadioGroup from "./ScheduleFormRadioGroup";
-import Divider from "@mui/material/Divider";
 import { convertDateToIso } from "@/utils/date";
-import { useSchedulesData } from "@/utils/hooks/useSchedulesData";
+import { useSchedulesData } from "@/utils/hooks/useSchedules";
 import scheduleFormSchema, {
   initialValues,
   type ScheduleFormInputs,
 } from "@/lib/schema/scheduleSchema";
-import type { CalendarEvent } from "@/lib/types/schedules";
-import type { OpenDrawerValues } from "@/lib/types/forms";
 import FormButtons from "../shared/form/FormButtons";
+import { useScheduleStore } from "@/store/schedules/scheduleStore";
+import useShallowStore from "@/store/useShallowStore";
+import { DateTime } from "luxon";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import Button from "@mui/material/Button";
-import ConfirmationModal from "../shared/ConfirmationModal";
-import DeleteHeader from "../shared/header-icons/DeleteIcon";
-import Span from "../shared/typography/Span";
-
-type ScheduleFormProps = {
-  openDrawer: OpenDrawerValues;
-  setOpenDrawer: React.Dispatch<React.SetStateAction<OpenDrawerValues>>;
-  selectedEvent: CalendarEvent | null;
-  setSelectedEvent: React.Dispatch<React.SetStateAction<CalendarEvent | null>>;
-};
+import { secondaryButtonSx } from "@/utils/styles";
 
 const modalityOptions = [
   { value: "remote", label: "Remote" },
@@ -49,14 +40,26 @@ const typeValues = [
   { label: "Other", value: "other" },
 ];
 
-export default function ScheduleForm({
-  openDrawer,
-  setOpenDrawer,
-  selectedEvent,
-  setSelectedEvent,
-}: ScheduleFormProps) {
-  const [openModal, setOpenModal] = useState(false);
-
+type ScheduleFormProps = {
+  handleDelete: (onSuccess: () => void) => void;
+};
+export default function ScheduleForm({ handleDelete }: ScheduleFormProps) {
+  const {
+    drawerMode,
+    selectedEvent,
+    date,
+    createStart,
+    createEnd,
+    closeDrawer,
+  } = useShallowStore(useScheduleStore, (state) => ({
+    drawerMode: state.drawerMode,
+    selectedEvent: state.selectedEvent,
+    date: state.date,
+    createStart: state.createStart,
+    createEnd: state.createEnd,
+    closeDrawer: state.closeDrawer,
+  }));
+  
   const {
     reset,
     resetField,
@@ -70,12 +73,6 @@ export default function ScheduleForm({
     defaultValues: initialValues,
   });
 
-  /**
-   * Watch modality and date field for dependency updates.
-   *
-   * Modality: for toggling between link (remote) and address (onsite) fields
-   * SelectedDate: reference for start and end times (since MUI uses DateTime)
-   */
   const modality = useWatch({
     control,
     name: "modality",
@@ -86,14 +83,8 @@ export default function ScheduleForm({
     name: "date",
   });
 
-  /**
-   * When an existing event is selected, pass its values to the form.
-   *
-   * Convert Date objects from `react-big-calendar` events into string (ISO)
-   * to match zod and backend schema.
-   */
   useEffect(() => {
-    if (selectedEvent) {
+    if (drawerMode === "update" && selectedEvent) {
       const startIsoString = convertDateToIso(selectedEvent.start);
       const endIsoString = convertDateToIso(selectedEvent.end);
 
@@ -104,68 +95,73 @@ export default function ScheduleForm({
         start: startIsoString,
         end: endIsoString,
       } as ScheduleFormInputs);
+      return;
     }
-  }, [selectedEvent, reset]);
 
-  /**
-   * When toggling between "remote" and "onsite" modality, reset states
-   * for address and link fields for cleanup
-   */
+    if (drawerMode === "create") {
+      const startIsoString = createStart ? convertDateToIso(createStart) : "";
+
+      const endIsoString = createEnd ? convertDateToIso(createEnd) : "";
+
+      reset({
+        ...initialValues,
+        date: DateTime.fromJSDate(date).toISO() ?? "",
+        start: startIsoString,
+        end: endIsoString,
+      });
+    }
+  }, [drawerMode, selectedEvent, date, createStart, createEnd, reset]);
+
   useEffect(() => {
     if (modality === "remote") resetField("address");
     if (modality === "onsite") resetField("link");
   }, [modality, resetField]);
 
-  const currentLocalDate = new Date().toISOString().split("T")[0];
-  const { saveSchedule, deleteSchedule, isDeleting } =
-    useSchedulesData(currentLocalDate);
+  const { saveSchedule, isDeleting } = useSchedulesData();
 
   async function onSubmit(formData: ScheduleFormInputs) {
     saveSchedule(
       { data: formData, id: selectedEvent?.id },
       {
         onSuccess: () => {
-          setOpenDrawer(null);
-          reset();
+          closeDrawer();
+          reset(initialValues);
         },
       },
     );
   }
 
-  async function onDelete({ id }: Pick<CalendarEvent, "id">) {
-    deleteSchedule(id, {
-      onSuccess: () => {
-        setOpenDrawer(null);
-        setOpenModal(false);
-        reset();
-      },
-    });
-  }
-
   function handleCancel() {
     reset(initialValues);
-    setSelectedEvent(null);
-    setOpenDrawer(null);
+    closeDrawer();
   }
 
   return (
-    <Drawer open={!!openDrawer} onClose={handleCancel} anchor="right">
-      <DrawerHeader />
+    <Drawer
+      open={!!drawerMode}
+      onClose={handleCancel}
+      anchor="right"
+      slotProps={{
+        paper: {
+          sx: { width: { xs: "100%", sm: "35%" } },
+        },
+      }}
+    >
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
         sx={{
-          my: 2,
-          mt: 3,
+          my: 2.5,
+          mt: 5,
           height: "100%",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
-          maxWidth: "600px",
+          width: "100%",
         }}
       >
-        <Stack direction="row" justifyContent="space-between" px={2.5}>
+        <Stack direction="row" justifyContent="space-between" px={2.5} pb={1}>
           <Typography
             variant="h5"
             component="h1"
@@ -173,24 +169,43 @@ export default function ScheduleForm({
             display="flex"
             alignItems="center"
           >
-            {openDrawer === "create" ? "Create a new event" : "Update event"}
+            {drawerMode === "create" ? "Create a new event" : "Update event"}
           </Typography>
 
-          {openDrawer === "update" && selectedEvent && (
-            <Button onClick={() => setOpenModal(true)}>Remove event</Button>
+          {drawerMode === "update" && (
+            <Button
+              onClick={() =>
+                handleDelete(() => {
+                  reset(initialValues);
+                })
+              }
+              disabled={isDeleting}
+              sx={{
+                borderRadius: 2,
+                minWidth: 0,
+                p: 1,
+                bgcolor: "action.hover",
+                color: "action.active",
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  color: "error.main",
+                  bgcolor: "error.extraLight",
+                },
+              }}
+            >
+              <DeleteOutlinedIcon />
+            </Button>
           )}
         </Stack>
         <Box
           sx={{
             p: 2.5,
             pr: 1.3,
-            pb: 0,
+            pt: 2,
           }}
           className="thin-scrollbar"
         >
-          <Stack spacing={3}>
-            {/* Title Field */}
-
+          <Stack spacing={4}>
             <ControlledFormTextField
               name="title"
               control={control}
@@ -199,28 +214,7 @@ export default function ScheduleForm({
               placeholder="Event title"
             />
 
-            {/* Description Field */}
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <MDEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  preview="edit"
-                  previewOptions={{
-                    rehypePlugins: [[rehypeSanitize]],
-                  }}
-                  textareaProps={{
-                    placeholder: "Description (optional)",
-                    maxLength: 200,
-                  }}
-                />
-              )}
-            />
-
             <Stack direction="row" spacing={2}>
-              {/* Date Field */}
               <Controller
                 name="date"
                 control={control}
@@ -234,7 +228,6 @@ export default function ScheduleForm({
                 )}
               />
 
-              {/* Start Time Field */}
               <Controller
                 name="start"
                 control={control}
@@ -249,7 +242,6 @@ export default function ScheduleForm({
                 )}
               />
 
-              {/* End Time Field */}
               <Controller
                 name="end"
                 control={control}
@@ -266,38 +258,29 @@ export default function ScheduleForm({
                 )}
               />
             </Stack>
-          </Stack>
 
-          <Divider sx={{ my: 4 }} />
-
-          <Stack spacing={2.5}>
             <Stack direction="row" spacing={2}>
-              {/* Type Field */}
-
-              <ControlledFormSelect
-                name="type"
-                control={control}
-                label="Type"
-                items={typeValues}
-              />
-
-              {/* Modality Field */}
               <Controller
                 name="modality"
                 control={control}
                 render={({ field }) => (
                   <ScheduleFormRadioGroup
                     field={field}
-                    label="Modality:"
+                    label="Modality"
                     error={!!errors.modality}
                     errorMessage={errors.modality?.message}
                     radioItems={modalityOptions}
                   />
                 )}
               />
+              <ControlledFormSelect
+                name="type"
+                control={control}
+                label="Type"
+                items={typeValues}
+              />
             </Stack>
 
-            {/* Link / Address Field */}
             {modality === "remote" ? (
               <ControlledFormTextField
                 name="link"
@@ -311,43 +294,50 @@ export default function ScheduleForm({
                 label="Office/Location Address"
               />
             )}
+
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <MDEditor
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  preview="edit"
+                  previewOptions={{
+                    rehypePlugins: [[rehypeSanitize]],
+                  }}
+                  textareaProps={{
+                    placeholder: "Description (optional)",
+                    maxLength: 200,
+                  }}
+                />
+              )}
+            />
           </Stack>
         </Box>
-        <Stack direction="row" spacing={2} width="100%" px={2.5}>
-          {/* Cancel Button */}
+        <Stack
+          direction="row"
+          spacing={2}
+          width="100%"
+          px={2.5}
+          mt="auto"
+          pt={2}
+        >
           <FormButtons
             type="button"
             variant="outlined"
             disabled={isSubmitting}
             onClick={handleCancel}
+            sx={secondaryButtonSx}
           >
             Cancel
           </FormButtons>
 
-          {/* Save Button */}
           <FormButtons type="submit" loading={isSubmitting}>
             Save
           </FormButtons>
         </Stack>
       </Box>
-      <ConfirmationModal
-        open={openModal}
-        title="Are you sure?"
-        message={
-          <Typography variant="body1" component="p" color="textSecondary">
-            This will permanently delete&nbsp;
-            <Span>{selectedEvent?.title}</Span> from your schedule. Once
-            deleted, it cannot be undone.
-          </Typography>
-        }
-        handleClose={() => setOpenModal(false)}
-        handleConfirm={() => {
-          return selectedEvent && onDelete({ id: selectedEvent?.id });
-        }}
-        confirmButtonColor="error"
-        loading={isDeleting}
-        headerIcon={<DeleteHeader />}
-      />
     </Drawer>
   );
 }

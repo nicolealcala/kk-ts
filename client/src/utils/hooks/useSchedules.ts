@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   deleteSchedule,
   getSchedules,
@@ -6,15 +6,16 @@ import {
 } from "@/lib/services/schedulesService";
 import type { ScheduleFormInputs } from "@/lib/schema/scheduleSchema";
 import { showToast } from "@/lib/config/toast";
+import { useQueryClient } from "./useQueryClient";
 
-export function useSchedulesData(currentLocalDate: string) {
+export function useSchedulesData() {
   const key = "schedules";
-  const queryClient = useQueryClient();
+  const { queryClient } = useQueryClient();
 
   // --- GET Query ---
   const query = useQuery({
-    queryKey: [key, currentLocalDate],
-    queryFn: () => getSchedules(currentLocalDate),
+    queryKey: [key],
+    queryFn: () => getSchedules(),
   });
 
   // --- SAVE Mutation (Create or Update) ---
@@ -23,7 +24,7 @@ export function useSchedulesData(currentLocalDate: string) {
       updateSchedule(data, id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [key, currentLocalDate],
+        queryKey: [key],
       });
       showToast("success", "Event saved successfully");
     },
@@ -35,15 +36,15 @@ export function useSchedulesData(currentLocalDate: string) {
 
   // --- DELETE Mutation  ---
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteSchedule(id),
+    mutationFn: (ids: string[]) => deleteSchedule(ids),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [key, currentLocalDate],
+        queryKey: [key],
       });
       showToast("success", "Event deleted successfully");
     },
     onError: (error) => {
-      console.error("Failed to delet schedule: ", error);
+      console.error("Failed to delete schedule: ", error);
       showToast("error", "Failed to delete event");
     },
   });

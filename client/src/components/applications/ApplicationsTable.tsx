@@ -39,6 +39,7 @@ import {
   handleRowSelectionChange,
   handleSort,
 } from "@/utils/application/table";
+import { useQueryClient } from "@/utils/hooks/useQueryClient";
 type ApplicationsTableProps = {
   data: ApplicationTableData[];
 };
@@ -64,10 +65,10 @@ function ApplicationsTable({ data }: ApplicationsTableProps) {
     setSortOrder: state.setSortOrder,
     setSelectedApplications: state.setSelectedApplications,
   }));
-
+  const { invalidateQueries } = useQueryClient();
   const openConfirmation = useDialogStore((state) => state.openConfirmation);
 
-  const { deleteApplication, invalidateQueries } = useApplications();
+  const { deleteApplication } = useApplications();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 

@@ -12,6 +12,7 @@ import "@tanstack/react-table";
 import { formatShortenedLocaleDate } from "@/utils/date";
 import type { ApplicationFormData } from "@/lib/schema/applicationSchema.ts";
 import JobLocation from "./JobLocation";
+import { workArrangementColors } from "@/lib/config/colors";
 
 export type ApplicationTableData = ApplicationFormData & { id: string };
 /**
@@ -101,21 +102,15 @@ export const getColumns = () => [
     },
     cell: (info) => {
       const val = info.getValue();
-      const chipClassName = {
-        remote: "bg-green-50! text-green-500!",
-        hybrid: "bg-blue-50! text-blue-500!",
-        onsite: "bg-yellow-50! text-yellow-400!",
-        notProvided: "bg-gray-50! text-gray-500!",
-      };
       return val ? (
         <Chip
           label={val.toUpperCase()}
           size="small"
-          className={cn(
-            "text-sm!",
-            chipClassName[val as keyof typeof chipClassName],
-          )}
-          sx={{ fontFamily: "Inter" }}
+          sx={{
+            fontFamily: "Inter",
+            color: workArrangementColors[val][800],
+            bgcolor: workArrangementColors[val][50],
+          }}
         />
       ) : (
         <Typography variant="body2" color="text.disabled">
